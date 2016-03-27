@@ -1,0 +1,40 @@
+﻿@model ParcelXpress.Models.DRVR_DATA
+
+@{
+    ViewBag.Title = "EditDriver";
+}
+<div class="container-fluid">
+    <section class="content-header">
+        <h2>Edit Driver</h2>
+    </section>
+    
+
+    <div class="col-lg-9">
+        <div class="box box-primary container-fluid">
+            <div class="box-header">
+                <h4 class="col-sm-8">Driver Details</h4>
+                @using (Html.BeginForm("DeleteDriver", "Driver", null, FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    @Html.HiddenFor(m => m.DriverId);
+                    <button type="submit" role="button" class="btn btn-danger col-sm-2" id="btnDelete" style="margin-top:1%; "><span class="glyphicon glyphicon-remove"></span> Delete Driver</button>
+                }
+            </div>
+            @using (Html.BeginForm("editDriverInformation", "Driver", new { reqtId = ViewData["requestId"] }, FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <div class="box-body">
+                    @Html.Partial("_DriverDetails", Model, new ViewDataDictionary { { "isDisabled", "false" } })
+                </div>
+
+                <div class="box-footer">
+
+                    <button class="btn btn-primary col-lg-2 col-sm-offset-3" type="submit" style="margin-bottom:2%;">Save</button>
+
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+@Html.Raw(TempData["toastMessage"])

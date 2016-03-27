@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="bcfd159b0bdf432ca0ac1858cdc57d53" Name="Diagram1">
+        <EntityTypeShape EntityType="ParcelXpressModel.CUST_DATA" Width="1.5" PointX="0.75" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.CUST_TRAN" Width="1.5" PointX="8.25" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.DRVR_MSGS" Width="1.5" PointX="6" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.DRVR_TRAN" Width="1.5" PointX="11.25" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.JOB" Width="1.5" PointX="6" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.JOBS_HTRY" Width="1.5" PointX="8.25" PointY="15.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.JOBS_RESP" Width="1.5" PointX="8.25" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.REQT_DRVR" Width="1.5" PointX="10.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.RESP_CODE" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.SCRT_QUES" Width="1.5" PointX="1.5" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.SESN" Width="1.5" PointX="6" PointY="12.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.STUS_CODE" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.SYS_USER" Width="1.5" PointX="3.75" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.sysdiagram" Width="1.5" PointX="10.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.TRAN_TYPE" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="ParcelXpressModel.FK_JOBS_CUST" ManuallyRouted="false" />
+        <AssociationConnector Association="ParcelXpressModel.FK_HSTRY_JOB" ManuallyRouted="false" />
+        <AssociationConnector Association="ParcelXpressModel.FK_JOBS_RESP_JOBS" ManuallyRouted="false" />
+        <AssociationConnector Association="ParcelXpressModel.FK_SYS_USER_SCRT_QUES" ManuallyRouted="false" />
+        <AssociationConnector Association="ParcelXpressModel.FK_SESN_SYS_USER" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="ParcelXpressModel.CUST_BILL" Width="1.5" PointX="3" PointY="8.125" />
+        <AssociationConnector Association="ParcelXpressModel.FK_CUST_BILL_CUST_DATA" />
+        <EntityTypeShape EntityType="ParcelXpressModel.DRVR_DATA" Width="1.5" PointX="3.625" PointY="15.875" />
+        <AssociationConnector Association="ParcelXpressModel.FK_DRVR_DATA_SCRT_QUES" />
+        <AssociationConnector Association="ParcelXpressModel.FK_DRVR_MSGS_DRVR_DATA" />
+        <AssociationConnector Association="ParcelXpressModel.FK_JOBS_DRVR" />
+        <AssociationConnector Association="ParcelXpressModel.FK_JOBS_RESP_DRVR" />
+        <EntityTypeShape EntityType="ParcelXpressModel.EMAL_ACNT" Width="1.5" PointX="0.75" PointY="11.75" />
+        <EntityTypeShape EntityType="ParcelXpressModel.CUST_CRDT" Width="1.5" PointX="3" PointY="0.75" />
+        <AssociationConnector Association="ParcelXpressModel.FK_CRDT_CUST_DATA" />
+        <EntityTypeShape EntityType="ParcelXpressModel.FAQ" Width="1.5" PointX="8.375" PointY="11.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

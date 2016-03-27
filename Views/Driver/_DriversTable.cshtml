@@ -1,0 +1,27 @@
+﻿@model IEnumerable<DRVR_DATA>
+
+<div class="row col-lg-10" id="registeredDrivers">
+    <table class="table table-bordered table-responsive table-hover">
+        <thead>
+            <tr>
+                <th>Driver Name</th>
+                <th>Contact Number</th>
+                <th>Commission %</th>
+                <th>Active now</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.DriverName</td>
+                    <td>@item.ContactNo</td>
+                    <td>@item.CommissionRate</td>
+                    <td><input type="checkbox" class="checkbox-inline" value="@item.IsActive" checked="@item.IsActive" disabled="disabled" /></td>
+                    <td>@Html.ActionLink("View Details", "EditDriver", "Driver", new { id = @item.DriverId }, new { @class = "btn btn-primary" })</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

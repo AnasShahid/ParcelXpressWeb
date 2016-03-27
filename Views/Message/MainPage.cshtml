@@ -1,0 +1,28 @@
+﻿<div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav" id="sideNavigation">
+            <li class="sidebar-brand">
+                <a href="#">
+                    Driver Messages
+                </a>
+            </li>
+            <li>
+                <a href="/Message/Inbox" id="inbox">Inbox &nbsp;<span class="badge">@ViewBag.MessageCount</span></a>
+            </li>
+            <li>
+                <a href="/Message/Sent" id="sent">Sent Items</a>
+            </li>
+            <li>
+                <a href="/Message/WriteNew" id="write">Write New</a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="page-content-wrapper">
+        <div class="container-fluid">           
+                @Html.Action("Inbox")           
+        </div>
+    </div>
+</div>
+@Html.Raw(TempData["toastMessage"])

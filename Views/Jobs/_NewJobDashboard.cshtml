@@ -1,0 +1,236 @@
+﻿@model JOB
+
+@{
+    List<CUST_DATA> customersModel = new List<CUST_DATA>();
+    bool accountInd = ViewBag.CustomerAccountInd;
+
+    var htmlAttributes = new Dictionary<string, object>();
+    if (!accountInd)
+    {
+        htmlAttributes.Add("disabled", "disabled");
+    }
+    string mapsLinkLondon = "https://www.google.com/maps/place/London,+UK/@51.5336475,-0.2629951,11z/data=!4m2!3m1!1s0x47d8a00baf21de75:0x52963a5addd52a99";
+}
+
+@using (Html.BeginForm("SendJobDashboard", "Jobs", null, FormMethod.Post, new { @class = "form-horizontal", @id = "formNewJob" }))
+{
+    <div class="container-fluid">
+        <div class="panel panel-primary mdl-shadow--4dp">
+            <div class="panel-heading panel-title">
+                <div class="mdl-card__title zero-margins">
+                    <h5 class="zero-margins" style="color:white;">New Job</h5>
+                    <div class="mdl-layout-spacer"></div>
+                    <a target="_blank" href="@mapsLinkLondon" class="btn mdl-button--accent mdl-button--raised refreshButton"><span class="glyphicon glyphicon-link"></span> Google Maps</a>
+                </div>
+            </div>
+            <div class="panel-body">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mdl-textfield  mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="searchTerm">Customer Name</label>
+                            <div class="input-group">
+                                <form method="get" action="@Url.Action("CustomerSearchDashboard")" data-pxp-ajax="true" data-pxp-target="#searchResults">
+                                    @Html.TextBoxFor(m => m.CustomerName, new { @class = "mdl-textfield__input", @name = "searchTerm", @id = "searchTerm" })
+                                    <span class="input-group-btn">
+                                        <button type="button" role="button" class="btn mdl-button--accent mdl-button--raised" id="btnSearchCustomer"><span class="glyphicon glyphicon-search"></span></button>
+                                    </span>
+                                </form>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.CustomerName, null, new { @class = "text-danger" })
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="row">
+                            <label class="control-label" style="padding-left:0px !important;color:#c6c6c6;">Type of Parcel</label>
+                        </div>
+                        <div class="row">
+                            @Html.DropDownListFor(m => m.TypeOfParcel, (IEnumerable<SelectListItem>)ViewBag.TypesOfParcel, "Please Select", new { @class = "dropdown dropdown-toggle" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <form method="get" action="@Url.Action("CustomerPickupSearchDashboard")" data-pxp-ajax="true" data-pxp-target="#searchResults">
+                        <div class="col-md-6">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-textfield__label" for="pickupAddress">Pickup Address</label>
+                                <div class="input-group col-sm-12">
+                                    @Html.TextBoxFor(m => m.PickupAddress, new { @class = "mdl-textfield__input", @id = "pickupAddress", @name = "pickupAddress" })
+                                    <span class="input-group-btn">
+                                        <button type="button" role="button" class="btn mdl-button--accent mdl-button--raised" id="btnSearchCustomerPickup"><span class="glyphicon glyphicon-search"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.PickupAddress, null, new { @class = "text-danger" })
+                        </div>
+                    </form>
+
+                    <div class="col-md-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="dropAddress">Drop Address</label>
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.DropAddress, new { @class = "mdl-textfield__input", @id = "dropAddress" })
+
+                                <span class="input-group-btn"><a href="#" class="btn btn-success" id="addField"><span class="glyphicon glyphicon-plus"></span></a></span>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.DropAddress, null, new { @class = "text-danger" })
+                    </div>
+
+                </div>
+                <div class="row VisiblityHidden">
+                    <div class="col-md-6 VisiblityHidden" id="address1">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="dropAddress1">Drop Address 2</label>
+                            @Html.TextBoxFor(m => m.DropAddress1, new { @class = "mdl-textfield__input", @id = "dropAddress1" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.DropAddress1, null, new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6 VisiblityHidden" id="address2">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="dropAddress2">Drop Address 3</label>
+                            @Html.TextBoxFor(m => m.DropAddress2, new { @class = "mdl-textfield__input", @id = "dropAddress2" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.DropAddress2, null, new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row VisiblityHidden">
+                    <div class="col-md-6 VisiblityHidden" id="address3">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="dropAddress3">Drop Address 4</label>
+                            @Html.TextBoxFor(m => m.DropAddress3, new { @class = "mdl-textfield__input", @id = "dropAddress3" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.DropAddress3, null, new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6 VisiblityHidden" id="address4">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="dropAddress4">Drop Address 5</label>
+                            @Html.TextBoxFor(m => m.DropAddress4, new { @class = "mdl-textfield__input", @id = "dropAddress4" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.DropAddress4, null, new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <form method="get" action="@Url.Action("CustomerSearchDashboard")" data-pxp-ajax="true" data-pxp-target="#searchResults">
+                        <div class="col-md-6">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-textfield__label" for="contactNumber">Contact Number</label>
+                                <div class="input-group col-sm-12">
+                                    @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "mdl-textfield__input", @id = "contactNumber", @name = "contactNumber" })
+                                    <span class="input-group-btn">
+                                        <button type="button" role="button" class="btn mdl-button--accent mdl-button--raised" id="btnSearchCustomerPhone"><span class="glyphicon glyphicon-search"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.CustomerPhone, null, new { @class = "text-danger" })
+                        </div>
+                    </form>
+
+                    <div class="col-md-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="amount">Amount (&pound;)</label>
+                            @Html.TextBoxFor(m => m.Price, new { @class = "mdl-textfield__input", @id = "amount" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Price, null, new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="notes">Notes</label>
+                            @Html.TextAreaFor(m => m.Notes, new { @class = "mdl-textfield__input", @id = "notes" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Notes, null, new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="dropoffContactNumber">Dropoff Contact Number</label>
+                            @Html.TextBoxFor(m => m.DropoffContact, new { @class = "mdl-textfield__input", @id = "dropoffContactNumber" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.DropoffContact, null, new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6" style="padding-left:0px !important;">
+                        <label class="control-label col-lg-4" style="padding-left:0px !important;color:#c6c6c6;">Driver</label>
+                        @Html.DropDownListFor(m => m.DriverId, (IEnumerable<SelectListItem>)ViewBag.DriversList, "Please Select", new { @class = "dropdown dropdown-toggle col-lg-8 vertical-align" })
+                    </div>
+                    <div class="col-md-6">
+                        <div class="l">
+                            <label class="mdl-checkbox mdl-js-checkbox" for="longDistance">
+                                @Html.CheckBoxFor(m => m.longDistanceCheckboxValue, new { @class = "mdl-checkbox__input", @id = "longDistance" })
+                                <span class="mdl-checkbox__label">Long Distance Job</span>
+                            </label>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.LongDistanceInd, null, new { @class = "text-danger" })
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-lg-12 form-group">
+                        <label class="control-label col-lg-3">Payment Mode</label>
+                        <div class="col-lg-8">
+                            <label class="form-control"> @Html.RadioButtonFor(m => m.AccountPaymentInd, false, new { @checked = "checked" }) Cash </label>
+                            <label class="form-control">@Html.RadioButtonFor(m => m.AccountPaymentInd, true, htmlAttributes) Account </label>
+                            @if (!accountInd)
+                            {
+                                <label class="text-warning">Account is not configured.</label>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+                @Html.HiddenFor(m => m.CustomerId)
+            </div>
+            <div class="panel-footer">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <button id="btnJobFormSubmit" type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent"><span class="glyphicon glyphicon-send"></span> Send Job</button>
+                    </div>
+                    <div class="col-md-2 hidden-sm hidden-xs"></div>
+                    <div class="col-sm-6 col-md-6">
+                        <button type='submit' formaction='/Jobs/SaveCustomerAndSend' class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent"><span class="glyphicon glyphicon-saved"></span> Save and Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<div id="searchModal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Customer Search</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="input-group col-sm-12">
+                            <form method="get" action="@Url.Action("CustomerSearchDashboard")" data-pxp-ajax="true" data-pxp-target="#searchResults" id="searchForm">
+                                <input type="search" class="form-control" placeholder="Customer Name, Address or Phone&hellip;" name="searchTerm" id="term" />
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> </button>
+                                </span>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("_SearchResultCustomerDashboard", customersModel)
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@Html.Raw(TempData["toastMessage"])
+@Html.Raw(TempData["toastMessage1"])
+
+

@@ -1,0 +1,52 @@
+﻿@model List<ParcelXpress.Helpers.CustomerJobDriver>
+@{
+
+    TempData["CustomerJobs"] = Model;
+    TempData["CustomerId"] = Request.QueryString["customerId"];
+}
+
+<div class="box box-primary">
+    <div class="box-header">
+        <div class="row">
+            <h3 class="col-sm-3">Jobs</h3>
+            @using (Html.BeginForm("CreateCustomerStatement", "Accounts", null, FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+
+                <button type="submit" role="button" class="btn btn-primary col-sm-3 col-sm-offset-5" id="btnGenerateStatement" style="margin-top:2%"><span class="glyphicon glyphicon-send"></span> Send Customer Statement</button>
+            }
+        </div>
+    </div>
+    <div class="box-body">
+        <table class="table table-bordered table-hover table-responsive" style="max-height:500px !important;overflow-y:auto !important;">
+            <thead>
+                <tr>
+                    <th>Driver Name</th>
+                    <th>Date</th>
+                    <th>Charges</th>
+                    <th>Paid Amount</th>
+                    <th>Remaining Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.DriverName</td>
+                        <td>@item.JobDate.ToString("dd-MMM-yyyy")</td>
+                        <td>@item.Price</td>
+                        <td>@item.ReceivedAmount</td>
+                        <td>@item.RemainingAmount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="loading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 0%; left: 30%; color: White;">
+        Please Wait. . .<img src="~/Content/loading.gif" height="200px" width="200px">
+    </p>
+</div>

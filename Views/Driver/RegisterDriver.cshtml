@@ -1,0 +1,32 @@
+﻿@model ParcelXpress.Models.DRVR_DATA
+
+@{
+    ViewBag.Title = "RegisterDriver";
+}
+<div class="container-fluid">
+    <section class="content-header">
+        <h2>Register Driver</h2>
+    </section>
+
+    @using (Html.BeginForm("saveNewDriver", "Driver", new { reqtId = ViewData["requestId"] }, FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <div class="col-lg-9">
+            <div class="box box-primary container-fluid">
+                <div class="box-header">
+                    <h4>Driver Details</h4>
+                </div>
+
+                <div class="box-body">
+                    @Html.Partial("_DriverDetails", Model, new ViewDataDictionary { { "isDisabled", "false" } })
+                </div>
+
+                <div class="box-footer">                 
+                    <button class="btn btn-primary col-lg-2" type="submit" style="margin-bottom:2%;">Save</button>                  
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@Html.Raw(TempData["toastMessage"])

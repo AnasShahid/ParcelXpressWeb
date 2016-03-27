@@ -1,0 +1,65 @@
+﻿@model DRVR_MSGS
+<div id="messageContainer">
+    <div class="col-lg-11">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3>Write Message</h3>
+            </div>
+
+            <div class="panel-body">
+                @using (Html.BeginForm("sendToSingle", "Message", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h4> Message single driver</h4>
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-lg-10">
+                                    <label class="control-label col-lg-2 ">Driver</label>
+                                    @Html.DropDownListFor(m => m.DriverId, (IEnumerable<SelectListItem>)ViewBag.DriversList, "Please Select", new { @class = "dropdown dropdown-toggle" })
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-10">
+                                    <label class="control-label col-lg-2">Message</label>
+                                    @Html.TextAreaFor(m => m.Message, new { @class = "col-lg-10" })
+                                    @Html.ValidationMessageFor(m => m.Message,null, new { @class="text-danger"})
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-send"> Send Message</span></button>
+                        </div>
+                    </div>
+                }
+
+                @using (Html.BeginForm("sendToAll", "Message", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h4> Message all drivers</h4>
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-lg-10">
+                                    <label class="control-label col-lg-2">Message</label>
+                                    @Html.TextAreaFor(m => m.Message, new { @class = "col-lg-10" })
+                                    @Html.ValidationMessageFor(m => m.Message, null, new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-send"> Send to all</span></button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

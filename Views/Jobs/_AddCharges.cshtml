@@ -1,0 +1,48 @@
+﻿@model ParcelXpress.Helpers.AddChagesViewModel
+@{
+    Model.JobId = Convert.ToInt16(Request.QueryString["jobId"]);
+}
+}
+
+@Html.BeginForm("AddCharges", "Jobs", FormMethod.Post, new { @class = "form-horizontal" }){
+<div class="modal-content">
+    <div class="modal-header">
+        <h4>Add Charges</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="input-group">
+                    <label class="control-label col-lg-5">Additional Amount</label>
+                    <div class="col-lg-7">
+                        @Html.TextBoxFor(m => m.Price)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="input-group">
+                    <label class="control-label col-lg-5">Description</label>
+                    <div class="col-lg-7">
+                        @Html.TextAreaFor(m => m.ChargesDescription, new { @required = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10">
+                @Html.ValidationMessageFor(m => m.Price, null, new { @class = "text-danger" })<br />
+                @Html.ValidationMessageFor(m => m.ChargesDescription, null, new { @class = "text-danger" })
+            </div>
+        </div>
+        @Html.HiddenFor(m => m.JobId)
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal" type="reset">Close</button>
+        <button class="btn btn-success" type="submit">Add Charges</button>
+    </div>
+
+</div>
+        }

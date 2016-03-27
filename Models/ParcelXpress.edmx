@@ -1,0 +1,1175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ParcelXpressModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="CUST_BILL">
+          <Key>
+            <PropertyRef Name="BillId" />
+          </Key>
+          <Property Name="BillId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="PaymentDate" Type="datetime" Nullable="false" />
+          <Property Name="DueAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="PaidAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="RemainingAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="PreviousCredit" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="CUST_CRDT">
+          <Key>
+            <PropertyRef Name="CustomerCreditId" />
+          </Key>
+          <Property Name="CustomerCreditId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" />
+          <Property Name="Date" Type="date" />
+          <Property Name="CreditAmount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="SettledAmount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="RemainingAmount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="SettledInd" Type="bit" />
+        </EntityType>
+        <EntityType Name="CUST_DATA">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Address" Type="text" Nullable="false" />
+          <Property Name="ContactNo" Type="nchar" MaxLength="14" />
+          <Property Name="EmailAddress" Type="varchar" MaxLength="50" />
+          <Property Name="AccountRefNumber" Type="varchar" MaxLength="15" />
+          <Property Name="HasAccount" Type="bit" />
+          <Property Name="AccountId" Type="int" />
+        </EntityType>
+        <EntityType Name="CUST_TRAN">
+          <Key>
+            <PropertyRef Name="TransactionId" />
+          </Key>
+          <Property Name="TransactionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TransactionDate" Type="date" Nullable="false" />
+          <Property Name="CustomerId" Type="int" />
+          <Property Name="PayableAmount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ReceivedAmount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="RemainingAmount" Type="decimal" Precision="19" Scale="2" StoreGeneratedPattern="Computed" />
+          <Property Name="JobId" Type="int" />
+          <Property Name="SettledInd" Type="bit" />
+        </EntityType>
+        <EntityType Name="DRVR_DATA">
+          <Key>
+            <PropertyRef Name="DriverId" />
+          </Key>
+          <Property Name="DriverId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DriverName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LoginName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="SecurityQuestionId" Type="int" />
+          <Property Name="SecurityAnswer" Type="varchar" MaxLength="50" />
+          <Property Name="GcmId" Type="text" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="ContactNo" Type="nvarchar" MaxLength="14" />
+          <Property Name="CommissionRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="IsDeleted" Type="bit" />
+          <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DRVR_MSGS">
+          <Key>
+            <PropertyRef Name="MessageId" />
+          </Key>
+          <Property Name="MessageId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DriverId" Type="int" />
+          <Property Name="Message" Type="text" />
+          <Property Name="MessageReceivedInd" Type="bit" />
+          <Property Name="MessageDate" Type="datetime" Nullable="false" />
+          <Property Name="MessageReadInd" Type="bit" />
+        </EntityType>
+        <EntityType Name="DRVR_TRAN">
+          <Key>
+            <PropertyRef Name="DriverTransId" />
+          </Key>
+          <Property Name="DriverTransId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DriverId" Type="int" />
+          <Property Name="TransactionType" Type="varchar" MaxLength="5" />
+          <Property Name="JobId" Type="int" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="TransactionDate" Type="datetime" />
+          <Property Name="Balance" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="SettledInd" Type="bit" />
+        </EntityType>
+        <EntityType Name="EMAL_ACNT">
+          <Key>
+            <PropertyRef Name="EmailAccountId" />
+          </Key>
+          <Property Name="EmailAccountId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmailAddress" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="EmailClient" Type="int" Nullable="false" />
+          <Property Name="ExecutionDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="FAQS">
+          <Key>
+            <PropertyRef Name="FaqId" />
+          </Key>
+          <Property Name="FaqId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Title" Type="varchar(max)" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="JOBS">
+          <Key>
+            <PropertyRef Name="JobId" />
+          </Key>
+          <Property Name="JobId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="JobStatus" Type="varchar" MaxLength="5" />
+          <Property Name="PickupAddress" Type="text" Nullable="false" />
+          <Property Name="DropAddress" Type="text" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="CustomerPhone" Type="nvarchar" MaxLength="20" />
+          <Property Name="CustomerName" Type="varchar" MaxLength="50" />
+          <Property Name="CustomerId" Type="int" />
+          <Property Name="DriverId" Type="int" />
+          <Property Name="DriverCommission" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Notes" Type="text" />
+          <Property Name="PaymentReceived" Type="bit" />
+          <Property Name="JobDate" Type="datetime" Nullable="false" />
+          <Property Name="AccountPaymentInd" Type="bit" />
+          <Property Name="ChargesDescription" Type="text" />
+          <Property Name="LongDistanceInd" Type="bit" />
+          <Property Name="DropoffContact" Type="varchar" MaxLength="20" />
+          <Property Name="DropAddress1" Type="text" />
+          <Property Name="DropAddress2" Type="text" />
+          <Property Name="DropAddress3" Type="text" />
+          <Property Name="DropAddress4" Type="text" />
+          <Property Name="TypeOfParcel" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="JOBS_HTRY">
+          <Key>
+            <PropertyRef Name="JobHistoryId" />
+          </Key>
+          <Property Name="JobHistoryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="JobId" Type="int" />
+          <Property Name="CompletionDate" Type="date" />
+        </EntityType>
+        <EntityType Name="JOBS_RESP">
+          <Key>
+            <PropertyRef Name="JobResponseId" />
+          </Key>
+          <Property Name="JobResponseId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="JobId" Type="int" Nullable="false" />
+          <Property Name="DriverId" Type="int" Nullable="false" />
+          <Property Name="ResponseCode" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="IsAssigned" Type="bit" Nullable="false" />
+          <Property Name="ResponseTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="REQT_DRVR">
+          <Key>
+            <PropertyRef Name="DriverReqId" />
+          </Key>
+          <Property Name="DriverReqId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DriverName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LoginName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="GcmId" Type="text" Nullable="false" />
+          <Property Name="SecurityQuestionId" Type="int" />
+          <Property Name="SecurityAnswer" Type="varchar" MaxLength="50" />
+          <Property Name="ContactNo" Type="nvarchar" MaxLength="20" />
+          <Property Name="IsConverted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RESP_CODE">
+          <Key>
+            <PropertyRef Name="ResponseId" />
+          </Key>
+          <Property Name="ResponseId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ResponseCode" Type="varchar" MaxLength="5" />
+          <Property Name="ResponseDsc" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="SCRT_QUES">
+          <Key>
+            <PropertyRef Name="QuestionId" />
+          </Key>
+          <Property Name="QuestionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SecurityQuestion" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="SESN">
+          <Key>
+            <PropertyRef Name="SessionId" />
+          </Key>
+          <Property Name="SessionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SessionCode" Type="varchar" MaxLength="50" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="SessionDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="STUS_CODE">
+          <Key>
+            <PropertyRef Name="StatusId" />
+          </Key>
+          <Property Name="StatusId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StatusCode" Type="varchar" MaxLength="5" Nullable="false" />
+          <Property Name="StatusDsc" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SYS_USER">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SecurityQuestionId" Type="int" />
+          <Property Name="SecurityAnswer" Type="varchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <EntityType Name="TRAN_TYPE">
+          <Key>
+            <PropertyRef Name="TransactionTypeId" />
+          </Key>
+          <Property Name="TransactionTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TransactionTypeCode" Type="varchar" MaxLength="5" />
+          <Property Name="TransactionTypeDsc" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <Association Name="FK_CRDT_CUST_DATA">
+          <End Role="CUST_DATA" Type="Self.CUST_DATA" Multiplicity="0..1" />
+          <End Role="CUST_CRDT" Type="Self.CUST_CRDT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CUST_CRDT">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CUST_BILL_CUST_DATA">
+          <End Role="CUST_DATA" Type="Self.CUST_DATA" Multiplicity="1" />
+          <End Role="CUST_BILL" Type="Self.CUST_BILL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CUST_BILL">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DRVR_DATA_SCRT_QUES">
+          <End Role="SCRT_QUES" Type="Self.SCRT_QUES" Multiplicity="0..1" />
+          <End Role="DRVR_DATA" Type="Self.DRVR_DATA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SCRT_QUES">
+              <PropertyRef Name="QuestionId" />
+            </Principal>
+            <Dependent Role="DRVR_DATA">
+              <PropertyRef Name="SecurityQuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DRVR_MSGS_DRVR_DATA">
+          <End Role="DRVR_DATA" Type="Self.DRVR_DATA" Multiplicity="0..1" />
+          <End Role="DRVR_MSGS" Type="Self.DRVR_MSGS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DRVR_DATA">
+              <PropertyRef Name="DriverId" />
+            </Principal>
+            <Dependent Role="DRVR_MSGS">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HSTRY_JOB">
+          <End Role="JOBS" Type="Self.JOBS" Multiplicity="0..1" />
+          <End Role="JOBS_HTRY" Type="Self.JOBS_HTRY" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JOBS">
+              <PropertyRef Name="JobId" />
+            </Principal>
+            <Dependent Role="JOBS_HTRY">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JOBS_CUST">
+          <End Role="CUST_DATA" Type="Self.CUST_DATA" Multiplicity="0..1" />
+          <End Role="JOBS" Type="Self.JOBS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="JOBS">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JOBS_DRVR">
+          <End Role="DRVR_DATA" Type="Self.DRVR_DATA" Multiplicity="0..1" />
+          <End Role="JOBS" Type="Self.JOBS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DRVR_DATA">
+              <PropertyRef Name="DriverId" />
+            </Principal>
+            <Dependent Role="JOBS">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JOBS_RESP_DRVR">
+          <End Role="DRVR_DATA" Type="Self.DRVR_DATA" Multiplicity="1" />
+          <End Role="JOBS_RESP" Type="Self.JOBS_RESP" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DRVR_DATA">
+              <PropertyRef Name="DriverId" />
+            </Principal>
+            <Dependent Role="JOBS_RESP">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JOBS_RESP_JOBS">
+          <End Role="JOBS" Type="Self.JOBS" Multiplicity="1" />
+          <End Role="JOBS_RESP" Type="Self.JOBS_RESP" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JOBS">
+              <PropertyRef Name="JobId" />
+            </Principal>
+            <Dependent Role="JOBS_RESP">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_JOBS_RESP_RESP_CODE' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_JOBS_RESP_RESP_CODE" />-->
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_JOBS_STUS" />-->
+        <Association Name="FK_SESN_SYS_USER">
+          <End Role="SYS_USER" Type="Self.SYS_USER" Multiplicity="0..1" />
+          <End Role="SESN" Type="Self.SESN" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SYS_USER">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="SESN">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SYS_USER_SCRT_QUES">
+          <End Role="SCRT_QUES" Type="Self.SCRT_QUES" Multiplicity="0..1" />
+          <End Role="SYS_USER" Type="Self.SYS_USER" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SCRT_QUES">
+              <PropertyRef Name="QuestionId" />
+            </Principal>
+            <Dependent Role="SYS_USER">
+              <PropertyRef Name="SecurityQuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ParcelXpressModelStoreContainer">
+          <EntitySet Name="CUST_BILL" EntityType="Self.CUST_BILL" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CUST_CRDT" EntityType="Self.CUST_CRDT" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CUST_DATA" EntityType="Self.CUST_DATA" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CUST_TRAN" EntityType="Self.CUST_TRAN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DRVR_DATA" EntityType="Self.DRVR_DATA" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DRVR_MSGS" EntityType="Self.DRVR_MSGS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DRVR_TRAN" EntityType="Self.DRVR_TRAN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EMAL_ACNT" EntityType="Self.EMAL_ACNT" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FAQS" EntityType="Self.FAQS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="JOBS" EntityType="Self.JOBS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="JOBS_HTRY" EntityType="Self.JOBS_HTRY" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="JOBS_RESP" EntityType="Self.JOBS_RESP" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="REQT_DRVR" EntityType="Self.REQT_DRVR" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RESP_CODE" EntityType="Self.RESP_CODE" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SCRT_QUES" EntityType="Self.SCRT_QUES" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SESN" EntityType="Self.SESN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="STUS_CODE" EntityType="Self.STUS_CODE" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SYS_USER" EntityType="Self.SYS_USER" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TRAN_TYPE" EntityType="Self.TRAN_TYPE" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CRDT_CUST_DATA" Association="Self.FK_CRDT_CUST_DATA">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="CUST_CRDT" EntitySet="CUST_CRDT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CUST_BILL_CUST_DATA" Association="Self.FK_CUST_BILL_CUST_DATA">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="CUST_BILL" EntitySet="CUST_BILL" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DRVR_DATA_SCRT_QUES" Association="Self.FK_DRVR_DATA_SCRT_QUES">
+            <End Role="SCRT_QUES" EntitySet="SCRT_QUES" />
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DRVR_MSGS_DRVR_DATA" Association="Self.FK_DRVR_MSGS_DRVR_DATA">
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+            <End Role="DRVR_MSGS" EntitySet="DRVR_MSGS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HSTRY_JOB" Association="Self.FK_HSTRY_JOB">
+            <End Role="JOBS" EntitySet="JOBS" />
+            <End Role="JOBS_HTRY" EntitySet="JOBS_HTRY" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JOBS_CUST" Association="Self.FK_JOBS_CUST">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="JOBS" EntitySet="JOBS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JOBS_DRVR" Association="Self.FK_JOBS_DRVR">
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+            <End Role="JOBS" EntitySet="JOBS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JOBS_RESP_DRVR" Association="Self.FK_JOBS_RESP_DRVR">
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+            <End Role="JOBS_RESP" EntitySet="JOBS_RESP" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JOBS_RESP_JOBS" Association="Self.FK_JOBS_RESP_JOBS">
+            <End Role="JOBS" EntitySet="JOBS" />
+            <End Role="JOBS_RESP" EntitySet="JOBS_RESP" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SESN_SYS_USER" Association="Self.FK_SESN_SYS_USER">
+            <End Role="SYS_USER" EntitySet="SYS_USER" />
+            <End Role="SESN" EntitySet="SESN" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SYS_USER_SCRT_QUES" Association="Self.FK_SYS_USER_SCRT_QUES">
+            <End Role="SCRT_QUES" EntitySet="SCRT_QUES" />
+            <End Role="SYS_USER" EntitySet="SYS_USER" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ParcelXpressModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="CUST_DATA">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ContactNo" Type="String" MaxLength="14" FixedLength="true" Unicode="true" />
+          <Property Name="EmailAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AccountRefNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="HasAccount" Type="Boolean" />
+          <Property Name="AccountId" Type="Int32" />
+          <NavigationProperty Name="JOBS" Relationship="Self.FK_JOBS_CUST" FromRole="CUST_DATA" ToRole="JOBS" />
+          <NavigationProperty Name="CUST_BILL" Relationship="ParcelXpressModel.FK_CUST_BILL_CUST_DATA" FromRole="CUST_DATA" ToRole="CUST_BILL" />
+          <NavigationProperty Name="CUST_CRDT" Relationship="ParcelXpressModel.FK_CRDT_CUST_DATA" FromRole="CUST_DATA" ToRole="CUST_CRDT" />
+        </EntityType>
+        <EntityType Name="CUST_TRAN">
+          <Key>
+            <PropertyRef Name="TransactionId" />
+          </Key>
+          <Property Name="TransactionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="CustomerId" Type="Int32" />
+          <Property Name="PayableAmount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ReceivedAmount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="RemainingAmount" Type="Decimal" Precision="19" Scale="2" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="JobId" Type="Int32" />
+          <Property Name="SettledInd" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="DRVR_MSGS">
+          <Key>
+            <PropertyRef Name="MessageId" />
+          </Key>
+          <Property Name="MessageId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DriverId" Type="Int32" />
+          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="MessageReceivedInd" Type="Boolean" />
+          <Property Name="MessageDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="MessageReadInd" Type="Boolean" />
+          <NavigationProperty Name="DRVR_DATA" Relationship="ParcelXpressModel.FK_DRVR_MSGS_DRVR_DATA" FromRole="DRVR_MSGS" ToRole="DRVR_DATA" />
+        </EntityType>
+        <EntityType Name="DRVR_TRAN">
+          <Key>
+            <PropertyRef Name="DriverTransId" />
+          </Key>
+          <Property Name="DriverTransId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DriverId" Type="Int32" />
+          <Property Name="TransactionType" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="JobId" Type="Int32" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="TransactionDate" Type="DateTime" Precision="3" />
+          <Property Name="Balance" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="SettledInd" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="JOB">
+          <Key>
+            <PropertyRef Name="JobId" />
+          </Key>
+          <Property Name="JobId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="JobStatus" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="PickupAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DropAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CustomerPhone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerId" Type="Int32" />
+          <Property Name="DriverId" Type="Int32" />
+          <Property Name="DriverCommission" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PaymentReceived" Type="Boolean" />
+          <Property Name="JobDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="AccountPaymentInd" Type="Boolean" />
+          <NavigationProperty Name="CUST_DATA" Relationship="Self.FK_JOBS_CUST" FromRole="JOBS" ToRole="CUST_DATA" />
+          <NavigationProperty Name="JOBS_HTRY" Relationship="Self.FK_HSTRY_JOB" FromRole="JOBS" ToRole="JOBS_HTRY" />
+          <NavigationProperty Name="JOBS_RESP" Relationship="Self.FK_JOBS_RESP_JOBS" FromRole="JOBS" ToRole="JOBS_RESP" />
+          <NavigationProperty Name="DRVR_DATA" Relationship="ParcelXpressModel.FK_JOBS_DRVR" FromRole="JOB" ToRole="DRVR_DATA" />
+          <Property Name="ChargesDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LongDistanceInd" Type="Boolean" />
+          <Property Name="DropoffContact" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="DropAddress1" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DropAddress2" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DropAddress3" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DropAddress4" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="TypeOfParcel" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="JOBS_HTRY">
+          <Key>
+            <PropertyRef Name="JobHistoryId" />
+          </Key>
+          <Property Name="JobHistoryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="JobId" Type="Int32" />
+          <Property Name="CompletionDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="JOB" Relationship="Self.FK_HSTRY_JOB" FromRole="JOBS_HTRY" ToRole="JOBS" />
+        </EntityType>
+        <EntityType Name="JOBS_RESP">
+          <Key>
+            <PropertyRef Name="JobResponseId" />
+          </Key>
+          <Property Name="JobResponseId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="JobId" Type="Int32" Nullable="false" />
+          <Property Name="DriverId" Type="Int32" Nullable="false" />
+          <Property Name="ResponseCode" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="IsAssigned" Type="Boolean" Nullable="false" />
+          <Property Name="ResponseTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="JOB" Relationship="Self.FK_JOBS_RESP_JOBS" FromRole="JOBS_RESP" ToRole="JOBS" />
+          <NavigationProperty Name="DRVR_DATA" Relationship="ParcelXpressModel.FK_JOBS_RESP_DRVR" FromRole="JOBS_RESP" ToRole="DRVR_DATA" />
+        </EntityType>
+        <EntityType Name="REQT_DRVR">
+          <Key>
+            <PropertyRef Name="DriverReqId" />
+          </Key>
+          <Property Name="DriverReqId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DriverName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LoginName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="GcmId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SecurityQuestionId" Type="Int32" />
+          <Property Name="SecurityAnswer" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ContactNo" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="IsConverted" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RESP_CODE">
+          <Key>
+            <PropertyRef Name="ResponseId" />
+          </Key>
+          <Property Name="ResponseId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ResponseCode" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="ResponseDsc" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="SCRT_QUES">
+          <Key>
+            <PropertyRef Name="QuestionId" />
+          </Key>
+          <Property Name="QuestionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SecurityQuestion" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="SYS_USER" Relationship="Self.FK_SYS_USER_SCRT_QUES" FromRole="SCRT_QUES" ToRole="SYS_USER" />
+          <NavigationProperty Name="DRVR_DATA" Relationship="ParcelXpressModel.FK_DRVR_DATA_SCRT_QUES" FromRole="SCRT_QUES" ToRole="DRVR_DATA" />
+        </EntityType>
+        <EntityType Name="SESN">
+          <Key>
+            <PropertyRef Name="SessionId" />
+          </Key>
+          <Property Name="SessionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SessionCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="SessionDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="SYS_USER" Relationship="Self.FK_SESN_SYS_USER" FromRole="SESN" ToRole="SYS_USER" />
+        </EntityType>
+        <EntityType Name="STUS_CODE">
+          <Key>
+            <PropertyRef Name="StatusId" />
+          </Key>
+          <Property Name="StatusId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StatusCode" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="StatusDsc" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SYS_USER">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SecurityQuestionId" Type="Int32" />
+          <Property Name="SecurityAnswer" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="SCRT_QUES" Relationship="Self.FK_SYS_USER_SCRT_QUES" FromRole="SYS_USER" ToRole="SCRT_QUES" />
+          <NavigationProperty Name="SESNs" Relationship="Self.FK_SESN_SYS_USER" FromRole="SYS_USER" ToRole="SESN" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="TRAN_TYPE">
+          <Key>
+            <PropertyRef Name="TransactionTypeId" />
+          </Key>
+          <Property Name="TransactionTypeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TransactionTypeCode" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="TransactionTypeDsc" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK_JOBS_CUST">
+          <End Role="CUST_DATA" Type="Self.CUST_DATA" Multiplicity="0..1" />
+          <End Role="JOBS" Type="Self.JOB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="JOBS">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_HSTRY_JOB">
+          <End Role="JOBS" Type="Self.JOB" Multiplicity="0..1" />
+          <End Role="JOBS_HTRY" Type="Self.JOBS_HTRY" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JOBS">
+              <PropertyRef Name="JobId" />
+            </Principal>
+            <Dependent Role="JOBS_HTRY">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JOBS_RESP_JOBS">
+          <End Role="JOBS" Type="Self.JOB" Multiplicity="1" />
+          <End Role="JOBS_RESP" Type="Self.JOBS_RESP" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JOBS">
+              <PropertyRef Name="JobId" />
+            </Principal>
+            <Dependent Role="JOBS_RESP">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SYS_USER_SCRT_QUES">
+          <End Role="SCRT_QUES" Type="Self.SCRT_QUES" Multiplicity="0..1" />
+          <End Role="SYS_USER" Type="Self.SYS_USER" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SCRT_QUES">
+              <PropertyRef Name="QuestionId" />
+            </Principal>
+            <Dependent Role="SYS_USER">
+              <PropertyRef Name="SecurityQuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SESN_SYS_USER">
+          <End Role="SYS_USER" Type="Self.SYS_USER" Multiplicity="0..1" />
+          <End Role="SESN" Type="Self.SESN" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SYS_USER">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="SESN">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ParcelXpressConnection" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="CUST_DATA" EntityType="Self.CUST_DATA" />
+          <EntitySet Name="CUST_TRAN" EntityType="Self.CUST_TRAN" />
+          <EntitySet Name="DRVR_MSGS" EntityType="Self.DRVR_MSGS" />
+          <EntitySet Name="DRVR_TRAN" EntityType="Self.DRVR_TRAN" />
+          <EntitySet Name="JOBS" EntityType="Self.JOB" />
+          <EntitySet Name="JOBS_HTRY" EntityType="Self.JOBS_HTRY" />
+          <EntitySet Name="JOBS_RESP" EntityType="Self.JOBS_RESP" />
+          <EntitySet Name="REQT_DRVR" EntityType="Self.REQT_DRVR" />
+          <EntitySet Name="RESP_CODE" EntityType="Self.RESP_CODE" />
+          <EntitySet Name="SCRT_QUES" EntityType="Self.SCRT_QUES" />
+          <EntitySet Name="SESNs" EntityType="Self.SESN" />
+          <EntitySet Name="STUS_CODE" EntityType="Self.STUS_CODE" />
+          <EntitySet Name="SYS_USER" EntityType="Self.SYS_USER" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+          <EntitySet Name="TRAN_TYPE" EntityType="Self.TRAN_TYPE" />
+          <AssociationSet Name="FK_JOBS_CUST" Association="Self.FK_JOBS_CUST">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="JOBS" EntitySet="JOBS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_HSTRY_JOB" Association="Self.FK_HSTRY_JOB">
+            <End Role="JOBS" EntitySet="JOBS" />
+            <End Role="JOBS_HTRY" EntitySet="JOBS_HTRY" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JOBS_RESP_JOBS" Association="Self.FK_JOBS_RESP_JOBS">
+            <End Role="JOBS" EntitySet="JOBS" />
+            <End Role="JOBS_RESP" EntitySet="JOBS_RESP" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SYS_USER_SCRT_QUES" Association="Self.FK_SYS_USER_SCRT_QUES">
+            <End Role="SCRT_QUES" EntitySet="SCRT_QUES" />
+            <End Role="SYS_USER" EntitySet="SYS_USER" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SESN_SYS_USER" Association="Self.FK_SESN_SYS_USER">
+            <End Role="SYS_USER" EntitySet="SYS_USER" />
+            <End Role="SESN" EntitySet="SESNs" />
+          </AssociationSet>
+          <EntitySet Name="CUST_BILL" EntityType="ParcelXpressModel.CUST_BILL" />
+          <AssociationSet Name="FK_CUST_BILL_CUST_DATA" Association="ParcelXpressModel.FK_CUST_BILL_CUST_DATA">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="CUST_BILL" EntitySet="CUST_BILL" />
+          </AssociationSet>
+          <EntitySet Name="DRVR_DATA" EntityType="ParcelXpressModel.DRVR_DATA" />
+          <AssociationSet Name="FK_DRVR_DATA_SCRT_QUES" Association="ParcelXpressModel.FK_DRVR_DATA_SCRT_QUES">
+            <End Role="SCRT_QUES" EntitySet="SCRT_QUES" />
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DRVR_MSGS_DRVR_DATA" Association="ParcelXpressModel.FK_DRVR_MSGS_DRVR_DATA">
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+            <End Role="DRVR_MSGS" EntitySet="DRVR_MSGS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JOBS_DRVR" Association="ParcelXpressModel.FK_JOBS_DRVR">
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+            <End Role="JOB" EntitySet="JOBS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JOBS_RESP_DRVR" Association="ParcelXpressModel.FK_JOBS_RESP_DRVR">
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+            <End Role="JOBS_RESP" EntitySet="JOBS_RESP" />
+          </AssociationSet>
+          <EntitySet Name="EMAL_ACNT" EntityType="ParcelXpressModel.EMAL_ACNT" />
+          <EntitySet Name="CUST_CRDT" EntityType="ParcelXpressModel.CUST_CRDT" />
+          <AssociationSet Name="FK_CRDT_CUST_DATA" Association="ParcelXpressModel.FK_CRDT_CUST_DATA">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="CUST_CRDT" EntitySet="CUST_CRDT" />
+          </AssociationSet>
+          <EntitySet Name="FAQS" EntityType="ParcelXpressModel.FAQ" />
+        </EntityContainer>
+        <EntityType Name="CUST_BILL">
+          <Key>
+            <PropertyRef Name="BillId" />
+          </Key>
+          <Property Name="BillId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="PaymentDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DueAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="PaidAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="RemainingAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK_CUST_BILL_CUST_DATA" FromRole="CUST_BILL" ToRole="CUST_DATA" />
+          <Property Name="PreviousCredit" Type="Decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <Association Name="FK_CUST_BILL_CUST_DATA">
+          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="1" />
+          <End Type="ParcelXpressModel.CUST_BILL" Role="CUST_BILL" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CUST_BILL">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DRVR_DATA">
+          <Key>
+            <PropertyRef Name="DriverId" />
+          </Key>
+          <Property Name="DriverId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DriverName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LoginName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="SecurityQuestionId" Type="Int32" />
+          <Property Name="SecurityAnswer" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GcmId" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="ContactNo" Type="String" MaxLength="14" FixedLength="false" Unicode="true" />
+          <Property Name="CommissionRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="IsDeleted" Type="Boolean" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="SCRT_QUES" Relationship="ParcelXpressModel.FK_DRVR_DATA_SCRT_QUES" FromRole="DRVR_DATA" ToRole="SCRT_QUES" />
+          <NavigationProperty Name="DRVR_MSGS" Relationship="ParcelXpressModel.FK_DRVR_MSGS_DRVR_DATA" FromRole="DRVR_DATA" ToRole="DRVR_MSGS" />
+          <NavigationProperty Name="JOBS" Relationship="ParcelXpressModel.FK_JOBS_DRVR" FromRole="DRVR_DATA" ToRole="JOB" />
+          <NavigationProperty Name="JOBS_RESP" Relationship="ParcelXpressModel.FK_JOBS_RESP_DRVR" FromRole="DRVR_DATA" ToRole="JOBS_RESP" />
+        </EntityType>
+        <Association Name="FK_DRVR_DATA_SCRT_QUES">
+          <End Type="ParcelXpressModel.SCRT_QUES" Role="SCRT_QUES" Multiplicity="0..1" />
+          <End Type="ParcelXpressModel.DRVR_DATA" Role="DRVR_DATA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SCRT_QUES">
+              <PropertyRef Name="QuestionId" />
+            </Principal>
+            <Dependent Role="DRVR_DATA">
+              <PropertyRef Name="SecurityQuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DRVR_MSGS_DRVR_DATA">
+          <End Type="ParcelXpressModel.DRVR_DATA" Role="DRVR_DATA" Multiplicity="0..1" />
+          <End Type="ParcelXpressModel.DRVR_MSGS" Role="DRVR_MSGS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DRVR_DATA">
+              <PropertyRef Name="DriverId" />
+            </Principal>
+            <Dependent Role="DRVR_MSGS">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JOBS_DRVR">
+          <End Type="ParcelXpressModel.DRVR_DATA" Role="DRVR_DATA" Multiplicity="0..1" />
+          <End Type="ParcelXpressModel.JOB" Role="JOB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DRVR_DATA">
+              <PropertyRef Name="DriverId" />
+            </Principal>
+            <Dependent Role="JOB">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JOBS_RESP_DRVR">
+          <End Type="ParcelXpressModel.DRVR_DATA" Role="DRVR_DATA" Multiplicity="1" />
+          <End Type="ParcelXpressModel.JOBS_RESP" Role="JOBS_RESP" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DRVR_DATA">
+              <PropertyRef Name="DriverId" />
+            </Principal>
+            <Dependent Role="JOBS_RESP">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="EMAL_ACNT">
+          <Key>
+            <PropertyRef Name="EmailAccountId" />
+          </Key>
+          <Property Name="EmailAccountId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EmailClient" Type="Int32" Nullable="false" />
+          <Property Name="ExecutionDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="CUST_CRDT">
+          <Key>
+            <PropertyRef Name="CustomerCreditId" />
+          </Key>
+          <Property Name="CustomerCreditId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" />
+          <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="CreditAmount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="SettledAmount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="RemainingAmount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="SettledInd" Type="Boolean" />
+          <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK_CRDT_CUST_DATA" FromRole="CUST_CRDT" ToRole="CUST_DATA" />
+        </EntityType>
+        <Association Name="FK_CRDT_CUST_DATA">
+          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="0..1" />
+          <End Type="ParcelXpressModel.CUST_CRDT" Role="CUST_CRDT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CUST_CRDT">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="FAQ">
+          <Key>
+            <PropertyRef Name="FaqId" />
+          </Key>
+          <Property Name="FaqId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Date" Type="DateTime" Precision="3" Nullable="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ParcelXpressModelStoreContainer" CdmEntityContainer="ParcelXpressConnection">
+          <EntitySetMapping Name="CUST_DATA">
+            <EntityTypeMapping TypeName="ParcelXpressModel.CUST_DATA">
+              <MappingFragment StoreEntitySet="CUST_DATA">
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="AccountRefNumber" ColumnName="AccountRefNumber" />
+                <ScalarProperty Name="HasAccount" ColumnName="HasAccount" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CUST_TRAN">
+            <EntityTypeMapping TypeName="ParcelXpressModel.CUST_TRAN">
+              <MappingFragment StoreEntitySet="CUST_TRAN">
+                <ScalarProperty Name="TransactionId" ColumnName="TransactionId" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="PayableAmount" ColumnName="PayableAmount" />
+                <ScalarProperty Name="ReceivedAmount" ColumnName="ReceivedAmount" />
+                <ScalarProperty Name="RemainingAmount" ColumnName="RemainingAmount" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="SettledInd" ColumnName="SettledInd" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DRVR_MSGS">
+            <EntityTypeMapping TypeName="ParcelXpressModel.DRVR_MSGS">
+              <MappingFragment StoreEntitySet="DRVR_MSGS">
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="MessageReceivedInd" ColumnName="MessageReceivedInd" />
+                <ScalarProperty Name="MessageDate" ColumnName="MessageDate" />
+                <ScalarProperty Name="MessageReadInd" ColumnName="MessageReadInd" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DRVR_TRAN">
+            <EntityTypeMapping TypeName="ParcelXpressModel.DRVR_TRAN">
+              <MappingFragment StoreEntitySet="DRVR_TRAN">
+                <ScalarProperty Name="DriverTransId" ColumnName="DriverTransId" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="SettledInd" ColumnName="SettledInd" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="JOBS">
+            <EntityTypeMapping TypeName="ParcelXpressModel.JOB">
+              <MappingFragment StoreEntitySet="JOBS">
+                <ScalarProperty Name="TypeOfParcel" ColumnName="TypeOfParcel" />
+                <ScalarProperty Name="DropAddress4" ColumnName="DropAddress4" />
+                <ScalarProperty Name="DropAddress3" ColumnName="DropAddress3" />
+                <ScalarProperty Name="DropAddress2" ColumnName="DropAddress2" />
+                <ScalarProperty Name="DropAddress1" ColumnName="DropAddress1" />
+                <ScalarProperty Name="DropoffContact" ColumnName="DropoffContact" />
+                <ScalarProperty Name="LongDistanceInd" ColumnName="LongDistanceInd" />
+                <ScalarProperty Name="ChargesDescription" ColumnName="ChargesDescription" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="JobStatus" ColumnName="JobStatus" />
+                <ScalarProperty Name="PickupAddress" ColumnName="PickupAddress" />
+                <ScalarProperty Name="DropAddress" ColumnName="DropAddress" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="CustomerPhone" ColumnName="CustomerPhone" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+                <ScalarProperty Name="DriverCommission" ColumnName="DriverCommission" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="PaymentReceived" ColumnName="PaymentReceived" />
+                <ScalarProperty Name="JobDate" ColumnName="JobDate" />
+                <ScalarProperty Name="AccountPaymentInd" ColumnName="AccountPaymentInd" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="JOBS_HTRY">
+            <EntityTypeMapping TypeName="ParcelXpressModel.JOBS_HTRY">
+              <MappingFragment StoreEntitySet="JOBS_HTRY">
+                <ScalarProperty Name="JobHistoryId" ColumnName="JobHistoryId" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="CompletionDate" ColumnName="CompletionDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="JOBS_RESP">
+            <EntityTypeMapping TypeName="ParcelXpressModel.JOBS_RESP">
+              <MappingFragment StoreEntitySet="JOBS_RESP">
+                <ScalarProperty Name="JobResponseId" ColumnName="JobResponseId" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+                <ScalarProperty Name="ResponseCode" ColumnName="ResponseCode" />
+                <ScalarProperty Name="IsAssigned" ColumnName="IsAssigned" />
+                <ScalarProperty Name="ResponseTime" ColumnName="ResponseTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="REQT_DRVR">
+            <EntityTypeMapping TypeName="ParcelXpressModel.REQT_DRVR">
+              <MappingFragment StoreEntitySet="REQT_DRVR">
+                <ScalarProperty Name="DriverReqId" ColumnName="DriverReqId" />
+                <ScalarProperty Name="DriverName" ColumnName="DriverName" />
+                <ScalarProperty Name="LoginName" ColumnName="LoginName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="GcmId" ColumnName="GcmId" />
+                <ScalarProperty Name="SecurityQuestionId" ColumnName="SecurityQuestionId" />
+                <ScalarProperty Name="SecurityAnswer" ColumnName="SecurityAnswer" />
+                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+                <ScalarProperty Name="IsConverted" ColumnName="IsConverted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RESP_CODE">
+            <EntityTypeMapping TypeName="ParcelXpressModel.RESP_CODE">
+              <MappingFragment StoreEntitySet="RESP_CODE">
+                <ScalarProperty Name="ResponseId" ColumnName="ResponseId" />
+                <ScalarProperty Name="ResponseCode" ColumnName="ResponseCode" />
+                <ScalarProperty Name="ResponseDsc" ColumnName="ResponseDsc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SCRT_QUES">
+            <EntityTypeMapping TypeName="ParcelXpressModel.SCRT_QUES">
+              <MappingFragment StoreEntitySet="SCRT_QUES">
+                <ScalarProperty Name="QuestionId" ColumnName="QuestionId" />
+                <ScalarProperty Name="SecurityQuestion" ColumnName="SecurityQuestion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SESNs">
+            <EntityTypeMapping TypeName="ParcelXpressModel.SESN">
+              <MappingFragment StoreEntitySet="SESN">
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="SessionCode" ColumnName="SessionCode" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="SessionDate" ColumnName="SessionDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="STUS_CODE">
+            <EntityTypeMapping TypeName="ParcelXpressModel.STUS_CODE">
+              <MappingFragment StoreEntitySet="STUS_CODE">
+                <ScalarProperty Name="StatusId" ColumnName="StatusId" />
+                <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+                <ScalarProperty Name="StatusDsc" ColumnName="StatusDsc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SYS_USER">
+            <EntityTypeMapping TypeName="ParcelXpressModel.SYS_USER">
+              <MappingFragment StoreEntitySet="SYS_USER">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="SecurityQuestionId" ColumnName="SecurityQuestionId" />
+                <ScalarProperty Name="SecurityAnswer" ColumnName="SecurityAnswer" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="ParcelXpressModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TRAN_TYPE">
+            <EntityTypeMapping TypeName="ParcelXpressModel.TRAN_TYPE">
+              <MappingFragment StoreEntitySet="TRAN_TYPE">
+                <ScalarProperty Name="TransactionTypeId" ColumnName="TransactionTypeId" />
+                <ScalarProperty Name="TransactionTypeCode" ColumnName="TransactionTypeCode" />
+                <ScalarProperty Name="TransactionTypeDsc" ColumnName="TransactionTypeDsc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CUST_BILL">
+            <EntityTypeMapping TypeName="ParcelXpressModel.CUST_BILL">
+              <MappingFragment StoreEntitySet="CUST_BILL">
+                <ScalarProperty Name="PreviousCredit" ColumnName="PreviousCredit" />
+                <ScalarProperty Name="RemainingAmount" ColumnName="RemainingAmount" />
+                <ScalarProperty Name="PaidAmount" ColumnName="PaidAmount" />
+                <ScalarProperty Name="DueAmount" ColumnName="DueAmount" />
+                <ScalarProperty Name="PaymentDate" ColumnName="PaymentDate" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="BillId" ColumnName="BillId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DRVR_DATA">
+            <EntityTypeMapping TypeName="ParcelXpressModel.DRVR_DATA">
+              <MappingFragment StoreEntitySet="DRVR_DATA">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CommissionRate" ColumnName="CommissionRate" />
+                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="GcmId" ColumnName="GcmId" />
+                <ScalarProperty Name="SecurityAnswer" ColumnName="SecurityAnswer" />
+                <ScalarProperty Name="SecurityQuestionId" ColumnName="SecurityQuestionId" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="LoginName" ColumnName="LoginName" />
+                <ScalarProperty Name="DriverName" ColumnName="DriverName" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EMAL_ACNT">
+            <EntityTypeMapping TypeName="ParcelXpressModel.EMAL_ACNT">
+              <MappingFragment StoreEntitySet="EMAL_ACNT">
+                <ScalarProperty Name="ExecutionDate" ColumnName="ExecutionDate" />
+                <ScalarProperty Name="EmailClient" ColumnName="EmailClient" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="EmailAccountId" ColumnName="EmailAccountId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CUST_CRDT">
+            <EntityTypeMapping TypeName="ParcelXpressModel.CUST_CRDT">
+              <MappingFragment StoreEntitySet="CUST_CRDT">
+                <ScalarProperty Name="SettledInd" ColumnName="SettledInd" />
+                <ScalarProperty Name="RemainingAmount" ColumnName="RemainingAmount" />
+                <ScalarProperty Name="SettledAmount" ColumnName="SettledAmount" />
+                <ScalarProperty Name="CreditAmount" ColumnName="CreditAmount" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="CustomerCreditId" ColumnName="CustomerCreditId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FAQS">
+            <EntityTypeMapping TypeName="ParcelXpressModel.FAQ">
+              <MappingFragment StoreEntitySet="FAQS">
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="FaqId" ColumnName="FaqId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

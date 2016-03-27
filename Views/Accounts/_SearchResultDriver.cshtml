@@ -1,0 +1,34 @@
+﻿@model IEnumerable<DRVR_DATA>
+
+<div class="row" id="searchResults" style="margin-top:1%;">
+    <div class="container-fluid">
+        <div class="table-dialog-fixed-height">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Driver Name</th>
+                        <th> Contact Number</th>
+                        <th>Login Name</th>
+                        <th>Commission %</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.DriverName</td>
+                                <td>@item.ContactNo</td>
+                                <td>@item.LoginName</td>
+                                <td>@item.CommissionRate </td>
+                                <td>@Html.ActionLink("View Commission Report", "DriverAccounts", "Accounts", new { driverId = @item.DriverId }, new { @class = "btn btn-default" })</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "Parcel Xpress";
+}
+
+<div class="container" style="margin-top:5%">
+    <div class="panel  panel-default">
+        <div class=" panel-heading">
+            <h3>Home</h3>
+        </div>
+        <div class="panel-body">
+
+            <div class="col-md-4 col-sm-6">
+                <a href="/Index/Dashboard" id="btnNewJob" class="btn btn-danger btn-lg margin-bottom" style="display:block;width:100%;"><span class="glyphicon glyphicon-dashboard pull-left"></span>Dashboard</a>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <a href="/Jobs/CreateNewJob" id="btnNewJob" class="btn btn-danger btn-lg margin-bottom" style="display:block;width:100%;"><span class="glyphicon glyphicon-send pull-left"></span>Send new job</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <a href="/Message/MainPage" id="btnMessages" class="btn btn-danger btn-lg margin-bottom" style="display:block;width:100%;"><span class="glyphicon glyphicon-inbox pull-left"></span>Messages &nbsp;<span class="badge">@ViewBag.MessageCount</span></a>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <a href="/Jobs/ActiveJobs" id="btnActiveJobs" class="btn btn-danger btn-lg margin-bottom" style="display:block;width:100%;"><span class="glyphicon glyphicon-tasks pull-left"></span>Active jobs</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <a href="/Jobs/AllJobs" id="btnAllobs" class="btn btn-danger btn-lg margin-bottom" style="display:block;width:100%;"><span class="glyphicon glyphicon-list pull-left"></span>All jobs</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <a href="/Driver/AllDrivers" id="btnDiverProfiles" class="btn btn-danger btn-lg margin-bottom" style="display:block;width:100%;"><span class="glyphicon glyphicon-user pull-left"></span>Driver Profiles</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <a href="/Customer/AllCustomers" id="btnCustomerProfiles" class="btn btn-danger btn-lg margin-bottom" style="display:block;width:100%;"><span class="glyphicon glyphicon-user pull-left"></span>Customer Profiles</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <a href="/Accounts/CustomerAccounts" id="btnCustomerAccounts" class="btn btn-danger btn-lg margin-bottom" style="display:block;width:100%;"><span class="glyphicon glyphicon-gbp pull-left"></span>Customer Accounts</a>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <a href="/Accounts/DriverAccounts" id="btnDriverAccounts" class="btn btn-danger btn-lg margin-bottom" style="display:block;width:100%;"><span class="glyphicon glyphicon-gbp pull-left"></span>Driver Commission</a>
+            </div>
+
+        </div>
+
+        <div class="panel-footer">
+
+        </div>
+    </div>
+</div>
+@Html.Raw(TempData["toastMessage"])
+@Html.Raw(TempData["toastMessage1"])

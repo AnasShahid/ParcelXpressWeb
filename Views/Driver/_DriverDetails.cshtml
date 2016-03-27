@@ -1,0 +1,59 @@
+﻿@model ParcelXpress.Models.DRVR_DATA
+
+@{
+    var disabled = ViewData["isDisabled"];
+    Model.IsDeleted = false;
+}
+
+<div class="row">
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Driver Name</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.DriverName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.DriverName, null, new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Login Name</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.LoginName, new {  @class = "form-control isDisabled" })
+            @Html.ValidationMessageFor(m => m.LoginName, null, new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 form-group" >
+        <label class="control-label col-lg-3">Contact No.</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.ContactNo, new {  @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.ContactNo, null, new { @class = "text-danger" })           
+        </div>
+    </div>
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">GCM ID</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.GcmId, new { @class = "form-control isDisabled" })      @*//Get controls from isDisabled Class and play in Javascript*@
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Commission %</label>
+        <div class="col-lg-8">       
+            @Html.EditorFor(m => m.CommissionRate)
+            @Html.ValidationMessageFor(m => m.CommissionRate, null, new { @class = "text-danger" })
+        </div>
+    </div>
+    @Html.HiddenFor(m=>m.Password)
+    @Html.HiddenFor(m=>m.IsActive)
+    @Html.HiddenFor(m=>m.DriverId)
+    @Html.HiddenFor(m=>m.IsDeleted)
+    @Html.HiddenFor(m=>m.CreatedOn)
+  
+</div>
+
+
+
+

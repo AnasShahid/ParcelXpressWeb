@@ -1,0 +1,66 @@
+﻿@model DRVR_MSGS
+
+<div class="container-fluid">
+    <div class="panel panel-primary mdl-shadow--4dp">
+        <div class="panel-heading panel-title">
+            <div class="mdl-card__title">
+                <h5 style="color:white;">New Message</h5>
+                <div class="mdl-layout-spacer"></div>
+                <a href="/Message/MainPage" class="btn mdl-button--accent mdl-button--raised refreshButton">Inbox &nbsp;<b>@ViewBag.MessageCount</b></a>
+            </div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("sendToSingleDashboard", "Message", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="box box-primary container-fluid">
+                    @*<div class="box-header">
+                            <h5 style="margin-top:4px;margin-bottom:0px;"> Message single driver</h5>
+                        </div>*@
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-10" style="padding-left:0px !important;">
+                                <label class="control-label col-md-4" style="padding-left:0px !important;color:#c6c6c6">Driver</label>
+                                @Html.DropDownListFor(m => m.DriverId, (IEnumerable<SelectListItem>)ViewBag.DriversList, "Please Select", new { @class = "dropdown dropdown-toggle col-md-8" })
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class=" mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-textfield__label" for="singleMessage">Message</label>
+                                @Html.TextAreaFor(m => m.Message, new { @class = "mdl-textfield__input", @id = "singleMessage" })
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Message, null, new { @class = "text-danger" })
+                    </div>
+                    <div class="box-footer">
+                        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent"><span class="glyphicon glyphicon-send"> Send Message</span></button>
+                    </div>
+                </div>
+            }
+
+            @using (Html.BeginForm("sendToAllDashboard", "Message", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="box box-primary container-fluid">
+                    @*<div class="box-header">
+                            <h5 style="margin-top:4px;margin-bottom:0px;"> Message all drivers</h5>
+                        </div>*@
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <label class="mdl-textfield__label" for="allMessage">Message</label>
+                                @Html.TextAreaFor(m => m.Message, new { @class = "mdl-textfield__input", @id = "allMessage" })
+
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Message, null, new { @class = "text-danger" })
+                    </div>
+                    <div class="box-footer">
+                        <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent"><span class="glyphicon glyphicon-send"> Send to all</span></button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

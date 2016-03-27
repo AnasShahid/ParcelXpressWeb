@@ -1,0 +1,138 @@
+﻿@model IEnumerable<JOB>
+@{
+    ViewBag.Title = "DriverAccounts";
+    List<DRVR_DATA> driverModel = new List<DRVR_DATA>();
+    bool ispayable = false;
+    decimal receivableAmount = (decimal)ViewBag.AmountReceivable;
+    if (receivableAmount < 0)
+    {
+        ispayable = true;
+        receivableAmount = Math.Abs(receivableAmount);
+    }
+    int driverId = (int)ViewBag.DriverId;
+}
+
+<div class="container-fluid">
+    <section class="content-header">
+        <h3>Driver Commission</h3>
+    </section>
+    <div class="panel panel-default">
+
+        <div class="panel-heading form-horizontal col-lg-12">
+            <div class="col-lg-6 form-group">
+                <label class="control-label col-lg-3">Search for Driver</label>
+                <form method="get" action="@Url.Action("DriverSearch")" data-pxp-ajax="true" data-pxp-target="#searchResults">
+                    <div class="col-lg-8">
+                        <div class="input-group col-sm-12">
+                            <input type="search" class="form-control" placeholder="Driver Name&hellip;" name="searchTerm" id="searchTerm" />
+                            <span class="input-group-btn">
+                                <button type="button" role="button" class="btn btn-default" id="btnSearchCustomer"><span class="glyphicon glyphicon-search"></span></button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            @if (ViewBag.DriverId != 0 && ViewBag.DriverId != null)
+            {
+                <label class="col-lg-6 control-label">Driver: @ViewBag.DriverName</label>
+            }
+        </div>
+
+        <div class="panel-body">
+            <div class="row">
+                @if (ViewBag.DriverId != 0 && ViewBag.DriverId != null)
+                {
+                    if (Model == null || Model.Count() <= 0)
+                    {
+                        <h4 class="text-danger">No commission record found for this driver</h4>
+                    }
+                    else
+                    {
+                        <div class="col-lg-9">
+                            @Html.Partial("_AccountJobGrid", Model, new ViewDataDictionary { { "isFromDriver", true } })
+                        </div>
+
+                        using (Html.BeginForm("SettleDriverCommission", "Accounts", null, FormMethod.Get, new { @class = "form-horizontal" }))
+                        {
+                            @Html.Hidden("driverId", driverId)
+                            <div class="col-lg-3">
+                                <div class="box box-primary">
+                                    <div class="box-header">
+                                        <h3>Commission Summary</h3>
+                                    </div>
+                                    <div class="box-body">
+                                        <div class="row" style="margin-top:2px;">
+                                            <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Jobs Charges: </label>
+                                            @ViewBag.JobBalance
+                                        </div>
+                                        <div class="row" style="margin-top:2px;">
+                                            <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Cash Received: </label>
+                                            @ViewBag.CashPayment
+                                        </div>
+                                        <div class="row" style="margin-top:2px;">
+                                            <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Driver Commission: </label>
+                                            @ViewBag.DriverCommission
+                                        </div>
+                                        <hr />
+                                        <div class="row" style="margin-top:2px;">
+                                            @if (ispayable)
+                                            { <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Payable to driver</label> }
+                                            else
+                                            { <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Receivable from driver</label>}
+                                            <b>@receivableAmount</b>
+                                        </div>
+                                        <div class="box-footer">
+                                            <div class="row" style="margin-top:4px;">
+                                                <button class="btn btn-success col-md-offset-3" data-accounttype="driver" type="submit" id="settleAccount">Settle Driver Account</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                }
+                else
+                {
+                    <div class="container">
+                        <h4 class="text-danger">Please search for a driver to view commission details</h4>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="searchModal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Driver Search</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <form method="get" action="@Url.Action("DriverSearch")" data-pxp-ajax="true" data-pxp-target="#searchResults" id="searchForm">
+                                <input type="search" class="form-control" placeholder="Search&hellip;" name="searchTerm" id="term" />
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> </button>
+                                </span>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @Html.Partial("_SearchResultDriver", driverModel)
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@Html.Raw(TempData["toastMessage"])

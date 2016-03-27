@@ -1,0 +1,51 @@
+﻿@model IEnumerable<JOB>
+@{
+    bool isFromDriver = (bool)ViewData["isFromDriver"];
+}
+
+<div class="box box-primary">
+    <div class="box-header">
+        <h3>Jobs</h3>
+    </div>
+    <div class="box-body">
+        <table class="table table-bordered table-hover table-responsive" style="max-height:500px !important;overflow-y:auto !important;">
+            <thead>
+                <tr>
+                    @if (isFromDriver)
+                    {
+                        <th>Customer Name</th>}
+                    else
+                    {
+                        <th>Driver Name</th>
+                    }
+                    <th>Date</th>
+                    <th>Amount</th>
+                    @if (isFromDriver)
+                    {
+                        <th>Payment from Account</th>}
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @if (isFromDriver)
+                        {
+                            <td>@item.CustomerName</td>
+                        }
+                        else
+                        {
+                            <td>@if (item.DRVR_DATA != null)
+                            { @item.DRVR_DATA.DriverName}</td>
+                        }
+                        <td>@item.JobDate.ToString("dd-MMM-yyyy")</td>
+                        <td>@item.Price</td>
+                        @if (isFromDriver)
+                        {
+                            <td><input type="checkbox" class="checkbox-inline" value="@item.AccountPaymentInd" checked="@item.AccountPaymentInd" disabled="disabled" /></td>}
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div> 

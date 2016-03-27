@@ -1,0 +1,45 @@
+﻿@model JOB
+@{
+    ViewBag.Title = "Edit Job";
+    List<CUST_DATA> customersModel = new List<CUST_DATA>();
+
+}
+
+<div class="container-fluid">
+    <section class="content-header">
+        <h2>Jobs <small>Edit Job</small></h2>
+    </section>
+    @using (Html.BeginForm("saveEditJob", "Jobs", null, FormMethod.Post, new { @class = "form-horizontal", @id = "formNewJob" }))
+    {
+        <div class="col-lg-10">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h4 class="col-lg-5">Job Details</h4>
+                </div>
+                <div class="box-body">
+
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                    @Html.Partial("_JobDetails", Model)
+                    @Html.HiddenFor(m=>m.JobId)
+                    @Html.HiddenFor(m=>m.JobDate)
+                    @Html.HiddenFor(m => m.DriverId)
+                    @Html.HiddenFor(m => m.DriverCommission)
+                    @Html.HiddenFor(m => m.JobStatus)
+                    <div class="box-footer wrapper ">
+                        <div class="col-sm-3 col-md-1">
+                            <button id="btnJobFormSubmit" type="submit" class="btn btn-primary "><span class="glyphicon glyphicon-send"></span> Save Changes</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@Html.Raw(TempData["toastMessage"])
+
+

@@ -1,0 +1,40 @@
+﻿@model IPagedList<JOB>
+
+<div class="row col-lg-12" id="jobTable">
+    <table class="table table-bordered table-responsive table-hover">
+        <thead>
+            <tr>
+                <th>Customer Name</th>
+                <th>Driver Name</th>
+                <th>Pickup Address</th>
+                <th>Drop Address</th>
+                <th>Last Modified</th>
+                <th>Charges</th>
+                <th>Account Payment</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.CustomerName</td>
+                    <td>
+                        @if (item.DRVR_DATA != null)
+                        {
+                            @item.DRVR_DATA.DriverName
+                        }
+                    </td>
+                    <td>@item.PickupAddress</td>
+                    <td>@item.DropAddress</td>
+                    <td>@item.JobDate.ToString("dd-MMM-yyyy hh:mm tt")</td>
+                    <td>&pound; @item.Price</td>
+                    <td><input type="checkbox" class="checkbox-inline" value="@item.AccountPaymentInd" checked="@item.AccountPaymentInd" disabled="disabled" /></td>
+                    <td>@StringEnum.Parse(typeof(StatusCode),item.JobStatus)</td>
+                    <td>@Html.ActionLink("View Details", "SingleJobDetails", "Jobs", new { jobId = @item.JobId }, new { @class = "btn btn-default" })</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

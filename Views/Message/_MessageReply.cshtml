@@ -1,0 +1,24 @@
+﻿@model DRVR_MSGS
+@{
+}
+
+@using (Html.BeginForm("sendToSingle", "Message", FormMethod.Post, new { @style = "width:100% !important;" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="row" >
+        <div class="col-lg-10 col-md-12 form-group">
+                <label class="control-label col-lg-2">Message</label>
+                @Html.TextAreaFor(m => m.Message, new { @class = "col-lg-10 form-control", @style = "width:100%;" })
+                @Html.ValidationMessageFor(m => m.Message, null, new { @class = "text-danger" })
+            </div>
+    </div>
+    <div class="row" style="margin-top:1%;">
+        <div class="col-lg-2 col-md-3">
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-send"></span> Send Reply</button>
+            </span>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.DriverId)
+}

@@ -1,0 +1,54 @@
+﻿@model ParcelXpress.Helpers.EmailAccount
+@{
+
+}
+
+<div class="container">
+    <section class="content-header">
+        <h3>Email Address Configuration</h3>
+    </section>
+    @using (Html.BeginForm("saveConfiguration", "Index", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <div class="col-lg-9">
+            <div class="box box-primary container-fluid">
+                <div class="box-body">
+                    <div class="row" style="margin-top:2%">
+                        <label class="control-label col-lg-3">Email Address</label>
+                        <div class="col-lg-8">
+                            @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control", @type = "email", autocomplete = "off" })
+                            @Html.ValidationMessageFor(m => m.EmailAddress, null, new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:2%">
+                        <label class="control-label col-lg-3" >Password</label>
+                        <div class="col-lg-8">
+                            @Html.TextBoxFor(m => m.Password, new { @class = "form-control", @type = "password", autocomplete = "off" })
+                            @Html.ValidationMessageFor(m => m.Password, null, new { @class = "text-danger"})
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:2%">
+                        <label class="control-label col-lg-3" >Confirm Password</label>
+                        <div class="col-lg-8">
+                            @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "form-control", @type = "password", autocomplete = "off" })
+                            @Html.ValidationMessageFor(m => m.ConfirmPassword, null, new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:2%">
+                        <label class="control-label col-lg-3">Mail Client</label>
+                        <div class="col-lg-8">
+                            @Html.DropDownListFor(m => m.MailProvider, (IEnumerable<SelectListItem>)ViewBag.MailClients, "Please Select", new { @class = "dropdown dropdown-toggle" })
+                            @Html.ValidationMessageFor(m => m.MailProvider, null, new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <button class="btn btn-primary col-lg-2" type="submit" style="margin-bottom:2%;">Save</button>
+                </div>
+
+                <label class="text-danger">To configure a Gmail account (For first time only) you will have to explicitly give permission by following <a href="https://accounts.google.com/DisplayUnlockCaptcha">this link</a> and then "Turn On" less secure apps on <a href="https://www.google.com/settings/security/lesssecureapps">this link</a></label>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,29 @@
+﻿@model FAQ
+@{
+
+}
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="row">
+            <h4 class="zero-margins">
+                <b>@Model.Title</b>&nbsp;&nbsp;
+                <b><small style="font-size:0.8em !important; font-weight:bolder">@Model.Date.ToString("dd-MMM-yyyy hh:mm tt")</small></b>
+            </h4>
+        </div>
+        <div class="row">
+            @Model.Description
+        </div>
+    </div>
+    <div class="col-md-1">
+        <a href="/FAQ/EditFaq?faqId=@Model.FaqId" class="btn btn-primary"><span class="glyphicon glyphicon-edit"> Edit</span></a>
+    </div>
+    <div class="col-md-1">
+
+        @using (Html.BeginForm("DeleteFaq", "FAQ", null, FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.HiddenFor(m => m.FaqId);
+            <button type="submit" role="button" class="btn btn-danger" id="btnDelete"><span class="glyphicon glyphicon-remove"></span> Delete</button>
+        }
+    </div>
+</div>

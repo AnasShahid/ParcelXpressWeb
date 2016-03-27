@@ -1,0 +1,32 @@
+﻿@model IEnumerable<CUST_DATA>
+
+<div class="row" id="searchResults" style="margin-top:1%;">
+    <div class="container-fluid">
+        <div class="table-dialog-fixed-height">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th> Contact Number</th>
+                        <th>Address</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.CustomerName</td>
+                                <td>@item.ContactNo</td>
+                                <td>@item.Address</td>
+                                <td>@Html.ActionLink("Import", "Dashboard", "Index", new { customerId = @item.CustomerId }, new { @class = "btn btn-default" })</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

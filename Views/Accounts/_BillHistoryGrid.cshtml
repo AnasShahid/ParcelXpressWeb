@@ -1,0 +1,49 @@
+﻿@model IEnumerable<CUST_BILL>
+@{
+
+}
+
+<div class="box box-primary">
+    <div class="box-header">
+        <h3>Customer Payment History</h3>
+    </div>
+    <div class="box-body">
+        <table class="table table-bordered table-hover table-responsive" style="max-height:500px !important;overflow-y:auto !important;">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Total Due Amount</th>
+                    <th>Previous Credit Amount</th>
+                    <th>Net Due Amount</th>
+                    <th>Paid Amount</th>
+                    <th>Remaining Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.PaymentDate.ToString("dd-MMM-yyyy")</td>
+                        @if (item.PreviousCredit == null)
+                        {
+                            <td>@item.DueAmount</td>}
+                        else
+                        {
+                            <td>@(item.DueAmount+item.PreviousCredit) </td>
+                        }
+                        @if (item.PreviousCredit == null)
+                        {
+                            <td>0.00</td>}
+                        else
+                        {
+                            <td> @item.PreviousCredit </td>
+                        }
+                        <td>@item.DueAmount</td>
+                        <td>@item.PaidAmount</td>
+                        <td>@item.RemainingAmount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div> 

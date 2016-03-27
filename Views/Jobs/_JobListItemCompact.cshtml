@@ -1,0 +1,50 @@
+﻿@model JOB
+@{
+    string driverName = "unassigned";
+    if (Model.DriverId != null && Model.DriverId > 0)
+    {
+        driverName = Model.DRVR_DATA.DriverName;
+    }
+
+    string jobStatus = StringEnum.Parse(typeof(StatusCode), Model.JobStatus).ToString();
+    var jobResponse = Model.JOBS_RESP.Where(r => r.IsAssigned == true).FirstOrDefault();
+    string responseText = "";
+    if (jobResponse != null)
+    {
+        responseText = StringEnum.Parse(typeof(ResponseCode), jobResponse.ResponseCode).ToString() + " minutes";
+    }
+}
+
+<a href="/Jobs/SingleJobDetails?jobId=@Model.JobId">
+    <div class="row" style="padding-top:-10px !important;">
+        <h6 class="zero-margins">
+            @Model.CustomerName
+            <small style="font-size:0.8em !important; font-weight:bolder">@Model.CustomerPhone</small>
+        </h6>
+    </div>
+    <div class="row">
+        <div style="color:#3d3c3c"> @Model.PickupAddress </div>
+      
+    </div>
+    <div class="row">
+        <div style="color:#8a8a8a"> @Model.DropAddress </div>
+    </div>
+    <div class="row">
+        <div style="color: #8a8a8a !important;">
+            <b>
+                @if (Model.JobStatus == StringEnum.GetStringValue(StatusCode.Assigned))
+                {
+                    @responseText
+                }
+                else
+                {
+                    @jobStatus
+                }
+            </b>
+            @if (Model.DRVR_DATA != null)
+            {
+                <span>(@Model.DRVR_DATA.DriverName)</span> 
+            }
+        </div>
+    </div>
+</a>

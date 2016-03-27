@@ -1,0 +1,61 @@
+﻿@model CUST_DATA
+@{
+    var accountRefNum = "No account is yet generated for this customer";
+    if (Model.AccountRefNumber != null)
+    {
+        if (!Model.AccountRefNumber.ToString().Trim().Equals(""))
+        {
+            accountRefNum = Model.AccountRefNumber.ToString();
+        }
+    }
+
+
+}
+
+<div class="row">
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-4" style="text-align:left !important;">Account Reference Number:</label>
+        <label class="control-label col-lg-7 text-warning">@accountRefNum</label>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Customer Name</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.CustomerName, null, new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Address</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.Address, new { @class = "form-control isDisabled" })
+            @Html.ValidationMessageFor(m => m.Address, null, new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Contact No.</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.ContactNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.ContactNo, null, new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Email</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control isDisabled" })      @*//Get controls from isDisabled Class and play in Javascript*@
+            @Html.ValidationMessageFor(m => m.EmailAddress, null, new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+
+
+@Html.HiddenFor(m=>m.AccountRefNumber)
+@Html.HiddenFor(m => m.HasAccount)
+@Html.HiddenFor(m => m.CustomerId)
+
+

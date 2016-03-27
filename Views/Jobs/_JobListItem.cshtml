@@ -1,0 +1,157 @@
+﻿@model JOB
+@{
+    string driverName = "unassigned";
+    if (Model.DriverId != null && Model.DriverId > 0)
+    {
+        driverName = Model.DRVR_DATA.DriverName;
+    }
+
+    string jobStatus = StringEnum.Parse(typeof(StatusCode), Model.JobStatus).ToString();
+
+    string emailAddress = "";
+    if (Model.CUST_DATA != null)
+    {
+        emailAddress = Model.CUST_DATA.EmailAddress;
+    }
+    bool canEdit = true;
+    if (Model.JobStatus == StringEnum.GetStringValue(StatusCode.Closed) || Model.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff))
+    {
+        canEdit = false;
+    }
+    bool canAddCharges = false;
+    if ((Model.JobStatus == StringEnum.GetStringValue(StatusCode.Closed) || Model.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff)))
+    {
+        canAddCharges = true;
+    }
+
+}
+
+<div class="col-lg-11">
+    <div class="box box-info">
+        <div class="box-header">
+            <h3 class="box-title">@Model.CustomerName <small style="margin-left:2em;"><b> @Model.JobDate.ToString("dd-MMM-yy hh:mm tt")</b></small></h3>
+            @if (Model.LongDistanceInd == true)
+            {
+                <h4 class="box-title" style="margin-left:3em;">Long Distance Job</h4>
+            }
+            <h4 class="box-title" style="margin-left:3em; color:rgb(137, 95, 95)"><b>@Model.TypeOfParcel</b></h4>
+        </div>
+
+        <div class="box-body">
+            <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class=" col-lg-4">Pickup Address: </label>
+
+                        <label class="col-lg-8 ">@Model.PickupAddress</label>
+
+                    </div>
+                    <div class="col-lg-6 form-group">
+                        <label class="col-lg-4">Drop Address: </label>
+                        <label class="col-lg-8 ">@Model.DropAddress</label>
+                    </div>
+                </div>
+                @if (Model.DropAddress1 != null)
+                {
+                    <div class="col-lg-6 form-group">
+                        <label class=" col-lg-4">Drop Address 2: </label>
+
+                        <label class="col-lg-8 ">@Model.DropAddress1</label>
+
+                    </div>
+                }
+                @if (Model.DropAddress2 != null)
+                {
+                    <div class="col-lg-6 form-group">
+                        <label class="col-lg-4">Drop Address 3: </label>
+                        <label class="col-lg-8 ">@Model.DropAddress2</label>
+                    </div>
+               
+                }
+                @if (Model.DropAddress3 != null)
+                {
+                    <div class="col-lg-6 form-group">
+                        <label class=" col-lg-4">Drop Address 4: </label>
+
+                        <label class="col-lg-8 ">@Model.DropAddress3</label>
+
+                    </div>
+                }
+                @if (Model.DropAddress4 != null)
+                {
+                    <div class="col-lg-6 form-group">
+                        <label class="col-lg-4">Drop Address 5: </label>
+                        <label class="col-lg-8 ">@Model.DropAddress4</label>
+                    </div>
+                
+                }
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class=" col-lg-4">Customer Phone: </label>
+                        <label class="col-lg-8 ">@Model.CustomerPhone</label>
+                    </div>
+                    <div class="col-lg-6 form-group">
+                        <label class="col-lg-4">Email Address: </label>
+                        <label class="col-lg-8">@emailAddress</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class=" col-lg-4">Dropoff Contact: </label>
+                        <label class="col-lg-8 ">@Model.DropoffContact</label>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class="col-lg-4">Amount: </label>
+                        <label class="col-lg-8">&pound; @Model.Price</label>
+                    </div>
+                    <div class="col-lg-6 form-group">
+                        <label class="col-lg-4">Job Status: </label>
+                        <label class="col-lg-8">@jobStatus</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class="col-lg-4">Driver: </label>
+                        <label class="col-lg-8">@driverName</label>
+                    </div>
+                    <div class="col-lg-6 form-group">
+                        <label class="col-lg-4">Note: </label>
+                        <label class="col-lg-8">@Model.Notes</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-footer wrapper">
+            @if (canEdit)
+            {
+                <div class="col-lg-2 ">
+                    @using (Html.BeginForm("CancelJob", "Jobs", null, FormMethod.Get, new { @class = "form-horizontal" }))
+                    {
+                        @Html.HiddenFor(m => m.JobId);
+                        <button type="submit" role="button" class="btn btn-danger" id="btnCancelJob"><span class="glyphicon glyphicon-remove"></span> Cancel Job</button>
+                    }
+                </div>
+            }
+                <div class="col-lg-2 ">
+                    <a href="/Jobs/EditJob?JobId=@Model.JobId" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit Job</a>
+                </div>
+            @if (canAddCharges)
+            {
+                <div class="col-lg-2 ">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#addChargesModal"><span class="glyphicon glyphicon-plus"></span> Add Charges</button>
+                </div>
+            }
+        </div>
+        </div>
+        </div>
+
+        <div id="addChargesModal" class="modal fade">
+            <div class="modal-dialog modal-md">
+                @Html.Partial("_AddCharges", new ParcelXpress.Helpers.AddChagesViewModel())
+            </div>
+        </div>
+        @Html.Raw(TempData["toastMessage"])

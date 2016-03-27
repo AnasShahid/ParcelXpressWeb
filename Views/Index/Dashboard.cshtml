@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+
+    var id = Request.QueryString["customerId"];
+    
+}
+<link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.blue-red.min.css" />
+
+<div class="row">
+    <div class="col-lg-5 col-md-7">
+        @Html.Action("_NewJobDashboard", "Jobs", new { customerId = id });
+    </div>
+    <div class="col-lg-4 col-md-5">
+        @Html.Action("_ActiveJobsDashboard", "Jobs")
+        @Html.Action("_NewMessageDashboard", "Message")
+        
+
+    </div> 
+    <div class="col-lg-3 col-md-4">        
+        @Html.Action("_ActiveDriversDashboard", "Driver")
+        @Html.Action("_LongDistanceJobsDashboard", "Jobs")
+    </div> 
+</div>
+<div class="row">
+    <div class="col-lg-3 col-md-4 col-lg-offset-9" >
+        @*@Html.Action("_ActiveDriversDashboard","Driver")*@
+    </div>
+</div> 

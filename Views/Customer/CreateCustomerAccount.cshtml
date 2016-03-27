@@ -1,0 +1,46 @@
+﻿@model CUST_DATA
+@{
+    Model.HasAccount = ViewBag.HasAccount;
+    Model.AccountRefNumber = ViewBag.AccountRefNumber;
+    var htmlAttributes = new Dictionary<string, object>();
+    htmlAttributes.Add("class", "btn btn-default");
+    var showGenerateCodeButton = true;
+    if (Model.HasAccount != null)
+    {
+        if (Model.HasAccount.Value == true)
+        {
+            showGenerateCodeButton = false;
+        }
+    }
+}
+<div class="container-fluid">
+    <section class="content-header">
+        <h2>Create New Customer</h2>
+    </section>
+
+    @using (Html.BeginForm("saveNewCustomer", "Customer", null, FormMethod.Post, new { @class = "form-horizontal", @id = "newCustomerForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <div class="col-lg-10">
+            <div class="box box-primary container-fluid">
+                <div class="box-header">
+                    <h4 class="col-lg-8">Customer Details</h4>
+                    @if (showGenerateCodeButton)
+                    {
+                        @Html.ActionLink("Generate Account Code", "generateAccountRef", new { fromAction = "CreateCustomerAccount"}, new { @class = "btn btn-default col-lg-3", @style = "margin-top:2%;" })
+                    }
+
+                </div>
+                <div class="box-body">
+                    @Html.Partial("_CustomerDetails", Model)
+                </div>
+
+                <div class="box-footer">
+                    <button class="btn btn-success col-lg-3 col-lg-offset-1" type="submit" style="margin-bottom:2%;" id="btnSaveCustomer" data-showconfirm="@showGenerateCodeButton">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@Html.Raw(TempData["toastMessage"])

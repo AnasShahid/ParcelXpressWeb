@@ -1,0 +1,21 @@
+﻿@model IPagedList<DRVR_MSGS>
+<div id="messageContainer">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3>Sent</h3>
+        </div>
+        <div class="panel-body" id="driverMessageList">
+            @foreach (var item in Model)
+            {
+                @Html.Partial("_MessageListItem", item)
+            }
+
+        </div>
+        <div class="panel-footer text-center">
+            <div class="pagedList" data-pxp-target="#driverMessageList">
+                @Html.PagedListPager(Model, page => Url.Action("Sent", new { page }), PagedListRenderOptions.MinimalWithItemCountText)
+            </div>
+        </div>
+    </div>
+
+</div>

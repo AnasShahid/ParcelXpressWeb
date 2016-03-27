@@ -1,0 +1,20 @@
+﻿@model FAQ
+          
+<div class="row">
+    <div class="form-group">
+        <label class="control-label col-lg-3">Title</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Title, null, new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="form-group">
+        <label class="control-label col-lg-3">Description</label>
+        <div class="col-lg-8">
+            @Html.TextAreaFor(m => m.Description, new { @class = "form-control",@placeholder="Optional",@style="height:250px!important;" })
+            @Html.ValidationMessageFor(m => m.Description, null, new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
