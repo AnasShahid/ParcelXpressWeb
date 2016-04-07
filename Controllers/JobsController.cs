@@ -559,7 +559,8 @@ namespace ParcelXpress.Controllers
                 sb.AppendLine("New Job has been assigned to you.");
                 sb.AppendLine(" ");
                 sb.Append("Pickup from: " + job.PickupAddress);
-                GcmSender.SendToSingle(driver, sb.ToString(), "long_distance_job_assigned");
+                string gcmHeader = job.LongDistanceInd.Value == true ? "long_distance_job_assigned" : "specific_job_assigned";
+                GcmSender.SendToSingle(driver, sb.ToString(),gcmHeader);
                 TempData["toastMessage"] = "<script>toastr.success('Job has been successfully sent out to the selected driver.');</script>";
 
             }

@@ -47,7 +47,9 @@ namespace ParcelXpress.Models
         public string DropAddress3 { get; set; }
         public string DropAddress4 { get; set; }
         public string TypeOfParcel { get; set; }
-    
+        public Nullable<bool> IsPaid { get; set; }
+
+
         public virtual CUST_DATA CUST_DATA { get; set; }
         public virtual ICollection<JOBS_HTRY> JOBS_HTRY { get; set; }
         public virtual ICollection<JOBS_RESP> JOBS_RESP { get; set; }

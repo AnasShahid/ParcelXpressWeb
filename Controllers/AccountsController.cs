@@ -287,12 +287,24 @@ namespace ParcelXpress.Controllers
                     model = true;
                 if (model)
                 {
-                    ViewBag.TotalJobs = jobs.Count;
-                    ViewBag.TotalEarned = jobs.Sum(j => j.Price);
-                    ViewBag.TotalDriverCommission = (from j in jobs
+                    decimal totalJobsPrice= jobs.Sum(j => j.Price).GetValueOrDefault(0);
+                    decimal totalDriverCommission= ((from j in jobs
                                                      join drvrTran in _db.DRVR_TRAN on j.JobId equals drvrTran.JobId
                                                      where drvrTran.TransactionType==StringEnum.GetStringValue(TransactionTypeCode.In)
-                                                     select drvrTran).Sum(x => x.Amount);
+                                                     select drvrTran).Sum(x => x.Amount)).GetValueOrDefault(0);
+                    decimal netTotalEarned=totalJobsPrice-totalDriverCommission;
+                    decimal totalEarnedOnZeroJobs = ((from j in jobs
+                                                      join drvrTran in _db.DRVR_TRAN on j.JobId equals drvrTran.JobId
+                                                      where (drvrTran.TransactionType == StringEnum.GetStringValue(TransactionTypeCode.In) & drvrTran.Amount == 0)
+                                                      select j).Sum(x => x.Price)).GetValueOrDefault(0);
+
+                    ViewBag.TotalJobs = jobs.Count;
+                    ViewBag.SubIncomeRaw = totalJobsPrice;
+                    ViewBag.TotalDriverCommission =totalDriverCommission;
+                    ViewBag.TotalEarnedOnZeroJobs = totalEarnedOnZeroJobs;
+                    ViewBag.NetTotalEarned = netTotalEarned;
+                    ViewBag.TotalEarnedOnCommission = netTotalEarned - totalEarnedOnZeroJobs;
+                   
                 }
             }
             catch (Exception ex)

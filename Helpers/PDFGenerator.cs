@@ -11,13 +11,15 @@ using iTextSharp.text.html.simpleparser;
 using iTextSharp.text.pdf;
 using System.Net.Mail;
 using System.Net;
+using System.Text.RegularExpressions;
+using System.Configuration;
 
 
 namespace ParcelXpress.Helpers
 {
     public static class PDFGenerator
     {
-        public static bool createCustomerReportMarkup(CUST_DATA customerInformation, List<CustomerJobDriver> reportParameters,decimal previousPaidAmount)
+        public static bool createCustomerReportMarkup(CUST_DATA customerInformation, List<CustomerJobDriver> reportParameters, decimal previousPaidAmount)
         {
 
             string companyName = "Parcel Xpress";
@@ -27,11 +29,15 @@ namespace ParcelXpress.Helpers
             string bankName = "Barclays";
             string accountNumber = "60237434";
             string sortCode = "20-46-60";
-
+            string basePath = ConfigurationManager.AppSettings["ApplicationPath"].ToString();
+            string pathToImage = "/Styles/Resources/PxpLogoLatest.png";
+           
             StringBuilder sb = new StringBuilder();
             sb.Append("<div style='font-family:Arial'>");
             sb.Append("<table width='100%' cellspacing='0' cellpadding='0'>");
-            sb.Append("<tr><td align='right' style='font-size:13px' colspan = '2'><b>PXPUK LTD</b><br /><div style='font-size:8.5px'>");
+            sb.Append("<tr>");
+            sb.Append("<td align='left'><img src='"+basePath + pathToImage + "' height='70px' width='85px' /></td>");
+            sb.Append("<td align='right' style='font-size:13px'><b>PXPUK LTD</b><br /><div style='font-size:8.5px'>");
             sb.Append(companyAddress);
             sb.Append("<br />");
             sb.Append(companyPhone);
@@ -46,7 +52,7 @@ namespace ParcelXpress.Helpers
             sb.Append(DateTime.Now.ToUniversalTime().ToString("dd/MM/yyyy"));
             sb.Append("</div></td></tr>");
             sb.Append("<tr><td colspan = '2'style='font-size:10px'><b>Total Payable:</b> ");
-            sb.Append((reportParameters.Sum(p => p.RemainingAmount))-previousPaidAmount);
+            sb.Append((reportParameters.Sum(p => p.RemainingAmount)) - previousPaidAmount);
             sb.Append("</td></tr>");
             sb.Append("</table>");
             sb.Append("<br />");
@@ -75,7 +81,7 @@ namespace ParcelXpress.Helpers
                 sb.Append("</td></tr>");
             }
             sb.Append("<br />");
-            sb.Append("<tr><td colspan = '5'></td><td align='left' style='padding-left:3px;' colspan = '2' bgcolor='#c8c8c8'><b>TOTAL</b></td><td align='right' style='padding-right:3px;' bgcolor='#c8c8c8'><b>" +reportParameters.Sum(p => p.RemainingAmount) + "</b></td></tr>");
+            sb.Append("<tr><td colspan = '5'></td><td align='left' style='padding-left:3px;' colspan = '2' bgcolor='#c8c8c8'><b>TOTAL</b></td><td align='right' style='padding-right:3px;' bgcolor='#c8c8c8'><b>" + reportParameters.Sum(p => p.RemainingAmount) + "</b></td></tr>");
             sb.Append("<tr><td colspan = '5'></td><td align='left' style='padding-left:3px;' colspan = '2'>Amount Paid</td><td align='right' style='padding-right:3px;'>" + previousPaidAmount + "</td></tr>");
             sb.Append("<tr bgcolor='#c8c8c8' ><td colspan = '5' bgcolor='#c8c8c8'></td><td align='left' style='padding-left:3px;' bgcolor='#c8c8c8' colspan = '2'><b>Balance Due</b></td><td align='right' style='padding-right:3px;' bgcolor='#c8c8c8'><b>" + ((reportParameters.Sum(p => p.RemainingAmount)) - previousPaidAmount) + "</b></td></tr>");
 
@@ -98,14 +104,14 @@ namespace ParcelXpress.Helpers
         private static bool createAndEmailPdf(StringBuilder sb, string customerEmailAddress)
         {
             ParcelXpressConnection _db = new ParcelXpressConnection();
-            var emailAccount = _db.EMAL_ACNT.OrderByDescending(e => e.EmailAccountId).FirstOrDefault();            
+            var emailAccount = _db.EMAL_ACNT.OrderByDescending(e => e.EmailAccountId).FirstOrDefault();
             try
             {
                 using (StringWriter sw = new StringWriter())
                 {
                     using (HtmlTextWriter hw = new HtmlTextWriter(sw))
                     {
-                        StringReader sr = new StringReader(sb.ToString());
+                       StringReader sr = new StringReader(sb.ToString());
 
                         Document pdfDoc = new Document(PageSize.A4, 4f, 4f, 8f, 2f);
                         HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
@@ -127,7 +133,7 @@ namespace ParcelXpress.Helpers
                             MailMessage mm = new MailMessage();
                             mm.To.Add(customerEmailAddress);
                             mm.Subject = "Parcel Xpress Invoice";
-                            mm.Body = "Dear Customer,<br />Please find attached the invoice of your bill. Thank you for using Parcel Xpress.";
+                            mm.Body = "Dear Customer,<br />Please find attached the invoice of your bill.  Once payment has been sent, please kindly reply 'Paid'.<br /><br />Thank you for using Parcel Xpress.";
                             mm.Attachments.Add(new Attachment(new MemoryStream(bytes), "ParcelXpressInvoice.pdf"));
                             mm.IsBodyHtml = true;
 
@@ -197,5 +203,8 @@ namespace ParcelXpress.Helpers
                 client.Send(mm);
             }
         }
+
+   
     }
+
 }

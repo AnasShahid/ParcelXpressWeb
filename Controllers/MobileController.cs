@@ -638,5 +638,66 @@ namespace ParcelXpress.Controllers
             return Json("Request has been successfully submitted to server.", JsonRequestBehavior.AllowGet);
 
         }
+
+        [HttpPost]
+        public ActionResult CancelJob(int jobId)        
+        {
+            bool result = false;
+            try
+            {
+                var job = _db.JOBS.Find(jobId);
+                //Yahan Cancel ki logic
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult SetPaidInd(int jobId, bool paidInd)
+        {
+            bool result = false;
+            try {
+                var job = _db.JOBS.Find(jobId);
+                job.IsPaid = paidInd;
+                _db.Entry(job).State = EntityState.Modified;
+                _db.SaveChanges();
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult AddNotes(JOB currentJob)
+        {
+            try
+            {
+                var job = _db.JOBS.Find(currentJob.JobId);
+                if ((job.Notes == null ? "" : job.Notes).Trim() == "")
+                {
+                    job.Notes = "Driver Comments: " + currentJob.Notes;
+                }
+                else
+                {
+                    job.Notes = (job.Notes == null ? "" : job.Notes) + "\nDriver Comments: " + currentJob.Notes;
+                }
+
+                _db.Entry(job).State = EntityState.Modified;
+                _db.SaveChanges();
+                return Json("Notes have been successfully added", JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                return Json("An exception occurred on the server " + ex.Message, JsonRequestBehavior.AllowGet);
+            }
+        }
+
     }
 }

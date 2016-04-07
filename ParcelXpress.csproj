@@ -439,6 +439,7 @@
     <Content Include="Styles\Resources\ParcelExpressLogo.png" />
     <Content Include="Styles\Resources\ParcelExpressTransparent.png" />
     <Content Include="Styles\Resources\pxpBG.png" />
+    <Content Include="Styles\Resources\PxpLogoLatest.png" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
