@@ -99,6 +99,20 @@ namespace ParcelXpress.Controllers
                 .Where(c => (searchTerm == null || c.CustomerName.Contains(searchTerm) || c.Address.Contains(searchTerm) || c.ContactNo.Contains(searchTerm)) && c.HasAccount == true)
                 .OrderBy(c => c.CustomerName);
 
+            //var abc = from cust in _db.CUST_DATA
+            //            join trans in _db.CUST_TRAN on cust.CustomerId equals trans.CustomerId
+            //          where (searchTerm == null || cust.CustomerName.Contains(searchTerm) || cust.Address.Contains(searchTerm) || cust.ContactNo.Contains(searchTerm)) && cust.HasAccount == true && trans.SettledInd != true                        
+            //          group cust by new { cust.CustomerId, cust.CustomerName, cust.AccountRefNumber, cust.ContactNo, cust.Address } into custGroup
+            //          let totalAmount=custGroup.Sum(x=>x.)
+            //            orderby custGroup.Key.CustomerName
+            //          select new { CustomerId = custGroup.Key.CustomerId, CustomerName = custGroup.Key.CustomerName, AccountRefNumber = custGroup.Key.AccountRefNumber, ContactNo = custGroup.Key.ContactNo, Address = custGroup.Key.Address, TotalPayable = trans};
+
+            //List<dynamic> tempList = new List<dynamic>();
+            foreach (var item in model)
+            {
+                item.CustomerPayable = ((_db.CUST_TRAN.Where(trans => trans.CustomerId == item.CustomerId && trans.SettledInd != true)).Sum(c => c.RemainingAmount)).GetValueOrDefault(0);
+            }
+
             return PartialView("_SearchResultCustomer", model);
         }
 
@@ -197,6 +211,7 @@ namespace ParcelXpress.Controllers
                 }
                 _db.CUST_BILL.Add(bill);
                 _db.SaveChanges();
+                ResetAlertHistory(bill.CustomerId);
                 TempData["toastMessage"] = "<script>toastr.success('Customer Account has been successfully posted.');</script>";
             }
             catch (Exception ex)
@@ -312,6 +327,19 @@ namespace ParcelXpress.Controllers
                 TempData["toastMessage"] = "<script>toastr.info('" + ex.Message + "');</script>";
             }
             return View(model);
+        }
+
+        private void ResetAlertHistory(int customerId)
+        {
+            if (customerId <= 0)
+                return;
+            var dueAlerts = _db.DUES_ALRT.Where(due => due.CustomerId == customerId && due.IsPaid != true);
+            foreach (var item in dueAlerts)
+            {
+                item.IsPaid = true;
+                _db.Entry(item).State = EntityState.Modified;
+            }
+            _db.SaveChanges();
         }
     }
 }

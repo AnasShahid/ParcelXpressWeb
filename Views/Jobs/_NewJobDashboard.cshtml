@@ -52,7 +52,7 @@
 
                 </div>
                 <div class="row">
-                    <form method="get" action="@Url.Action("CustomerPickupSearchDashboard")" data-pxp-ajax="true" data-pxp-target="#searchResults">
+                    @*<form method="get" action="@Url.Action("CustomerSearchDashboard")" data-pxp-ajax="true" data-pxp-target="#searchResults">
                         <div class="col-md-6">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <label class="mdl-textfield__label" for="pickupAddress">Pickup Address</label>
@@ -65,8 +65,16 @@
                             </div>
                             @Html.ValidationMessageFor(m => m.PickupAddress, null, new { @class = "text-danger" })
                         </div>
-                    </form>
+                    </form>*@
+                    @*@Html.HiddenFor(m=>m.PickupAddress)*@
 
+                    <div class="col-md-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="pickupAddress">Pickup Address</label>
+                                @Html.TextBoxFor(m => m.PickupAddress, new { @class = "mdl-textfield__input", @id = "pickupAddress" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.PickupAddress, null, new { @class = "text-danger" })
+                    </div>
                     <div class="col-md-6">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                             <label class="mdl-textfield__label" for="dropAddress">Drop Address</label>
@@ -113,7 +121,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <form method="get" action="@Url.Action("CustomerSearchDashboard")" data-pxp-ajax="true" data-pxp-target="#searchResults">
+                    @*<form method="get" action="@Url.Action("CustomerSearchDashboard")" data-pxp-ajax="true" data-pxp-target="#searchResults">
                         <div class="col-md-6">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <label class="mdl-textfield__label" for="contactNumber">Contact Number</label>
@@ -127,6 +135,16 @@
                             @Html.ValidationMessageFor(m => m.CustomerPhone, null, new { @class = "text-danger" })
                         </div>
                     </form>
+                    @Html.HiddenFor(m => m.CustomerPhone)*@
+
+                    <div class="col-md-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <label class="mdl-textfield__label" for="contactNumber">Contact Number</label>
+                            @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "mdl-textfield__input", @id = "contactNumber" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.CustomerPhone, null, new { @class = "text-danger" })
+                    </div>
+
 
                     <div class="col-md-6">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">

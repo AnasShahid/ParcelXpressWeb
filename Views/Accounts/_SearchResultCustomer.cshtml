@@ -9,6 +9,7 @@
                         <th>Customer Name</th>
                         <th>Account Code</th>
                         <th> Contact Number</th>
+                        <th>Total Payable</th>
                         <th>Address</th>
                         <th></th>
                     </tr>
@@ -22,6 +23,7 @@
                                 <td>@item.CustomerName</td>
                                 <td>@item.AccountRefNumber</td>
                                 <td>@item.ContactNo</td>
+                                <td>@item.CustomerPayable</td>
                                 <td>@item.Address</td>
                                 <td>@Html.ActionLink("View Account Report", "CustomerAccounts", "Accounts", new { customerId = @item.CustomerId }, new { @class = "btn btn-default" })</td>
                             </tr>

@@ -280,7 +280,7 @@ namespace ParcelXpress.Controllers
                     TempData["toastMessage"] = "<script>toastr.error('Sorry, the job could not be posted.');</script>";
                 }
             }
-           
+
             catch (Exception ex)
             {
                 TempData["toastMessage"] = "<script>toastr.error('An error occured while trying to post the job.');</script>";
@@ -301,6 +301,10 @@ namespace ParcelXpress.Controllers
                 }
                 else
                 {
+                    var errors = ModelState
+    .Where(x => x.Value.Errors.Count > 0)
+    .Select(x => new { x.Key, x.Value.Errors })
+    .ToArray();
                     TempData["toastMessage"] = "<script>toastr.error('Sorry, the job could not be posted.');</script>";
                 }
             }
@@ -541,10 +545,10 @@ namespace ParcelXpress.Controllers
                     try
                     {
                         Task.Run(() => GcmSender.SendToSingle(driver, sb.ToString(), "new_job"));
-                       // GcmSender.SendToSingle(driver, sb.ToString(), "new_job");
+                        // GcmSender.SendToSingle(driver, sb.ToString(), "new_job");
                     }
                     catch (Exception ex)
-                    { 
+                    {
                     }
                 }
 
@@ -560,7 +564,7 @@ namespace ParcelXpress.Controllers
                 sb.AppendLine(" ");
                 sb.Append("Pickup from: " + job.PickupAddress);
                 string gcmHeader = job.LongDistanceInd.Value == true ? "long_distance_job_assigned" : "specific_job_assigned";
-                GcmSender.SendToSingle(driver, sb.ToString(),gcmHeader);
+                GcmSender.SendToSingle(driver, sb.ToString(), gcmHeader);
                 TempData["toastMessage"] = "<script>toastr.success('Job has been successfully sent out to the selected driver.');</script>";
 
             }
@@ -576,7 +580,7 @@ namespace ParcelXpress.Controllers
                     throw new CustomException() { CustomMessage = "Customer already exists in the system." };
 
                 var existingCustomerCount = _db.CUST_DATA.Count(c => c.CustomerName.ToLower() == job.CustomerName.ToLower() && c.Address.ToLower() == job.PickupAddress.ToLower() && c.ContactNo.Trim() == job.CustomerPhone.Trim());
-                if ( existingCustomerCount > 0)
+                if (existingCustomerCount > 0)
                     throw new CustomException() { CustomMessage = "Customer already exists in the system." };
                 CUST_DATA customer = new CUST_DATA();
                 customer.Address = job.PickupAddress;

@@ -36,6 +36,8 @@
         <EntityTypeShape EntityType="ParcelXpressModel.CUST_CRDT" Width="1.5" PointX="3" PointY="0.75" />
         <AssociationConnector Association="ParcelXpressModel.FK_CRDT_CUST_DATA" />
         <EntityTypeShape EntityType="ParcelXpressModel.FAQ" Width="1.5" PointX="8.375" PointY="11.75" />
+        <EntityTypeShape EntityType="ParcelXpressModel.DUES_ALRT" Width="1.5" PointX="3" PointY="21.5" />
+        <AssociationConnector Association="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

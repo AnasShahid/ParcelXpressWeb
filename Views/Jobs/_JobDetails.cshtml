@@ -41,38 +41,22 @@
         </div>
     </div>
 
-    <div class="col-lg-6 form-group" @*style="margin-left:0.02%; margin-right:0.23%;"*@>
+    <div class="col-lg-6 form-group">
         <label class="control-label col-lg-3">Contact Number</label>
-        <form method="get" action="@Url.Action("CustomerSearch")" data-pxp-ajax="true" data-pxp-target="#searchResults">
-            <div class="col-lg-8">
-                <div class="input-group">
-                    @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "form-control", @name = "contactNumber", @id = "contactNumber" })
-                    <span class="input-group-btn">
-                        <button type="button" role="button" class="btn btn-default" id="btnSearchCustomerPhone"><span class="glyphicon glyphicon-search"></span></button>
-                    </span>
-                </div>
-                @Html.ValidationMessageFor(m => m.CustomerPhone, null, new { @class = "text-danger" })
-            </div>
-        </form>
-
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.CustomerPhone, null, new { @class = "text-danger" })
+        </div>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-6 form-group">
         <label class="control-label col-lg-3">Pickup Address</label>
-        <form method="get" action="@Url.Action("CustomerSearch")" data-pxp-ajax="true" data-pxp-target="#searchResults">
-            <div class="col-lg-8">
-                <div class="input-group">
-                    @Html.TextBoxFor(m => m.PickupAddress, new { @class = "form-control", @name = "pickupAddress", @id = "pickupAddress" })
-                    <span class="input-group-btn">
-                        <button type="button" role="button" class="btn btn-default" id="btnSearchCustomerPickup"><span class="glyphicon glyphicon-search"></span></button>
-                    </span>
-                </div>
-                @Html.ValidationMessageFor(m => m.PickupAddress, null, new { @class = "text-danger" })
-            </div>
-        </form>
-
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.PickupAddress, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.PickupAddress, null, new { @class = "text-danger" })
         </div>
+    </div>
     <div class="col-lg-6 form-group">
         <label class="control-label col-lg-3">Drop Address</label>
         <div class="col-lg-8">

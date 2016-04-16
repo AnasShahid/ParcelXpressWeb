@@ -17,9 +17,12 @@ namespace ParcelXpress.Models
     {
         public CUST_DATA()
         {
-            this.CUST_BILL = new HashSet<CUST_BILL>();
             this.JOBS = new HashSet<JOB>();
+            this.CUST_BILL = new HashSet<CUST_BILL>();
+            this.CUST_CRDT = new HashSet<CUST_CRDT>();
+            this.DUES_ALRT = new HashSet<DUES_ALRT>();
         }
+
 
         public int CustomerId { get; set; }
         [Required]
@@ -34,8 +37,9 @@ namespace ParcelXpress.Models
         public Nullable<bool> HasAccount { get; set; }
         public Nullable<int> AccountId { get; set; }
     
+        public virtual ICollection<JOB> JOBS { get; set; }
         public virtual ICollection<CUST_BILL> CUST_BILL { get; set; }
         public virtual ICollection<CUST_CRDT> CUST_CRDT { get; set; }
-        public virtual ICollection<JOB> JOBS { get; set; }
+        public virtual ICollection<DUES_ALRT> DUES_ALRT { get; set; }
     }
 }

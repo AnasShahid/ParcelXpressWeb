@@ -8,14 +8,19 @@ using ParcelXpress.Enums;
 using System.Data;
 using ParcelXpress.Helpers;
 using System.Text;
+using System.Threading.Tasks;
+using System.Data.Objects;
+using System.Globalization;
+using System.Configuration;
 
 namespace ParcelXpress.Controllers
 {
     public class MobileController : Controller
     {
+
         ParcelXpressConnection _db = new ParcelXpressConnection();
-        //
-        // GET: /Mobile/
+
+        #region Driver Application
         [HttpPost]
         public JsonResult Register(REQT_DRVR driverRequest)
         {
@@ -278,6 +283,7 @@ namespace ParcelXpress.Controllers
                         };
                         _db.CUST_TRAN.Add(customerTransAccount);
                         _db.SaveChanges();
+                        Task.Run(() => sendCustomerOverdueAlert(job.CustomerId.GetValueOrDefault(0)));
                     }
                     job.JobStatus = StringEnum.GetStringValue(StatusCode.Closed);
                 }
@@ -337,7 +343,8 @@ namespace ParcelXpress.Controllers
                 {
                     job.ChargesDescription = currentJob.Notes;
                 }
-                else {
+                else
+                {
                     job.ChargesDescription = (job.ChargesDescription == null ? "" : job.ChargesDescription) + "\n" + currentJob.Notes;
                 }
                 _db.Entry(job).State = EntityState.Modified;
@@ -370,7 +377,7 @@ namespace ParcelXpress.Controllers
                     _db.SaveChanges();
                     var driver = _db.DRVR_DATA.Find(job.DriverId);
                     StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Job has been assinged to you.");
+                    sb.AppendLine("Job has been assigned to you.");
                     sb.AppendLine(" ");
                     sb.Append("Pickup from: " + job.PickupAddress + "||" + responseTime + "||" + job.CustomerPhone);
                     GcmSender.SendToSingle(driver, sb.ToString(), "job_assigned");
@@ -389,22 +396,6 @@ namespace ParcelXpress.Controllers
                 result = "error";
             }
             return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        private string getResponseTimeFromCode(string responseCode)
-        {
-            if (responseCode == StringEnum.GetStringValue(ResponseCode.LessThanFive))
-                return StringEnum.GetDisplayName(ResponseCode.LessThanFive);
-            else if (responseCode == StringEnum.GetStringValue(ResponseCode.FiveToTen))
-                return StringEnum.GetDisplayName(ResponseCode.FiveToTen);
-            else if (responseCode == StringEnum.GetStringValue(ResponseCode.TenToFifteen))
-                return StringEnum.GetDisplayName(ResponseCode.TenToFifteen);
-            else if (responseCode == StringEnum.GetStringValue(ResponseCode.FifteenToTwenty))
-                return StringEnum.GetDisplayName(ResponseCode.FifteenToTwenty);
-            else if (responseCode == StringEnum.GetStringValue(ResponseCode.MoreThanTwenty))
-                return StringEnum.GetDisplayName(ResponseCode.MoreThanTwenty);
-            else
-                return "";
         }
 
         [HttpGet]
@@ -461,6 +452,160 @@ namespace ParcelXpress.Controllers
             return Json(myJobs, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public ActionResult ReRegisterDevice(DRVR_DATA driver)
+        {
+            var existingDriver = _db.DRVR_DATA.Where(d => d.LoginName == driver.LoginName && d.Password == driver.Password).FirstOrDefault();
+            try
+            {
+                if (existingDriver == null)
+                {
+                    throw new Exception("Username and/or Password is incorrect.");
+                }
+                existingDriver.GcmId = driver.GcmId;
+                _db.Entry(existingDriver).State = EntityState.Modified;
+                _db.SaveChanges();
+                GcmSender.SendToSingle(driver, "Your device has been successfully registered.", "register_success");
+
+            }
+            catch (Exception ex)
+            {
+                return Json(ex.Message, JsonRequestBehavior.AllowGet);
+            }
+            return Json("Request has been successfully submitted to server.", JsonRequestBehavior.AllowGet);
+
+        }
+
+        [HttpPost]
+        public ActionResult CancelJob(int jobId)
+        {
+            bool result = false;
+            try
+            {
+                var job = _db.JOBS.Find(jobId);
+                if (job == null)
+                    throw new Exception("Job not found");
+
+                var response = _db.JOBS_RESP.Where(j => j.JobId == jobId && j.IsAssigned == true).FirstOrDefault();
+                job.DriverId = null;
+                job.JobStatus = StringEnum.GetStringValue(StatusCode.Open);
+                job.CancelledText = getResponseTimeFromCode(response.ResponseCode);
+
+                _db.Entry(job).State = EntityState.Modified;
+                _db.SaveChanges();
+
+                var activeDrivers = _db.DRVR_DATA.Where(d => d.IsActive == true && d.IsDeleted != true);
+                StringBuilder sb = new StringBuilder();
+
+                sb.AppendLine("New Job Available.");
+                sb.AppendLine(" ");
+                sb.AppendLine("Pickup Address: " + job.PickupAddress);
+                sb.AppendLine(" ");
+                sb.AppendLine("Drop Address: " + job.DropAddress);
+                sb.AppendLine(" ");
+                if (job.Notes != null && job.Notes.Trim() != "")
+                    sb.AppendLine("Notes: " + job.Notes);
+
+                foreach (var driver in activeDrivers)
+                {
+                    try
+                    {
+                        Task.Run(() => GcmSender.SendToSingle(driver, sb.ToString(), "new_job"));
+                        // GcmSender.SendToSingle(driver, sb.ToString(), "new_job");
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult SetPaidInd(int jobId, bool paidInd)
+        {
+            bool result = false;
+            try
+            {
+                var job = _db.JOBS.Find(jobId);
+                job.IsPaid = paidInd;
+                _db.Entry(job).State = EntityState.Modified;
+                _db.SaveChanges();
+                result = true;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult AddNotes(JOB currentJob)
+        {
+            try
+            {
+                var job = _db.JOBS.Find(currentJob.JobId);
+                if ((job.Notes == null ? "" : job.Notes).Trim() == "")
+                {
+                    job.Notes = "Driver Comments: " + currentJob.Notes;
+                }
+                else
+                {
+                    job.Notes = (job.Notes == null ? "" : job.Notes) + "\nDriver Comments: " + currentJob.Notes;
+                }
+
+                _db.Entry(job).State = EntityState.Modified;
+                _db.SaveChanges();
+                return Json("Notes have been successfully added", JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json("An exception occurred on the server " + ex.Message, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
+        public JsonResult GetDriverAccountSummary(int driverId, string fromDate, string toDate)
+        {
+
+            DriverAccounts account = new DriverAccounts();
+            try
+            {
+                //throw new Exception("Some exc");
+                DateTime startDate = DateTime.Parse(fromDate, new CultureInfo("en-GB", false));
+                DateTime endDate = DateTime.Parse(toDate, new CultureInfo("en-GB", false));
+                var jobs = _db.JOBS.Where(j => (j.DriverId == driverId) && (EntityFunctions.TruncateTime(j.JobDate) >= EntityFunctions.TruncateTime(startDate)) && (EntityFunctions.TruncateTime(j.JobDate) <= EntityFunctions.TruncateTime(endDate))).ToList();
+                if (jobs.Count > 0)
+                {
+                    decimal totalJobsPrice = jobs.Sum(j => j.Price).GetValueOrDefault(0);
+                    decimal totalDriverCommission = ((from j in jobs
+                                                      join drvrTran in _db.DRVR_TRAN on j.JobId equals drvrTran.JobId
+                                                      where drvrTran.TransactionType == StringEnum.GetStringValue(TransactionTypeCode.In)
+                                                      select drvrTran).Sum(x => x.Amount)).GetValueOrDefault(0);
+                    account.JobsCount = jobs.Count;
+                    account.TotalJobPrice = totalJobsPrice;
+                    account.DriverCommission = totalDriverCommission;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //string parameters = driverId + "---" + fromDate + "---" + toDate;
+                //new CustomException().LogExceptionMessage(ex, parameters);
+            }
+            return Json(account, JsonRequestBehavior.AllowGet);
+
+
+        }
+
+        #endregion
+
+        #region Admin app
         [HttpGet]
         public JsonResult GetAllCustomerNames()
         {
@@ -537,13 +682,13 @@ namespace ParcelXpress.Controllers
             }
             catch (Exception ex)
             {
-              
+
                 result = "An exception occured on server.";
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
-        public ActionResult SendJobTest(string customerName,string contactNumber,int customerId,string pickupAddress,string dropAddress,decimal price,bool accountPayment,string notes)
+        public ActionResult SendJobTest(string customerName, string contactNumber, int customerId, string pickupAddress, string dropAddress, decimal price, bool accountPayment, string notes)
         {
             string result = "";
             JOB job = new JOB()
@@ -601,8 +746,9 @@ namespace ParcelXpress.Controllers
         public ActionResult LoginAdmin(string username, string password)
         {
             bool result;
-            try {
-                var validUser = _db.SYS_USER.Where(a => a.UserName == username  && a.Password == password).FirstOrDefault();
+            try
+            {
+                var validUser = _db.SYS_USER.Where(a => a.UserName == username && a.Password == password).FirstOrDefault();
                 if (validUser != null)
                     result = true;
                 else
@@ -616,88 +762,100 @@ namespace ParcelXpress.Controllers
         }
 
         [HttpPost]
-        public ActionResult ReRegisterDevice(DRVR_DATA driver)
+        public JsonResult GetCustomerWithPayable(List<int> searchedCustomersId)
         {
-            var existingDriver = _db.DRVR_DATA.Where(d => d.LoginName == driver.LoginName && d.Password == driver.Password).FirstOrDefault();
+            //decimal totalCustomerPayable = 0;
             try
             {
-                if (existingDriver == null)
+                _db.Configuration.ProxyCreationEnabled = false;
+                var customers = _db.CUST_DATA.Where(c => searchedCustomersId.Contains(c.CustomerId));
+                foreach (var item in customers)
                 {
-                    throw new Exception("Username and/or Password is incorrect.");
-                }
-                existingDriver.GcmId = driver.GcmId;
-                _db.Entry(existingDriver).State = EntityState.Modified;
-                _db.SaveChanges();
-                GcmSender.SendToSingle(driver, "Your device has been successfully registered.", "register_success");
+                    item.CustomerPayable = ((_db.CUST_TRAN.Where(trans => trans.CustomerId == item.CustomerId && trans.SettledInd != true)).Sum(c => c.RemainingAmount)).GetValueOrDefault(0);
+                    //              new CustomException().LogExceptionMessage(new Exception(""), item.CustomerName +"-- "+item.EmailAddress+"-- "+item.Address+"");
 
+                }
+                //if (customerId > 0)
+                //{
+                //    var customerAccountList = (from trans in _db.CUST_TRAN
+                //                               where trans.CustomerId == customerId && trans.SettledInd != true
+                //                               join jobs in _db.JOBS on trans.JobId equals jobs.JobId
+                //                               join driver in _db.DRVR_DATA on jobs.DriverId equals driver.DriverId
+                //                               select new { JobId = jobs.JobId, JobDate = jobs.JobDate, DriverName = driver.DriverName, Price = trans.PayableAmount, ReceivedAmount = trans.ReceivedAmount, RemainingAmount = trans.RemainingAmount }).ToList();
+
+                //    totalCustomerPayable = customerAccountList.Sum(p => p.RemainingAmount).GetValueOrDefault(0);
+
+                // }
+                return Json(customers, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
                 return Json(ex.Message, JsonRequestBehavior.AllowGet);
             }
-            return Json("Request has been successfully submitted to server.", JsonRequestBehavior.AllowGet);
 
         }
 
-        [HttpPost]
-        public ActionResult CancelJob(int jobId)        
+        #endregion
+
+        # region Other Methods
+        private string getResponseTimeFromCode(string responseCode)
         {
-            bool result = false;
+            if (responseCode == StringEnum.GetStringValue(ResponseCode.LessThanFive))
+                return StringEnum.GetDisplayName(ResponseCode.LessThanFive);
+            else if (responseCode == StringEnum.GetStringValue(ResponseCode.FiveToTen))
+                return StringEnum.GetDisplayName(ResponseCode.FiveToTen);
+            else if (responseCode == StringEnum.GetStringValue(ResponseCode.TenToFifteen))
+                return StringEnum.GetDisplayName(ResponseCode.TenToFifteen);
+            else if (responseCode == StringEnum.GetStringValue(ResponseCode.FifteenToTwenty))
+                return StringEnum.GetDisplayName(ResponseCode.FifteenToTwenty);
+            else if (responseCode == StringEnum.GetStringValue(ResponseCode.MoreThanTwenty))
+                return StringEnum.GetDisplayName(ResponseCode.MoreThanTwenty);
+            else
+                return "";
+        }
+
+
+        private async void sendCustomerOverdueAlert(int customerId)
+        {
+            ParcelXpressConnection conn = new ParcelXpressConnection();
             try
             {
-                var job = _db.JOBS.Find(jobId);
-                //Yahan Cancel ki logic
-                result = true;
-            }
-            catch (Exception ex)
-            {
-                result = false;
-            }
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
+                if (customerId <= 0)
+                    return;
+                var customer = conn.CUST_DATA.Find(customerId);
+                var lastDueAlert = customer.DUES_ALRT.LastOrDefault(due => due.IsPaid != true); 
+                decimal lastAlertAmount=lastDueAlert==null? 0:lastDueAlert.AlertAmount.GetValueOrDefault(0);
+                decimal customerOverdues = conn.CUST_TRAN.Where(c => c.CustomerId == customerId && c.SettledInd != true).Sum(t => t.RemainingAmount).GetValueOrDefault(0);
+                string targetEmailAddress = ConfigurationManager.AppSettings["alertEmailAddress"].ToString();
+                decimal alertDifferenceAmount = Decimal.Parse(ConfigurationManager.AppSettings["alertDifferenceAmount"].ToString());
 
-        [HttpGet]
-        public ActionResult SetPaidInd(int jobId, bool paidInd)
-        {
-            bool result = false;
-            try {
-                var job = _db.JOBS.Find(jobId);
-                job.IsPaid = paidInd;
-                _db.Entry(job).State = EntityState.Modified;
-                _db.SaveChanges();
-                result = true;
-            }
-            catch (Exception ex)
-            {
-                result = false;
-            }
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-        [HttpPost]
-        public JsonResult AddNotes(JOB currentJob)
-        {
-            try
-            {
-                var job = _db.JOBS.Find(currentJob.JobId);
-                if ((job.Notes == null ? "" : job.Notes).Trim() == "")
+                if ((customerOverdues - lastAlertAmount) >= alertDifferenceAmount)
                 {
-                    job.Notes = "Driver Comments: " + currentJob.Notes;
-                }
-                else
-                {
-                    job.Notes = (job.Notes == null ? "" : job.Notes) + "\nDriver Comments: " + currentJob.Notes;
-                }
+                    DUES_ALRT alertObj = new DUES_ALRT() { AlertDate=DateTime.Now.ToUniversalTime(),IsPaid=false,CustomerId=customerId };
+                    alertObj.AlertAmount = alertDifferenceAmount * (((int)(lastAlertAmount / alertDifferenceAmount)) + 1);
+                    conn.DUES_ALRT.Add(alertObj);
+                    conn.SaveChanges();
 
-                _db.Entry(job).State = EntityState.Modified;
-                _db.SaveChanges();
-                return Json("Notes have been successfully added", JsonRequestBehavior.AllowGet);
+                    string emailSubject = "PXP Customer due alert";
+                    StringBuilder sb = new StringBuilder("Dear Pxp Admin,<br /><br />This is to alert you that the dues of the customer " + customer.CustomerName + " have reached " + alertObj.AlertAmount+"£");
+                    sb.Append("<br />");
+                    sb.Append("<br />Customer Name: "+customer.CustomerName);
+                    sb.Append("<br />Total Due Amount: £" + customerOverdues);
+                    sb.Append("<br />Contact Number: " + customer.ContactNo);
+                    sb.Append("<br />Email: " + customer.EmailAddress);
+                    string emailBody = sb.ToString();
 
+                    EmailSender.SendEmail(targetEmailAddress, emailSubject, emailBody, "PXP Alert");
+                }
             }
             catch (Exception ex)
             {
-                return Json("An exception occurred on the server " + ex.Message, JsonRequestBehavior.AllowGet);
+                new CustomException().LogExceptionMessage(ex, "");
             }
         }
+        #endregion
+
 
     }
 }
+

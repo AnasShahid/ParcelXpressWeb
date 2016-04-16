@@ -29,7 +29,7 @@
 <div class="col-lg-11">
     <div class="box box-info">
         <div class="box-header">
-            <h3 class="box-title">@Model.CustomerName <small style="margin-left:2em;"><b> @Model.JobDate.ToString("dd-MMM-yy hh:mm tt")</b></small></h3>
+            <h3 class="box-title">@Model.CustomerName <small style="margin-left:2em;"><b> @Model.JobDate.ToLocalTime().ToString("dd-MMM-yy hh:mm tt")</b></small></h3>
             @if (Model.LongDistanceInd == true)
             {
                 <h4 class="box-title" style="margin-left:3em;">Long Distance Job</h4>

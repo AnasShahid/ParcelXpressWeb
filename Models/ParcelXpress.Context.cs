@@ -45,5 +45,6 @@ namespace ParcelXpress.Models
         public DbSet<EMAL_ACNT> EMAL_ACNT { get; set; }
         public DbSet<CUST_CRDT> CUST_CRDT { get; set; }
         public DbSet<FAQ> FAQS { get; set; }
+        public DbSet<DUES_ALRT> DUES_ALRT { get; set; }
     }
 }

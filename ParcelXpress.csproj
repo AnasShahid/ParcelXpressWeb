@@ -215,11 +215,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AddChagesViewModel.cs" />
+    <Compile Include="Helpers\CustomerHelper.cs" />
     <Compile Include="Helpers\CustomerJobDriver.cs" />
     <Compile Include="Helpers\CustomException.cs" />
+    <Compile Include="Helpers\DriverAccounts.cs" />
     <Compile Include="Helpers\DriverHelper.cs" />
     <Compile Include="Helpers\EmailAccount.cs" />
     <Compile Include="Helpers\Balance.cs" />
+    <Compile Include="Helpers\EmailSender.cs" />
     <Compile Include="Helpers\GcmSender.cs" />
     <Compile Include="Helpers\JobHelper.cs" />
     <Compile Include="Helpers\PDFGenerator.cs" />
@@ -242,6 +245,9 @@
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DRVR_TRAN.cs">
+      <DependentUpon>ParcelXpress.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DUES_ALRT.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\EMAL_ACNT.cs">

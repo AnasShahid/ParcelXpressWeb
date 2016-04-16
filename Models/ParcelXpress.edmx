@@ -35,8 +35,8 @@
           </Key>
           <Property Name="CustomerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CustomerName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="Address" Type="text" Nullable="false" />
-          <Property Name="ContactNo" Type="nchar" MaxLength="14" />
+          <Property Name="Address" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ContactNo" Type="nvarchar" MaxLength="20" />
           <Property Name="EmailAddress" Type="varchar" MaxLength="50" />
           <Property Name="AccountRefNumber" Type="varchar" MaxLength="15" />
           <Property Name="HasAccount" Type="bit" />
@@ -96,6 +96,16 @@
           <Property Name="Balance" Type="decimal" Precision="18" Scale="2" />
           <Property Name="SettledInd" Type="bit" />
         </EntityType>
+        <EntityType Name="DUES_ALRT">
+          <Key>
+            <PropertyRef Name="AlertId" />
+          </Key>
+          <Property Name="AlertId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="int" Nullable="false" />
+          <Property Name="AlertDate" Type="datetime" />
+          <Property Name="AlertAmount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="IsPaid" Type="bit" />
+        </EntityType>
         <EntityType Name="EMAL_ACNT">
           <Key>
             <PropertyRef Name="EmailAccountId" />
@@ -121,8 +131,8 @@
           </Key>
           <Property Name="JobId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="JobStatus" Type="varchar" MaxLength="5" />
-          <Property Name="PickupAddress" Type="text" Nullable="false" />
-          <Property Name="DropAddress" Type="text" />
+          <Property Name="PickupAddress" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DropAddress" Type="nvarchar(max)" />
           <Property Name="Price" Type="decimal" Precision="18" Scale="2" />
           <Property Name="CustomerPhone" Type="nvarchar" MaxLength="20" />
           <Property Name="CustomerName" Type="varchar" MaxLength="50" />
@@ -135,12 +145,14 @@
           <Property Name="AccountPaymentInd" Type="bit" />
           <Property Name="ChargesDescription" Type="text" />
           <Property Name="LongDistanceInd" Type="bit" />
-          <Property Name="DropoffContact" Type="varchar" MaxLength="20" />
-          <Property Name="DropAddress1" Type="text" />
-          <Property Name="DropAddress2" Type="text" />
-          <Property Name="DropAddress3" Type="text" />
-          <Property Name="DropAddress4" Type="text" />
+          <Property Name="DropoffContact" Type="nvarchar" MaxLength="20" />
+          <Property Name="DropAddress1" Type="nvarchar(max)" />
+          <Property Name="DropAddress2" Type="nvarchar(max)" />
+          <Property Name="DropAddress3" Type="nvarchar(max)" />
+          <Property Name="DropAddress4" Type="nvarchar(max)" />
           <Property Name="TypeOfParcel" Type="varchar" MaxLength="50" />
+          <Property Name="IsPaid" Type="bit" />
+          <Property Name="CancelledText" Type="varchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="JOBS_HTRY">
           <Key>
@@ -283,6 +295,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_DUES_ALRT_CUST_DATA">
+          <End Role="CUST_DATA" Type="Self.CUST_DATA" Multiplicity="1" />
+          <End Role="DUES_ALRT" Type="Self.DUES_ALRT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="DUES_ALRT">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_HSTRY_JOB">
           <End Role="JOBS" Type="Self.JOBS" Multiplicity="0..1" />
           <End Role="JOBS_HTRY" Type="Self.JOBS_HTRY" Multiplicity="*" />
@@ -381,6 +405,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySet Name="DRVR_DATA" EntityType="Self.DRVR_DATA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DRVR_MSGS" EntityType="Self.DRVR_MSGS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DRVR_TRAN" EntityType="Self.DRVR_TRAN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DUES_ALRT" EntityType="Self.DUES_ALRT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EMAL_ACNT" EntityType="Self.EMAL_ACNT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FAQS" EntityType="Self.FAQS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="JOBS" EntityType="Self.JOBS" Schema="dbo" store:Type="Tables" />
@@ -409,6 +434,10 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <AssociationSet Name="FK_DRVR_MSGS_DRVR_DATA" Association="Self.FK_DRVR_MSGS_DRVR_DATA">
             <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
             <End Role="DRVR_MSGS" EntitySet="DRVR_MSGS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DUES_ALRT_CUST_DATA" Association="Self.FK_DUES_ALRT_CUST_DATA">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="DUES_ALRT" EntitySet="DUES_ALRT" />
           </AssociationSet>
           <AssociationSet Name="FK_HSTRY_JOB" Association="Self.FK_HSTRY_JOB">
             <End Role="JOBS" EntitySet="JOBS" />
@@ -449,8 +478,8 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           </Key>
           <Property Name="CustomerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CustomerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="ContactNo" Type="String" MaxLength="14" FixedLength="true" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ContactNo" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="EmailAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="AccountRefNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="HasAccount" Type="Boolean" />
@@ -458,6 +487,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <NavigationProperty Name="JOBS" Relationship="Self.FK_JOBS_CUST" FromRole="CUST_DATA" ToRole="JOBS" />
           <NavigationProperty Name="CUST_BILL" Relationship="ParcelXpressModel.FK_CUST_BILL_CUST_DATA" FromRole="CUST_DATA" ToRole="CUST_BILL" />
           <NavigationProperty Name="CUST_CRDT" Relationship="ParcelXpressModel.FK_CRDT_CUST_DATA" FromRole="CUST_DATA" ToRole="CUST_CRDT" />
+          <NavigationProperty Name="DUES_ALRT" Relationship="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA" FromRole="CUST_DATA" ToRole="DUES_ALRT" />
         </EntityType>
         <EntityType Name="CUST_TRAN">
           <Key>
@@ -503,8 +533,8 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           </Key>
           <Property Name="JobId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="JobStatus" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
-          <Property Name="PickupAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="DropAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PickupAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DropAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="CustomerPhone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="CustomerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -521,12 +551,14 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <NavigationProperty Name="DRVR_DATA" Relationship="ParcelXpressModel.FK_JOBS_DRVR" FromRole="JOB" ToRole="DRVR_DATA" />
           <Property Name="ChargesDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="LongDistanceInd" Type="Boolean" />
-          <Property Name="DropoffContact" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="DropAddress1" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="DropAddress2" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="DropAddress3" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="DropAddress4" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DropoffContact" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="DropAddress1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DropAddress2" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DropAddress3" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DropAddress4" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="TypeOfParcel" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IsPaid" Type="Boolean" />
+          <Property Name="CancelledText" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="JOBS_HTRY">
           <Key>
@@ -754,6 +786,11 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
             <End Role="CUST_CRDT" EntitySet="CUST_CRDT" />
           </AssociationSet>
           <EntitySet Name="FAQS" EntityType="ParcelXpressModel.FAQ" />
+          <EntitySet Name="DUES_ALRT" EntityType="ParcelXpressModel.DUES_ALRT" />
+          <AssociationSet Name="FK_DUES_ALRT_CUST_DATA" Association="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="DUES_ALRT" EntitySet="DUES_ALRT" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="CUST_BILL">
           <Key>
@@ -893,6 +930,29 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Date" Type="DateTime" Precision="3" Nullable="false" />
         </EntityType>
+        <EntityType Name="DUES_ALRT">
+          <Key>
+            <PropertyRef Name="AlertId" />
+          </Key>
+          <Property Name="AlertId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int32" Nullable="false" />
+          <Property Name="AlertDate" Type="DateTime" Precision="3" />
+          <Property Name="AlertAmount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="IsPaid" Type="Boolean" />
+          <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA" FromRole="DUES_ALRT" ToRole="CUST_DATA" />
+        </EntityType>
+        <Association Name="FK_DUES_ALRT_CUST_DATA">
+          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="1" />
+          <End Type="ParcelXpressModel.DUES_ALRT" Role="DUES_ALRT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="DUES_ALRT">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -956,6 +1016,8 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySetMapping Name="JOBS">
             <EntityTypeMapping TypeName="ParcelXpressModel.JOB">
               <MappingFragment StoreEntitySet="JOBS">
+                <ScalarProperty Name="CancelledText" ColumnName="CancelledText" />
+                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
                 <ScalarProperty Name="TypeOfParcel" ColumnName="TypeOfParcel" />
                 <ScalarProperty Name="DropAddress4" ColumnName="DropAddress4" />
                 <ScalarProperty Name="DropAddress3" ColumnName="DropAddress3" />
@@ -1146,6 +1208,17 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="FaqId" ColumnName="FaqId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DUES_ALRT">
+            <EntityTypeMapping TypeName="ParcelXpressModel.DUES_ALRT">
+              <MappingFragment StoreEntitySet="DUES_ALRT">
+                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
+                <ScalarProperty Name="AlertAmount" ColumnName="AlertAmount" />
+                <ScalarProperty Name="AlertDate" ColumnName="AlertDate" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="AlertId" ColumnName="AlertId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
