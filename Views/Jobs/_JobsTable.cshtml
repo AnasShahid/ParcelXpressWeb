@@ -28,7 +28,7 @@
                     </td>
                     <td>@item.PickupAddress</td>
                     <td>@item.DropAddress</td>
-                    <td>@item.JobDate.ToLocalTime().ToString("dd-MMM-yyyy hh:mm tt")</td>
+                    <td>@item.JobDate.AddHours(1).ToString("dd-MMM-yyyy hh:mm tt")</td>
                     <td>&pound; @item.Price</td>
                     <td><input type="checkbox" class="checkbox-inline" value="@item.AccountPaymentInd" checked="@item.AccountPaymentInd" disabled="disabled" /></td>
                     <td>@StringEnum.Parse(typeof(StatusCode),item.JobStatus)</td>

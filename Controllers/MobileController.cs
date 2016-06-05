@@ -287,6 +287,7 @@ namespace ParcelXpress.Controllers
                     }
                     job.JobStatus = StringEnum.GetStringValue(StatusCode.Closed);
                 }
+                thisjob.PaymentMode = job.PaymentMode;
                 thisjob.AccountPaymentInd = job.AccountPaymentInd;
                 thisjob.JobStatus = job.JobStatus;
                 thisjob.JobDate = transDate;
@@ -429,6 +430,23 @@ namespace ParcelXpress.Controllers
         }
 
         [HttpGet]
+        public JsonResult SetPaymentMode(int jobId, int paymentMode)
+        {
+            try
+            {
+                var job = _db.JOBS.Find(jobId);
+                job.PaymentMode = paymentMode;
+                job.AccountPaymentInd = job.PaymentMode==(int) PaymentModes.Account?true:false;
+                _db.Entry(job).State = EntityState.Modified;
+                _db.SaveChanges();
+                return Json("true", JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json("true", JsonRequestBehavior.AllowGet);
+            }
+        }
+        [HttpGet]
         public JsonResult MyJobHistory(int driverId)
         {
             string closed = StringEnum.GetStringValue(StatusCode.Closed);
@@ -522,6 +540,8 @@ namespace ParcelXpress.Controllers
             catch (Exception ex)
             {
                 result = false;
+                new CustomException().LogExceptionMessage(ex, jobId.ToString());
+
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -603,6 +623,27 @@ namespace ParcelXpress.Controllers
 
         }
 
+        [HttpGet]
+        public JsonResult GetActiveDrivers()
+        {
+           
+
+            var model = _db.DRVR_DATA.Where(d => d.IsActive == true && d.IsDeleted != true).ToList();
+            List<Dictionary<string, string>> activeDrivers = new List<Dictionary<string, string>>();
+            foreach (var item in model)
+            {
+                item.ActiveJobsCount = item.JOBS.Where(p => (p.JobStatus == StringEnum.GetStringValue(StatusCode.Assigned)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.PickedUp)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff))).Count();
+                var driver = new Dictionary<string, string>();
+                driver.Add("Name", item.DriverName);
+                driver.Add("JobCount", item.ActiveJobsCount.ToString());
+                driver.Add("Number", item.ContactNo);
+                activeDrivers.Add(driver);
+            }
+            
+
+            return Json(activeDrivers, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
 
         #region Admin app
@@ -636,7 +677,8 @@ namespace ParcelXpress.Controllers
             string result = "";
             JOB job = new JOB()
             {
-                AccountPaymentInd = receivedJob.AccountPaymentInd,
+                PaymentMode=receivedJob.PaymentMode,
+                AccountPaymentInd = receivedJob.PaymentMode==(int)PaymentModes.Account?true:false,
                 CustomerId = receivedJob.CustomerId,
                 CustomerName = receivedJob.CustomerName,
                 CustomerPhone = receivedJob.CustomerPhone,
@@ -688,12 +730,13 @@ namespace ParcelXpress.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
-        public ActionResult SendJobTest(string customerName, string contactNumber, int customerId, string pickupAddress, string dropAddress, decimal price, bool accountPayment, string notes)
+        public ActionResult SendJobTest(string customerName, string contactNumber, int customerId, string pickupAddress, string dropAddress, decimal price, int paymentMode, string notes)
         {
             string result = "";
             JOB job = new JOB()
             {
-                AccountPaymentInd = accountPayment,
+                PaymentMode = paymentMode,
+                AccountPaymentInd = paymentMode == (int)PaymentModes.Account ? true : false,
                 CustomerId = customerId,
                 CustomerName = customerName,
                 CustomerPhone = contactNumber,
@@ -855,6 +898,8 @@ namespace ParcelXpress.Controllers
         }
         #endregion
 
+
+     
 
     }
 }

@@ -36,11 +36,12 @@
           <Property Name="CustomerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CustomerName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Address" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="ContactNo" Type="nvarchar" MaxLength="20" />
+          <Property Name="ContactNo" Type="varchar" MaxLength="50" />
           <Property Name="EmailAddress" Type="varchar" MaxLength="50" />
           <Property Name="AccountRefNumber" Type="varchar" MaxLength="15" />
           <Property Name="HasAccount" Type="bit" />
           <Property Name="AccountId" Type="int" />
+          <Property Name="IsDeleted" Type="bit" />
         </EntityType>
         <EntityType Name="CUST_TRAN">
           <Key>
@@ -145,7 +146,7 @@
           <Property Name="AccountPaymentInd" Type="bit" />
           <Property Name="ChargesDescription" Type="text" />
           <Property Name="LongDistanceInd" Type="bit" />
-          <Property Name="DropoffContact" Type="nvarchar" MaxLength="20" />
+          <Property Name="DropoffContact" Type="varchar" MaxLength="20" />
           <Property Name="DropAddress1" Type="nvarchar(max)" />
           <Property Name="DropAddress2" Type="nvarchar(max)" />
           <Property Name="DropAddress3" Type="nvarchar(max)" />
@@ -153,6 +154,7 @@
           <Property Name="TypeOfParcel" Type="varchar" MaxLength="50" />
           <Property Name="IsPaid" Type="bit" />
           <Property Name="CancelledText" Type="varchar" MaxLength="500" />
+          <Property Name="PaymentMode" Type="int" />
         </EntityType>
         <EntityType Name="JOBS_HTRY">
           <Key>
@@ -229,16 +231,6 @@
           <Property Name="SecurityQuestionId" Type="int" />
           <Property Name="SecurityAnswer" Type="varchar" MaxLength="30" />
         </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="principal_id" Type="int" Nullable="false" />
-          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="version" Type="int" />
-          <Property Name="definition" Type="varbinary(max)" />
-        </EntityType>
         <EntityType Name="TRAN_TYPE">
           <Key>
             <PropertyRef Name="TransactionTypeId" />
@@ -255,18 +247,6 @@
               <PropertyRef Name="CustomerId" />
             </Principal>
             <Dependent Role="CUST_CRDT">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CUST_BILL_CUST_DATA">
-          <End Role="CUST_DATA" Type="Self.CUST_DATA" Multiplicity="1" />
-          <End Role="CUST_BILL" Type="Self.CUST_BILL" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CUST_DATA">
-              <PropertyRef Name="CustomerId" />
-            </Principal>
-            <Dependent Role="CUST_BILL">
               <PropertyRef Name="CustomerId" />
             </Dependent>
           </ReferentialConstraint>
@@ -417,15 +397,10 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySet Name="SESN" EntityType="Self.SESN" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="STUS_CODE" EntityType="Self.STUS_CODE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SYS_USER" EntityType="Self.SYS_USER" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TRAN_TYPE" EntityType="Self.TRAN_TYPE" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_CRDT_CUST_DATA" Association="Self.FK_CRDT_CUST_DATA">
             <End Role="CUST_DATA" EntitySet="CUST_DATA" />
             <End Role="CUST_CRDT" EntitySet="CUST_CRDT" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CUST_BILL_CUST_DATA" Association="Self.FK_CUST_BILL_CUST_DATA">
-            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
-            <End Role="CUST_BILL" EntitySet="CUST_BILL" />
           </AssociationSet>
           <AssociationSet Name="FK_DRVR_DATA_SCRT_QUES" Association="Self.FK_DRVR_DATA_SCRT_QUES">
             <End Role="SCRT_QUES" EntitySet="SCRT_QUES" />
@@ -479,7 +454,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="CustomerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CustomerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ContactNo" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="ContactNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="EmailAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="AccountRefNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
           <Property Name="HasAccount" Type="Boolean" />
@@ -488,6 +463,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <NavigationProperty Name="CUST_BILL" Relationship="ParcelXpressModel.FK_CUST_BILL_CUST_DATA" FromRole="CUST_DATA" ToRole="CUST_BILL" />
           <NavigationProperty Name="CUST_CRDT" Relationship="ParcelXpressModel.FK_CRDT_CUST_DATA" FromRole="CUST_DATA" ToRole="CUST_CRDT" />
           <NavigationProperty Name="DUES_ALRT" Relationship="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA" FromRole="CUST_DATA" ToRole="DUES_ALRT" />
+          <Property Name="IsDeleted" Type="Boolean" />
         </EntityType>
         <EntityType Name="CUST_TRAN">
           <Key>
@@ -551,7 +527,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <NavigationProperty Name="DRVR_DATA" Relationship="ParcelXpressModel.FK_JOBS_DRVR" FromRole="JOB" ToRole="DRVR_DATA" />
           <Property Name="ChargesDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="LongDistanceInd" Type="Boolean" />
-          <Property Name="DropoffContact" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="DropoffContact" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="DropAddress1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DropAddress2" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DropAddress3" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -559,6 +535,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="TypeOfParcel" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="IsPaid" Type="Boolean" />
           <Property Name="CancelledText" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="PaymentMode" Type="Int32" />
         </EntityType>
         <EntityType Name="JOBS_HTRY">
           <Key>
@@ -643,16 +620,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <NavigationProperty Name="SCRT_QUES" Relationship="Self.FK_SYS_USER_SCRT_QUES" FromRole="SYS_USER" ToRole="SCRT_QUES" />
           <NavigationProperty Name="SESNs" Relationship="Self.FK_SESN_SYS_USER" FromRole="SYS_USER" ToRole="SESN" />
         </EntityType>
-        <EntityType Name="sysdiagram">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="principal_id" Type="Int32" Nullable="false" />
-          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="Int32" />
-          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
-        </EntityType>
         <EntityType Name="TRAN_TYPE">
           <Key>
             <PropertyRef Name="TransactionTypeId" />
@@ -735,7 +702,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySet Name="SESNs" EntityType="Self.SESN" />
           <EntitySet Name="STUS_CODE" EntityType="Self.STUS_CODE" />
           <EntitySet Name="SYS_USER" EntityType="Self.SYS_USER" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
           <EntitySet Name="TRAN_TYPE" EntityType="Self.TRAN_TYPE" />
           <AssociationSet Name="FK_JOBS_CUST" Association="Self.FK_JOBS_CUST">
             <End Role="CUST_DATA" EntitySet="CUST_DATA" />
@@ -962,6 +928,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySetMapping Name="CUST_DATA">
             <EntityTypeMapping TypeName="ParcelXpressModel.CUST_DATA">
               <MappingFragment StoreEntitySet="CUST_DATA">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
                 <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
                 <ScalarProperty Name="Address" ColumnName="Address" />
@@ -1016,6 +983,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySetMapping Name="JOBS">
             <EntityTypeMapping TypeName="ParcelXpressModel.JOB">
               <MappingFragment StoreEntitySet="JOBS">
+                <ScalarProperty Name="PaymentMode" ColumnName="PaymentMode" />
                 <ScalarProperty Name="CancelledText" ColumnName="CancelledText" />
                 <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
                 <ScalarProperty Name="TypeOfParcel" ColumnName="TypeOfParcel" />
@@ -1123,17 +1091,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="SecurityQuestionId" ColumnName="SecurityQuestionId" />
                 <ScalarProperty Name="SecurityAnswer" ColumnName="SecurityAnswer" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="ParcelXpressModel.sysdiagram">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="definition" ColumnName="definition" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

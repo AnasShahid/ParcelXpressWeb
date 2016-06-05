@@ -49,6 +49,7 @@ namespace ParcelXpress.Models
         public string TypeOfParcel { get; set; }
         public Nullable<bool> IsPaid { get; set; }
         public string CancelledText { get; set; }
+        public Nullable<int> PaymentMode { get; set; }
     
         public virtual CUST_DATA CUST_DATA { get; set; }
         public virtual ICollection<JOBS_HTRY> JOBS_HTRY { get; set; }

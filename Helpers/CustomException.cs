@@ -15,7 +15,7 @@ namespace ParcelXpress.Helpers
         public void LogExceptionMessage(Exception ex, string additionalData)
         {
 
-            string filePath = "F:/Logs/PXP_Log.txt";
+            string filePath = AppDomain.CurrentDomain.BaseDirectory   + "Pxp_Log.txt";
             //if (!Directory.Exists(filepath))
             //{
             //    Directory.CreateDirectory(filepath);

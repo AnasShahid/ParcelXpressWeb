@@ -8,7 +8,7 @@
         <div class="row">
             <h4 class="zero-margins">
                 <b>@Model.Title</b>&nbsp;&nbsp;
-                <b><small style="font-size:0.8em !important; font-weight:bolder">@Model.Date.ToLocalTime().ToString("dd-MMM-yyyy hh:mm tt")</small></b>
+                <b><small style="font-size:0.8em !important; font-weight:bolder">@Model.Date.AddHours(1).ToString("dd-MMM-yyyy hh:mm tt")</small></b>
             </h4>
         </div>
         <div class="row">

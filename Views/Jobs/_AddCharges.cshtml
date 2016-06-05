@@ -2,7 +2,6 @@
 @{
     Model.JobId = Convert.ToInt16(Request.QueryString["jobId"]);
 }
-}
 
 @Html.BeginForm("AddCharges", "Jobs", FormMethod.Post, new { @class = "form-horizontal" }){
 <div class="modal-content">

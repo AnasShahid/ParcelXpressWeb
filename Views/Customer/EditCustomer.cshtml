@@ -18,20 +18,26 @@
         <h2>Edit Customer</h2>
     </section>
 
-    @using (Html.BeginForm("saveEditCustomer", "Customer", null, FormMethod.Post, new { @class = "form-horizontal", @id = "newCustomerForm" }))
-    {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true)
-        <div class="col-lg-10">
-            <div class="box box-primary container-fluid">
-                <div class="box-header">
-                    <h4 class="col-lg-8">Customer Details</h4>
-                    @if (showGenerateCodeButton)
-                    {
-                        @Html.ActionLink("Generate Account Code", "generateAccountRef", new { fromAction = "EditCustomer" ,custId=Model.CustomerId  }, new { @class = "btn btn-default col-lg-3", @style = "margin-top:2%;" })
-                    }
 
-                </div>
+    <div class="col-lg-10">
+        <div class="box box-primary container-fluid">
+            <div class="box-header">
+                <h4 class="col-lg-8">Customer Details</h4>
+                @if (showGenerateCodeButton)
+                {
+                    @Html.ActionLink("Generate Account Code", "generateAccountRef", new { fromAction = "EditCustomer", custId = Model.CustomerId }, new { @class = "btn btn-default col-lg-3", @style = "margin-top:2%;" })
+                }
+                @using (Html.BeginForm("DeleteCustomer", "Customer", null, FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    @Html.HiddenFor(m => m.CustomerId);
+                    <button type="submit" role="button" class="btn btn-danger col-lg-3 col-md-offset-1" id="btnDelete" style="margin-top:1%; "><span class="glyphicon glyphicon-remove"></span> Delete Customer</button>
+                }
+
+            </div>
+            @using (Html.BeginForm("saveEditCustomer", "Customer", null, FormMethod.Post, new { @class = "form-horizontal", @id = "newCustomerForm" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
                 <div class="box-body">
                     @Html.Partial("_CustomerDetails", Model)
                 </div>
@@ -39,8 +45,8 @@
                 <div class="box-footer">
                     <button class="btn btn-success col-lg-3 col-lg-offset-1" type="submit" style="margin-bottom:2%;" id="btnSaveCustomer" data-showconfirm="@showGenerateCodeButton">Save Changes</button>
                 </div>
-            </div>
+            }
         </div>
-    }
+    </div>
 </div>
 @Html.Raw(TempData["toastMessage"])

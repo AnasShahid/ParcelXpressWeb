@@ -12,6 +12,7 @@ namespace ParcelXpress.Models
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+
     
     public partial class CUST_DATA
     {
@@ -22,7 +23,6 @@ namespace ParcelXpress.Models
             this.CUST_CRDT = new HashSet<CUST_CRDT>();
             this.DUES_ALRT = new HashSet<DUES_ALRT>();
         }
-
 
         public int CustomerId { get; set; }
         [Required]
@@ -36,6 +36,7 @@ namespace ParcelXpress.Models
         public string AccountRefNumber { get; set; }
         public Nullable<bool> HasAccount { get; set; }
         public Nullable<int> AccountId { get; set; }
+        public Nullable<bool> IsDeleted { get; set; }
     
         public virtual ICollection<JOB> JOBS { get; set; }
         public virtual ICollection<CUST_BILL> CUST_BILL { get; set; }

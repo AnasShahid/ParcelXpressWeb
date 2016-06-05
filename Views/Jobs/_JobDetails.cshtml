@@ -1,6 +1,17 @@
 ﻿@model JOB
 @{
+
     List<CUST_DATA> customersModel = new List<CUST_DATA>();
+    var htmlAttributesForEdit = new Dictionary<string, object>();
+    bool fromEdit = false;
+    if (ViewBag.fromEdit != null)
+    {
+        fromEdit = ViewBag.fromEdit;
+        if (fromEdit)
+        {
+            htmlAttributesForEdit.Add("disabled", "disabled");
+        }
+    }
     bool accountInd = false;
     if (ViewBag.CustomerAccountInd != null)
     {
@@ -12,16 +23,14 @@
     {
         htmlAttributes.Add("disabled", "disabled");
     }
-    var htmlAttributesForEdit = new Dictionary<string, object>();
-    bool fromEdit = false;
-    if (ViewBag.fromEdit != null)
+    else
     {
-        fromEdit = ViewBag.fromEdit;
-        if (fromEdit)
+        if (fromEdit == false)
         {
-            htmlAttributesForEdit.Add("disabled", "disabled");
+            htmlAttributes.Add("checked", "checked");
         }
     }
+
 }
 
 <div class="row">
@@ -180,8 +189,9 @@ else
     <div class="col-lg-6 form-group">
         <label class="control-label col-lg-3">Payment Mode</label>
         <div class="col-lg-8">
-            <label class="form-control"> @Html.RadioButtonFor(m => m.AccountPaymentInd, false, new { @checked = "checked" }) Cash </label>
-            <label class="form-control">@Html.RadioButtonFor(m => m.AccountPaymentInd, true, htmlAttributes) Account </label>
+            <label class="form-control"> @Html.RadioButtonFor(m => m.PaymentMode, 1, new { @checked = "checked" }) Cash </label>
+            <label class="form-control"> @Html.RadioButtonFor(m => m.PaymentMode, 2, new {  }) Credit Card </label>
+            <label class="form-control">@Html.RadioButtonFor(m => m.PaymentMode, 3, htmlAttributes) Account </label>
             @if (!accountInd)
             {
                 <label class="text-warning">Account is not configured.</label>
@@ -201,11 +211,12 @@ else
 
             </div>
         }
-        <div class="row">
+        <div class="row form-group">
 
-            <label class="control-label col-lg-3">Type of Parcel</label>
+            <label class="control-label col-lg-3">Type of parcel</label>
             <div class="col-lg-8">
-                @Html.DropDownListFor(m => m.TypeOfParcel, (IEnumerable<SelectListItem>)ViewBag.TypesOfParcel, "Please Select", new { @class = "form-control dropdown dropdown-toggle" })
+                @Html.TextBoxFor(m => m.TypeOfParcel, new { @class = "form-control" })
+
             </div>
         </div>
     </div>

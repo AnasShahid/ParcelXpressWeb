@@ -168,6 +168,10 @@ namespace ParcelXpress.Controllers
 
             ViewBag.DriversList = selectList;
             ViewBag.MessageCount = _db.DRVR_MSGS.Where(m => m.MessageReadInd == false).Count();
+            if ((int)ViewBag.MessageCount > 0)
+            {
+                TempData["toastMessageForInbox"] = "<script>toastr.info('You have unread messages in inbox.');</script>";
+            }
             return PartialView();
         }
 

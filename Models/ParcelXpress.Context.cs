@@ -38,7 +38,6 @@ namespace ParcelXpress.Models
         public DbSet<SESN> SESNs { get; set; }
         public DbSet<STUS_CODE> STUS_CODE { get; set; }
         public DbSet<SYS_USER> SYS_USER { get; set; }
-        public DbSet<sysdiagram> sysdiagrams { get; set; }
         public DbSet<TRAN_TYPE> TRAN_TYPE { get; set; }
         public DbSet<CUST_BILL> CUST_BILL { get; set; }
         public DbSet<DRVR_DATA> DRVR_DATA { get; set; }

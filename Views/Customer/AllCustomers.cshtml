@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="row" style="margin-bottom:1%;">
-                    <form method="get" action="@Url.Action("AllCustomers")" data-pxp-ajax="true" data-pxp-target="#registeredCustomers">
+                    <form method="get" action="@Url.Action("AllCustomers")" @*data-pxp-ajax="true" data-pxp-target="#registeredCustomers"*@>
                         <div class="col-xs-7 col-sm-5 col-md-3">
                             <div class="input-group col-sm-12">
                                 <input type="search" class="form-control" placeholder="Search&hellip;" name="searchTerm" />
@@ -38,8 +38,8 @@
                 @Html.Partial("_CustomersTable", Model)
             </div>
             <div class="panel-footer text-center">
-                <div class="pagedList" data-pxp-target="#registeredCustomers">
-                    @Html.PagedListPager(Model, page => Url.Action("AllCustomers", new { page }), PagedListRenderOptions.MinimalWithItemCountText)
+                <div class="" data-pxp-target="">
+                    @Html.PagedListPager(Model, page => Url.Action("AllCustomers", new { ViewBag.searchTerm, page }), PagedListRenderOptions.ClassicPlusFirstAndLast)
                 </div>
             </div>
         </div>

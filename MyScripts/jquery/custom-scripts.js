@@ -230,6 +230,23 @@ $(function () {
         return false;
     };
     $('#btnGenerateStatement').click(generateEmailConfirmation);
+    
+    var submitWithLoader = function () {
+        var $button = $(this);
+        var $form = $button.parents("form").first();
+        $("#loading").show();
+        $form.submit();
+        
+    }
+    $('#btnSubmitWithShowLoading').click(submitWithLoader);
+
+    var showEmailDiv = function () {
+        
+        $("#enterEmailDiv").removeClass("hidden");
+        
+
+    }
+    $('#showEmailDiv').click(showEmailDiv);
 
     var count = 0;
     var showAnotherDropField = function () {

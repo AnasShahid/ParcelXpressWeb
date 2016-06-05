@@ -45,3 +45,17 @@
         </div>
     </div>
 </div>
+
+@*<script>
+    (function worker() {
+        $.ajax({
+            url: '/Jobs/_ActiveJobsDashboard',
+            success: function (data) {
+                $('#activeJobsGrid').html(data);
+            },
+            complete: function () {
+                setInterval(worker, 15000);
+            }
+        });
+    })();
+</script>*@

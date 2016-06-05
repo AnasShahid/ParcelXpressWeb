@@ -1,0 +1,31 @@
+﻿@model ParcelXpress.Helpers.CustomerJobDriver
+    @{
+        Model.JobId = Convert.ToInt16(Request.QueryString["jobId"]);
+    }
+
+    @*@Html.BeginForm("SendInvoiceToEmail", "Jobs", FormMethod.Get, new { @class = "form-horizontal" })
+    {*@
+<form method="get" action="@Url.Action("SendInvoiceToEmail")" class="form-horizontal">
+    <div class="box box-info ">
+        <div class="box-header">
+            <h4>Send Job Invoice</h4>
+        </div>
+
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <label class="control-label col-md-5">Email Address</label>
+                        <div class="col-md-7">
+                            @Html.TextBoxFor(m => m.EmailAddress)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(m => m.JobId)
+        <div class="box-footer">
+            <button class="btn btn-success" id="btnSubmitWithShowLoading">Send Invoice</button>
+        </div>
+    </div>
+</form>

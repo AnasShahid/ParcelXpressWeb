@@ -10,6 +10,7 @@
                         <th> Contact Number</th>
                         <th>Login Name</th>
                         <th>Commission %</th>
+                        <th>Commission Amount</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -23,6 +24,7 @@
                                 <td>@item.ContactNo</td>
                                 <td>@item.LoginName</td>
                                 <td>@item.CommissionRate </td>
+                                <td>@item.DriverCommissionAmount</td>
                                 <td>@Html.ActionLink("View Commission Report", "DriverAccounts", "Accounts", new { driverId = @item.DriverId }, new { @class = "btn btn-default" })</td>
                             </tr>
                         }

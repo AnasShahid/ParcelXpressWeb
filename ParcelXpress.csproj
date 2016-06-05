@@ -206,6 +206,7 @@
     <Compile Include="Controllers\IndexController.cs" />
     <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\MobileController.cs" />
+    <Compile Include="Enums\PaymentModes.cs" />
     <Compile Include="Enums\MailClients.cs" />
     <Compile Include="Enums\ResponseCode.cs" />
     <Compile Include="Enums\TransactionTypeCode.cs" />
@@ -293,9 +294,6 @@
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\STUS_CODE.cs">
-      <DependentUpon>ParcelXpress.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SYS_USER.cs">
@@ -513,6 +511,8 @@
     <Content Include="Views\FAQ\EditFaq.cshtml" />
     <Content Include="Views\Jobs\_LongDistanceJobsDashboard.cshtml" />
     <Content Include="Views\Accounts\AccountOverview.cshtml" />
+    <Content Include="Views\Jobs\_EnterEmail.cshtml" />
+    <Content Include="Views\Accounts\ShowAccountHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -62,7 +62,7 @@
                                 <div class="box-body">
                                     <div class="row" style="margin-top:2px; margin-left:3px;margin-right:3px;">
                                         <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Due Amount: </label>
-                                        <input class="form-control" disabled="disabled" placeholder="0.00"/>
+                                        <input class="form-control" disabled="disabled" placeholder="0.00" />
                                     </div>
                                     <div class="row" style="margin-top:2px; margin-left:3px;margin-right:3px;">
                                         <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Credit Amount: </label>
@@ -139,12 +139,42 @@
                     }
                     else
                     {
-                        <div class="box box-primary">
-                            <div class="box-header">
-                                <h3>Customer Payment History</h3>
+                        <div class="col-lg-9">
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <h3>Customer Payment History</h3>
+                                </div>
+                                <div class="box-body">
+                                    <h4 class="text-danger">No bill history found for this customer</h4>
+                                </div>
                             </div>
-                            <div class="box-body">
-                                <h4 class="text-danger">No bill history found for this customer</h4>
+                        </div>
+                    }
+
+                    using (Html.BeginForm("ShowAccountHistory", "Accounts", null, FormMethod.Get, new { @class = "form-horizontal" }))
+                    {
+                        @Html.HiddenFor(m => m.CustomerId)
+
+                        <div class="col-lg-3">
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <h3>Job History</h3>
+                                </div>
+                                <div class="box-body">
+                                    <div class="row" style="margin-top:2px; margin-left:3px;margin-right:3px;">
+                                        @* <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">From Date: </label>*@
+                                        <input type="search" class=" DateDialog form-control" placeholder="From Date&hellip;" name="fromDate" id="fromDate" />
+                                    </div>
+                                    <div class="row" style="margin-top:10px; margin-left:3px;margin-right:3px;">
+                                        @*     <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">To Date: </label>*@
+                                        <input type="search" class=" DateDialog form-control" placeholder="To Date&hellip;" name="toDate" id="toDate" />
+                                    </div>
+                                </div>
+                                <div class="box-footer">
+                                    <div class="row" style="margin-top:4px;">
+                                        <button class="btn btn-default col-md-offset-3" data-accounttype="customer" type="submit">View Account History</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     }
@@ -188,3 +218,6 @@
 @Html.Raw(TempData["toastMessage"])
 
 
+<script type="text/javascript">
+    $('.DateDialog').datepicker(); //Initialise any date pickers
+</script>

@@ -36,7 +36,7 @@ namespace ParcelXpress.Controllers
         public ActionResult CustomerSearch(string searchTerm = null)
         {
             var model = _db.CUST_DATA
-                .Where(c => searchTerm == null || c.CustomerName.Contains(searchTerm) || c.Address.Contains(searchTerm) || c.ContactNo.Contains(searchTerm))
+                .Where(c => (searchTerm == null || c.CustomerName.Contains(searchTerm) || c.Address.Contains(searchTerm) || c.ContactNo.Contains(searchTerm)) && c.IsDeleted != true)
                 .OrderBy(c => c.CustomerName);
 
             return PartialView("_SearchResultCustomer", model);
@@ -185,7 +185,7 @@ namespace ParcelXpress.Controllers
         public ActionResult CustomerSearchDashboard(string searchTerm = null)
         {
             var model = _db.CUST_DATA
-                .Where(c => searchTerm == null || c.CustomerName.Contains(searchTerm) || c.Address.Contains(searchTerm) || c.ContactNo.Contains(searchTerm))
+                .Where(c => (searchTerm == null || c.CustomerName.Contains(searchTerm) || c.Address.Contains(searchTerm) || c.ContactNo.Contains(searchTerm)) && c.IsDeleted != true)
                 .OrderBy(c => c.CustomerName);
 
             return PartialView("_SearchResultCustomerDashboard", model);
@@ -302,9 +302,9 @@ namespace ParcelXpress.Controllers
                 else
                 {
                     var errors = ModelState
-    .Where(x => x.Value.Errors.Count > 0)
-    .Select(x => new { x.Key, x.Value.Errors })
-    .ToArray();
+                                .Where(x => x.Value.Errors.Count > 0)
+                                .Select(x => new { x.Key, x.Value.Errors })
+                                .ToArray();
                     TempData["toastMessage"] = "<script>toastr.error('Sorry, the job could not be posted.');</script>";
                 }
             }
@@ -400,6 +400,8 @@ namespace ParcelXpress.Controllers
         public ActionResult saveEditJob(JOB job)
         {
             job.LongDistanceInd = job.longDistanceCheckboxValue == true ? true : false;
+            job.AccountPaymentInd = job.PaymentMode == (int)PaymentModes.Account ? true : false;
+
             string closed = StringEnum.GetStringValue(StatusCode.Closed);
             string dropped = StringEnum.GetStringValue(StatusCode.DroppedOff);
             try
@@ -516,6 +518,96 @@ namespace ParcelXpress.Controllers
             return RedirectToAction("SingleJobDetails", new { jobId = model.JobId });
         }
 
+        [HttpGet]
+        public ActionResult SendInvoice(int JobId)
+        {
+            try{
+                var job = _db.JOBS.Find(JobId);
+                if (job.CustomerId == null || job.CUST_DATA == null || job.CUST_DATA.EmailAddress == null || job.CUST_DATA.EmailAddress.Trim().Equals(""))
+                    throw new Exception("Customer does not have an email address configured in the system.");
+                var lastEmailAccount = _db.EMAL_ACNT.OrderByDescending(e => e.EmailAccountId).FirstOrDefault();
+                if (lastEmailAccount == null || lastEmailAccount.EmailAddress == null || lastEmailAccount.Password == null || lastEmailAccount.EmailClient == null)
+                {
+                    throw new Exception("Please configure a valid email address from settings to send an email.");
+                }
+                List<CustomerJobDriver> reportParameters = new List<CustomerJobDriver>();
+                reportParameters.Add(new CustomerJobDriver()
+                {
+                    JobId = job.JobId,
+                    JobDate = job.JobDate,
+                    PickupAddress = job.PickupAddress,
+                    DropAddress = job.DropAddress,
+                    RemainingAmount = job.Price.GetValueOrDefault(0),
+                    ChargeDescription = job.ChargesDescription
+                });
+                bool result = PDFGenerator.createCustomerReportMarkup(job.CUST_DATA, reportParameters, 0);
+                if (result == true)
+                    TempData["toastMessage"] = "<script>toastr.success('Invoice has been successfully sent to customer.');</script>";
+                else
+                    TempData["toastMessage"] = "<script>toastr.error('There was an error connecting to the mail server, Please check your email connection settings.');</script>";
+
+            }
+            catch(Exception ex)
+            {
+                if (ex.Message.Contains("Authentication"))
+                {
+                    TempData["toastMessage"] = "<script>toastr.error('There was an error connecting to the mail server, Please check your email connection settings.');</script>";
+                }
+                else
+                    TempData["toastMessage"] = "<script>toastr.error('" + ex.Message + "');</script>";
+            }
+            return RedirectToAction("SingleJobDetails", new { jobId = JobId });
+
+        }
+        [HttpGet]
+        public ActionResult SendInvoiceToEmail(CustomerJobDriver model)
+        {
+            try {
+                var job = _db.JOBS.Find(model.JobId);
+                if(model.EmailAddress==null||model.EmailAddress.Trim().Equals(""))
+                    throw new Exception("Please provide a valid email address.");
+                var lastEmailAccount = _db.EMAL_ACNT.OrderByDescending(e => e.EmailAccountId).FirstOrDefault();
+                if (lastEmailAccount == null || lastEmailAccount.EmailAddress == null || lastEmailAccount.Password == null || lastEmailAccount.EmailClient == null)
+                {
+                    throw new Exception("Please configure a valid email address from settings to send an email.");
+                }
+                List<CustomerJobDriver> reportParameters = new List<CustomerJobDriver>();
+                reportParameters.Add(new CustomerJobDriver()
+                {
+                    JobId = job.JobId,
+                    JobDate = job.JobDate,
+                    PickupAddress = job.PickupAddress,
+                    DropAddress = job.DropAddress,
+                    RemainingAmount = job.Price.GetValueOrDefault(0),
+                    ChargeDescription = job.ChargesDescription
+                });
+                CUST_DATA customerInformation = new CUST_DATA() { EmailAddress=model.EmailAddress,Address = job.PickupAddress, ContactNo = job.CustomerPhone, CustomerName = job.CustomerName, HasAccount = false, IsDeleted = false };
+                bool result = PDFGenerator.createCustomerReportMarkup(customerInformation, reportParameters, 0);
+                if (result == true)
+                    TempData["toastMessage"] = "<script>toastr.success('Invoice has been successfully sent to customer.');</script>";
+                else
+                    TempData["toastMessage"] = "<script>toastr.error('There was an error connecting to the mail server, Please check your email connection settings.');</script>";
+
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Authentication"))
+                {
+                    TempData["toastMessage"] = "<script>toastr.error('There was an error connecting to the mail server, Please check your email connection settings.');</script>";
+                }
+                else
+                    TempData["toastMessage"] = "<script>toastr.error('" + ex.Message + "');</script>";
+            }
+            return RedirectToAction("SingleJobDetails", new { jobId = model.JobId });
+
+        }
+
+        [HttpGet] // this action result returns the partial containing the modal
+        public ActionResult _EnterEmail()
+        {
+            return PartialView("_EnterEmail");
+        }
+
         #endregion
 
         #region Private methods
@@ -523,6 +615,8 @@ namespace ParcelXpress.Controllers
         {
             job.LongDistanceInd = job.longDistanceCheckboxValue == true ? true : false;
             job.JobDate = (DateTime.Now).ToUniversalTime();
+            job.AccountPaymentInd = job.PaymentMode == (int)PaymentModes.Account ? true : false;
+
 
 
             if (job.DriverId == null)
@@ -608,7 +702,7 @@ namespace ParcelXpress.Controllers
         {
             job.LongDistanceInd = job.longDistanceCheckboxValue == true ? true : false;
             job.JobDate = (DateTime.Now).ToUniversalTime();
-
+            job.AccountPaymentInd = job.PaymentMode == (int) PaymentModes.Account ? true : false;
 
             if (job.DriverId == null)
             {

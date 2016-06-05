@@ -92,6 +92,8 @@ namespace ParcelXpress.Helpers
             sb.Append("<br />" + bankName + "<br />");
             sb.Append("Account Number: " + accountNumber + "<br />");
             sb.Append("Sort Code: " + sortCode);
+            sb.Append("<br /><br />Option 2: Send a driver to collect.");
+            sb.Append("<br />Option 3: Pay over phone via credit card.");
             sb.Append("</div></td><td style='font-size:13px'><b>THANK YOU</b><br /> ");
             sb.Append("<div style='font-size:10px'>Thank you for using Parcel Express, your reliable courier solution.</div>");
             sb.Append("</td></tr></table>");

@@ -29,10 +29,11 @@ namespace ParcelXpress.Controllers
         public ActionResult AllCustomers(string searchTerm = null,int page=1)
         {
             var model = _db.CUST_DATA
-                .Where(r => searchTerm == null || r.CustomerName.Contains(searchTerm))
+                .Where(r => (searchTerm == null || r.CustomerName.Contains(searchTerm)) && r.IsDeleted!=true)
                 .OrderBy(r => r.CustomerName)
                 .ToPagedList(page,15);
 
+            ViewBag.searchTerm = searchTerm;
 
             if (Request.IsAjaxRequest())
             {
@@ -53,6 +54,7 @@ namespace ParcelXpress.Controllers
                         var code = customer.AccountRefNumber.Split('C');
                         customer.AccountId = Convert.ToInt32(code[1]);
                     }
+                    customer.IsDeleted = false;
                     _db.CUST_DATA.Add(customer);
                     _db.SaveChanges();
 
@@ -122,6 +124,24 @@ namespace ParcelXpress.Controllers
             return RedirectToAction("AllCustomers");
         }
 
+        [HttpPost]
+        public ActionResult DeleteCustomer(int CustomerId)
+        {
+            try
+            {
+                var customer = _db.CUST_DATA.Find(CustomerId);
+                customer.IsDeleted = true;
+                _db.Entry(customer).State = EntityState.Modified;
+                _db.SaveChanges();
+                TempData["toastMessage"] = "<script>toastr.success('Customer has been successfully deleted from the system.');</script>";
+            }
+            catch (Exception ex)
+            {
+                TempData["toastMessage"] = "<script>toastr.error('There was an error while processing your request.');</script>";
+            }
+            return RedirectToAction("AllCustomers");
+        }
+
         public ActionResult generateAccountRef(string fromAction = "CreateCustomerAccount",int custId=0)
         {
             string accountCode = accountCodeGenerator();
@@ -131,6 +151,7 @@ namespace ParcelXpress.Controllers
             }
             return RedirectToAction(fromAction, new { accountRefNumber=accountCode });
         }
+
 
         private string accountCodeGenerator()
         {

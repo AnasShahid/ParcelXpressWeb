@@ -8,5 +8,6 @@ namespace ParcelXpress.Models
     public partial class JOB
     {
         public bool longDistanceCheckboxValue { get; set; }
+        public string paymentModeDescription { get; set; }
     }
 }

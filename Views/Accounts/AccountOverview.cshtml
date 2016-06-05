@@ -57,6 +57,14 @@
                             <div class="col-md-3 col-xs-6"><label>Net Total Earned: </label></div>
                             <div class="col-md-3 col-xs-6"><label>@ViewBag.NetTotalEarned &pound;</label></div>
                         </div> 
+                        <br />
+                        foreach (var item in ViewBag.paymentTypeSummary)
+                        {
+                            <div class="row">
+                                <div class="col-md-3 col-xs-6"><label>Jobs on @item["Type"]: </label></div>
+                                <div class="col-md-6 col-xs-6"><label>@item["Amount"] &pound; (@item["Count"] Jobs)</label></div>
+                            </div> 
+                        }
                     }
                 </div>
             </div>

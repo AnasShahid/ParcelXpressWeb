@@ -19,6 +19,7 @@ namespace ParcelXpress.Helpers
         public string PickupAddress { get; set; }
         public string DropAddress { get; set; }
         public string ChargeDescription { get; set; }
+        public string EmailAddress { get; set; }
         
 
     }

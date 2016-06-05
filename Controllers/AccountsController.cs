@@ -90,13 +90,36 @@ namespace ParcelXpress.Controllers
                 .Where(c => (searchTerm == null || c.DriverName.Contains(searchTerm)) && c.IsDeleted != true)
                 .OrderBy(c => c.DriverName);
 
+            foreach (var item in model)
+            {
+                var transactions = _db.DRVR_TRAN.Where(t => t.DriverId == item.DriverId && t.SettledInd != true);
+                if (transactions != null && transactions.Count() > 0)
+                {
+                    var transactionIn = StringEnum.GetStringValue(TransactionTypeCode.In);
+                    var transactionOut = StringEnum.GetStringValue(TransactionTypeCode.Out);
+
+                    var jobs = _db.JOBS.Where(j => transactions.Any(t => j.JobId == t.JobId));
+                    var totalJobBalance = jobs.Sum(j => j.Price).GetValueOrDefault(0);      //total sum of jobs
+
+                    var paymentFromAccount = jobs.Where(j => j.AccountPaymentInd == true).Sum(j => j.Price).GetValueOrDefault(0);
+                    var totalCashPayment = totalJobBalance - paymentFromAccount;        //total cash that driver had already received
+
+                    var totalDriverCommission = transactions.Where(t => t.TransactionType == transactionIn).Sum(t => t.Amount).GetValueOrDefault(0);
+                    //totalPxpBalance = transactions.Where(t => t.TransactionType == transactionOut).Sum(t => t.Amount).GetValueOrDefault(0);
+
+                    item.DriverCommissionAmount = totalCashPayment - totalDriverCommission;   //Driver has to give the amount by cutting his commission
+                }
+                else {
+                    item.DriverCommissionAmount = 0;
+                }
+            }
             return PartialView("_SearchResultDriver", model);
         }
 
         public ActionResult CustomerSearch(string searchTerm = null)
         {
             var model = _db.CUST_DATA
-                .Where(c => (searchTerm == null || c.CustomerName.Contains(searchTerm) || c.Address.Contains(searchTerm) || c.ContactNo.Contains(searchTerm)) && c.HasAccount == true)
+                .Where(c => (searchTerm == null || c.CustomerName.Contains(searchTerm) || c.Address.Contains(searchTerm) || c.ContactNo.Contains(searchTerm)) && c.HasAccount == true && c.IsDeleted != true)
                 .OrderBy(c => c.CustomerName);
 
             //var abc = from cust in _db.CUST_DATA
@@ -312,7 +335,20 @@ namespace ParcelXpress.Controllers
                                                       join drvrTran in _db.DRVR_TRAN on j.JobId equals drvrTran.JobId
                                                       where (drvrTran.TransactionType == StringEnum.GetStringValue(TransactionTypeCode.In) & drvrTran.Amount == 0)
                                                       select j).Sum(x => x.Price)).GetValueOrDefault(0);
+                    
+                    List<Dictionary<string, dynamic>> paymentTypesSummary = new List<Dictionary<string, dynamic>>();
+                    var paymentModes = Enum.GetValues(typeof(PaymentModes));
 
+                    foreach (var item in paymentModes)
+                    {
+                        Dictionary<string, dynamic> paymentTypeSummary = new Dictionary<string, dynamic>();
+                        paymentTypeSummary.Add("Type", item.ToString());
+                        paymentTypeSummary.Add("Count", jobs.Count(j => j.PaymentMode ==(int) item));
+                        paymentTypeSummary.Add("Amount", jobs.Where(j => j.PaymentMode == (int)item).Sum(x => x.Price));
+                        paymentTypesSummary.Add(paymentTypeSummary);
+                    }
+
+                    ViewBag.paymentTypeSummary = paymentTypesSummary;
                     ViewBag.TotalJobs = jobs.Count;
                     ViewBag.SubIncomeRaw = totalJobsPrice;
                     ViewBag.TotalDriverCommission =totalDriverCommission;
@@ -340,6 +376,41 @@ namespace ParcelXpress.Controllers
                 _db.Entry(item).State = EntityState.Modified;
             }
             _db.SaveChanges();
+        }
+
+        [HttpGet]
+        public ActionResult ShowAccountHistory(int CustomerId, string fromDate = null, string toDate = null)
+        {
+            try
+            {
+                if (fromDate == null || fromDate == "" || toDate == null || toDate == "")
+                    throw new Exception("Please fill both dates to see the account overview.");
+
+                DateTime startDate = Convert.ToDateTime(fromDate);
+                DateTime endDate = Convert.ToDateTime(toDate);
+                if (endDate < startDate)
+                    throw new Exception("[To Date] cannot be earlier than [From date].");
+
+                string customerName = "";
+                if (CustomerId != 0)
+                {
+                    customerName = _db.CUST_DATA.Find(CustomerId).CustomerName;
+                    List<JOB> jobs = _db.JOBS.Where(j =>j.CustomerId==CustomerId && (EntityFunctions.TruncateTime(j.JobDate) >= EntityFunctions.TruncateTime(startDate)) && (EntityFunctions.TruncateTime(j.JobDate) <= EntityFunctions.TruncateTime(endDate))).ToList();
+
+                    var enumValues=Enum.GetValues(typeof(PaymentModes)).Cast<PaymentModes>().ToList();
+                    jobs.ForEach(j=>j.paymentModeDescription= StringEnum.GetDisplayName(enumValues.FirstOrDefault(e=>j.PaymentMode==(int)e)));
+                    
+                    ViewBag.CustomerName = customerName;
+                    ViewBag.ToDate = endDate.ToString("dd-MMM-yyyy"); ;
+                    ViewBag.FromDate = startDate.ToString("dd-MMM-yyyy");
+                    return View(jobs);
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["toastMessage"] = "<script>toastr.error('" + ex.Message + "');</script>";
+            }
+            return RedirectToAction("CustomerAccounts", new { customerId = CustomerId }); ;
         }
     }
 }
