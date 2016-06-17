@@ -19,7 +19,7 @@ namespace ParcelXpress.Helpers
 {
     public static class PDFGenerator
     {
-        public static bool createCustomerReportMarkup(CUST_DATA customerInformation, List<CustomerJobDriver> reportParameters, decimal previousPaidAmount)
+        public static bool createCustomerReportMarkup(CUST_DATA customerInformation, List<CustomerJobDriver> reportParameters, decimal previousPaidAmount,bool isPaid=false)
         {
 
             string companyName = "Parcel Xpress";
@@ -31,6 +31,8 @@ namespace ParcelXpress.Helpers
             string sortCode = "20-46-60";
             string basePath = ConfigurationManager.AppSettings["ApplicationPath"].ToString();
             string pathToImage = "/Styles/Resources/PxpLogoLatest.png";
+            if (isPaid)
+                previousPaidAmount = reportParameters.Sum(p => p.RemainingAmount); // If paid already then set paid amount
            
             StringBuilder sb = new StringBuilder();
             sb.Append("<div style='font-family:Arial'>");
@@ -74,6 +76,14 @@ namespace ParcelXpress.Helpers
                 sb.Append(item.PickupAddress);
                 sb.Append("</td><td style='padding-left:3px;' colspan = '2'>");
                 sb.Append(item.DropAddress);
+                if (item.DropAddress1 != null)
+                    sb.Append("<br />" + item.DropAddress1);
+                if (item.DropAddress2 != null)
+                    sb.Append("<br />" + item.DropAddress2);
+                if (item.DropAddress3 != null)
+                    sb.Append("<br />" + item.DropAddress3);
+                if (item.DropAddress4 != null)
+                    sb.Append("<br />" + item.DropAddress4);
                 sb.Append("</td><td style='padding-left:3px;' colspan = '2'>");
                 sb.Append(item.ChargeDescription);
                 sb.Append("</td><td align='right' style='padding-right:3px;'>");
@@ -87,17 +97,25 @@ namespace ParcelXpress.Helpers
 
 
             sb.Append("</table>");
-            sb.Append("<br /><table width='100%' cellspacing='10' cellpadding='0'>");
-            sb.Append("<tr><td align='left' style='font-size:13px' ><b>PAYMENT INSTRUCTIONS:</b><br /><div style='font-size:10px'>Bank Transfer:");
-            sb.Append("<br />" + bankName + "<br />");
-            sb.Append("Account Number: " + accountNumber + "<br />");
-            sb.Append("Sort Code: " + sortCode);
-            sb.Append("<br /><br />Option 2: Send a driver to collect.");
-            sb.Append("<br />Option 3: Pay over phone via credit card.");
-            sb.Append("</div></td><td style='font-size:13px'><b>THANK YOU</b><br /> ");
+            sb.Append("<br /><table width='100%' cellspacing='10' cellpadding='0'><tr>");
+            if (isPaid)
+            {
+                sb.Append("<td align='left' style='font-size:14px'><b>This invoice has already been settled.</b></td>");
+            }
+            else
+            {
+                sb.Append("<td align='left' style='font-size:13px' ><b>PAYMENT INSTRUCTIONS:</b><br /><div style='font-size:10px'>");
+                //sb.Append("Bank Transfer:<br />" + bankName + "<br />");
+                //sb.Append("Account Number: " + accountNumber + "<br />");
+                //sb.Append("Sort Code: " + sortCode);
+                sb.Append("<b>Option 1:</b> Pay by Cash/Cheque, we will send over a driver for free.");
+                sb.Append("<br /><b>Option 2:</b> Pay by BACS.</div></td>");
+            }
+            sb.Append("<td style='font-size:13px'><b>THANK YOU</b><br /> ");
             sb.Append("<div style='font-size:10px'>Thank you for using Parcel Express, your reliable courier solution.</div>");
-            sb.Append("</td></tr></table>");
-            sb.Append("</div>");
+            sb.Append("</td></tr>");
+        
+            sb.Append("</table></div>");
 
 
             return createAndEmailPdf(sb, customerInformation.EmailAddress);

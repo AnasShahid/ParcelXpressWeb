@@ -107,6 +107,7 @@ namespace ParcelXpress.Controllers
                         var code = customer.AccountRefNumber.Split('C');
                         customer.AccountId = Convert.ToInt32(code[1]);
                     }
+                    customer.IsDeleted = false;
                     _db.Entry(customer).State = EntityState.Modified;
                     _db.SaveChanges();
                     TempData["toastMessage"] = "<script>toastr.success('Customer has been successfully updated in the system.');</script>";

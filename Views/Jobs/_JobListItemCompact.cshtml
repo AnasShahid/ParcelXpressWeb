@@ -38,7 +38,7 @@
                 }
                 else
                 {
-                    @jobStatus
+                    @(jobStatus+ " --- "+Model.JobDate.AddHours(1).ToShortTimeString()) 
                 }
             </b>
             @if (Model.DRVR_DATA != null)

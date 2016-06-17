@@ -228,7 +228,7 @@ namespace ParcelXpress.Controllers
                 if (job.JobStatus == dropped)           //Accounting when dropped off
                 {
                     var driver = _db.DRVR_DATA.Find(job.DriverId);
-                    decimal commission = (job.Price * (driver.CommissionRate / 100)).GetValueOrDefault(0);
+                    decimal commission = Math.Round((job.Price * (driver.CommissionRate / 100)).GetValueOrDefault(0),2);
                     var driverTransactionCommission = new DRVR_TRAN()
                     {
                         DriverId = driver.DriverId,
@@ -250,8 +250,8 @@ namespace ParcelXpress.Controllers
                             JobId = job.JobId,
                             TransactionDate = transDate,
                             TransactionType = StringEnum.GetStringValue(TransactionTypeCode.Out),
-                            Amount = (job.Price - commission),
-                            Balance = (job.Price - commission),
+                            Amount = Math.Round((job.Price - commission).GetValueOrDefault(0),2),
+                            Balance = Math.Round((job.Price - commission).GetValueOrDefault(0), 2),
                             SettledInd = false
                         };
                         _db.DRVR_TRAN.Add(diverTransactionPXP);

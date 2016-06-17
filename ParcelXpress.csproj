@@ -513,6 +513,10 @@
     <Content Include="Views\Accounts\AccountOverview.cshtml" />
     <Content Include="Views\Jobs\_EnterEmail.cshtml" />
     <Content Include="Views\Accounts\ShowAccountHistory.cshtml" />
+    <Content Include="Views\Accounts\AllCustomersAccount.cshtml" />
+    <Content Include="Views\Accounts\_CustomersTableAccount.cshtml" />
+    <Content Include="Views\Accounts\AllDriversAccounts.cshtml" />
+    <Content Include="Views\Accounts\_DriversTableAccounts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

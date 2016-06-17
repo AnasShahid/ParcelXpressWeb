@@ -155,7 +155,8 @@ html, body, .container-table {
         height: 400px;
         overflow-y: auto;
     }
-      .custom-list-withoutPager {
+
+    .custom-list-withoutPager {
         height: 480px;
         overflow-y: auto;
     }
@@ -170,7 +171,16 @@ html, body, .container-table {
         top: 50%;
         transform: translateY(-50%);
     }
+
     .VisiblityHidden {
-        display:none;
+        display: none;
+    }
+
+    .badge-notify {
+        /*background: red !important;*/
+        font-size:17px !important;
+        position: relative !important;
+        top: -25px !important;
+        left: 25px !important;
     }
 }

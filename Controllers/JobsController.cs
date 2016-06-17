@@ -249,7 +249,7 @@ namespace ParcelXpress.Controllers
                 if (ModelState.IsValid)
                 {
                     SendJobToDrivers(job);
-                    return RedirectToAction("Home", "Index", new { refreshRequired = true });
+                    return RedirectToAction("Dashboard", "Index");
                 }
                 else
                 {
@@ -260,7 +260,7 @@ namespace ParcelXpress.Controllers
             {
                 TempData["toastMessage"] = "<script>toastr.error('An error occured while trying to post the job.');</script>";
             }
-            return null;
+            return RedirectToAction("Dashboard", "Index");
         }
 
         [HttpPost]
@@ -273,7 +273,7 @@ namespace ParcelXpress.Controllers
                 {
                     SaveNewCustomer(job);
                     SendJobToDrivers(job);
-                    return RedirectToAction("Home", "Index", new { refreshRequired = true });
+                    return RedirectToAction("Dashboard", "Index");
                 }
                 else
                 {
@@ -285,7 +285,7 @@ namespace ParcelXpress.Controllers
             {
                 TempData["toastMessage"] = "<script>toastr.error('An error occured while trying to post the job.');</script>";
             }
-            return null;
+            return RedirectToAction("Dashboard", "Index");
         }
 
         [HttpPost]
@@ -312,7 +312,7 @@ namespace ParcelXpress.Controllers
             {
                 TempData["toastMessage"] = "<script>toastr.error('An error occured while trying to post the job.');</script>";
             }
-            return null;
+            return RedirectToAction("Dashboard", "Index");
         }
 
 
@@ -420,8 +420,8 @@ namespace ParcelXpress.Controllers
                             var trans = _db.CUST_TRAN.Where(t => t.JobId == job.JobId);
                             foreach (var item in trans)
                             {
-                                item.PayableAmount = (updatedJobPrice / previousJobPrice) * item.PayableAmount;
-                                item.RemainingAmount = (updatedJobPrice / previousJobPrice) * item.RemainingAmount;
+                                item.PayableAmount = Math.Round(((updatedJobPrice / previousJobPrice) * item.PayableAmount).GetValueOrDefault(0),2);
+                                item.RemainingAmount = Math.Round(((updatedJobPrice / previousJobPrice) * item.RemainingAmount).GetValueOrDefault(0), 2);
                                 item.SettledInd = false;
                                 _db.Entry(item).State = EntityState.Modified;
 
@@ -431,8 +431,8 @@ namespace ParcelXpress.Controllers
                             foreach (var drvrTransItem in drverTrans)
                             {
                                 var oldAmount = drvrTransItem.Amount;
-                                drvrTransItem.Amount = (updatedJobPrice / previousJobPrice) * drvrTransItem.Amount;
-                                drvrTransItem.Balance = (drvrTransItem.Amount - oldAmount) + drvrTransItem.Balance;
+                                drvrTransItem.Amount = Math.Round(((updatedJobPrice / previousJobPrice) * drvrTransItem.Amount).GetValueOrDefault(0),2);
+                                drvrTransItem.Balance = Math.Round(((drvrTransItem.Amount - oldAmount) + drvrTransItem.Balance).GetValueOrDefault(0),2);
                                 drvrTransItem.SettledInd = false;
                                 _db.Entry(drvrTransItem).State = EntityState.Modified;
                             }
@@ -485,8 +485,8 @@ namespace ParcelXpress.Controllers
                 foreach (var drvrTransItem in drverTrans)
                 {
                     var oldAmount = drvrTransItem.Amount;
-                    drvrTransItem.Amount = (updatedJobPrice / previousJobPrice) * drvrTransItem.Amount;
-                    drvrTransItem.Balance = (drvrTransItem.Amount - oldAmount) + drvrTransItem.Balance;
+                    drvrTransItem.Amount = Math.Round(((updatedJobPrice / previousJobPrice) * drvrTransItem.Amount).GetValueOrDefault(0),2);
+                    drvrTransItem.Balance = Math.Round(((drvrTransItem.Amount - oldAmount) + drvrTransItem.Balance).GetValueOrDefault(0),2);
                     drvrTransItem.SettledInd = false;
                     _db.Entry(drvrTransItem).State = EntityState.Modified;
                 }
@@ -538,9 +538,19 @@ namespace ParcelXpress.Controllers
                     PickupAddress = job.PickupAddress,
                     DropAddress = job.DropAddress,
                     RemainingAmount = job.Price.GetValueOrDefault(0),
-                    ChargeDescription = job.ChargesDescription
+                    ChargeDescription = job.ChargesDescription,
+                    DropAddress1 = job.DropAddress1,
+                    DropAddress2 = job.DropAddress2,
+                    DropAddress3 = job.DropAddress3,
+                    DropAddress4 = job.DropAddress4
                 });
-                bool result = PDFGenerator.createCustomerReportMarkup(job.CUST_DATA, reportParameters, 0);
+
+                bool isPaid = false;
+                if (job.PaymentReceived == true || job.JobStatus == StringEnum.GetStringValue(StatusCode.Closed) || job.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff) || job.JobStatus == StringEnum.GetStringValue(StatusCode.PaymentReceived))
+                {
+                    isPaid = true;
+                }
+                bool result = PDFGenerator.createCustomerReportMarkup(job.CUST_DATA, reportParameters, 0,isPaid);
                 if (result == true)
                     TempData["toastMessage"] = "<script>toastr.success('Invoice has been successfully sent to customer.');</script>";
                 else
@@ -579,10 +589,20 @@ namespace ParcelXpress.Controllers
                     PickupAddress = job.PickupAddress,
                     DropAddress = job.DropAddress,
                     RemainingAmount = job.Price.GetValueOrDefault(0),
-                    ChargeDescription = job.ChargesDescription
+                    ChargeDescription = job.ChargesDescription,
+                    DropAddress1 = job.DropAddress1,
+                    DropAddress2 = job.DropAddress2,
+                    DropAddress3 = job.DropAddress3,
+                    DropAddress4 = job.DropAddress4
                 });
                 CUST_DATA customerInformation = new CUST_DATA() { EmailAddress=model.EmailAddress,Address = job.PickupAddress, ContactNo = job.CustomerPhone, CustomerName = job.CustomerName, HasAccount = false, IsDeleted = false };
-                bool result = PDFGenerator.createCustomerReportMarkup(customerInformation, reportParameters, 0);
+                //Check for paid (closed job is always paid)
+                bool isPaid = false;
+                if (job.PaymentReceived==true||job.JobStatus == StringEnum.GetStringValue(StatusCode.Closed) || job.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff) || job.JobStatus == StringEnum.GetStringValue(StatusCode.PaymentReceived))
+                {
+                    isPaid = true;
+                }
+                bool result = PDFGenerator.createCustomerReportMarkup(customerInformation, reportParameters, 0,isPaid);
                 if (result == true)
                     TempData["toastMessage"] = "<script>toastr.success('Invoice has been successfully sent to customer.');</script>";
                 else
@@ -679,6 +699,7 @@ namespace ParcelXpress.Controllers
                 CUST_DATA customer = new CUST_DATA();
                 customer.Address = job.PickupAddress;
                 customer.CustomerName = job.CustomerName;
+                customer.IsDeleted = false;
                 customer.ContactNo = job.CustomerPhone;
                 customer.HasAccount = false;
                 _db.CUST_DATA.Add(customer);

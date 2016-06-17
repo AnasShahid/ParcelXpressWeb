@@ -23,8 +23,9 @@ namespace ParcelXpress.Controllers
         [Authorize]
         public ActionResult Home(bool refreshRequired=false)
         {
-            ViewBag.MessageCount = _db.DRVR_MSGS.Where(m => m.MessageReadInd == false).Count();
-            return View();
+            return RedirectToAction("Dashboard", "Index");
+            //ViewBag.MessageCount = _db.DRVR_MSGS.Where(m => m.MessageReadInd == false).Count();
+            //return View();
         }
 
         [Authorize]
