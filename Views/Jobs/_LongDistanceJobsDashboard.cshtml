@@ -39,7 +39,7 @@
                 </div>
                 <div class="panel-footer text-center">
                     <div class="pagedList" data-pxp-target="#activeLongDistanceJobsGrid">
-                        @Html.PagedListPager(Model, page => Url.Action("_LongDistanceJobsDashboard", new { page }), PagedListRenderOptions.MinimalWithPageCountText)
+                        @Html.PagedListPager(Model, page => Url.Action("_LongDistanceJobsDashboard", new { page }), PagedListRenderOptions.Classic)
                     </div>
                 </div>
             </div>

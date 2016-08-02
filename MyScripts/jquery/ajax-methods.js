@@ -28,11 +28,13 @@ $(function () {
             data:$("form").serialize(),
             type:"get"
         };
-        $.ajax(options).done(function (data) {
-            var target = $a.parents("div.pagedList").attr("data-pxp-target");
-            $(target).replaceWith(data);
-            e.preventDefault();
-        });
+        if (options.url != undefined) {
+            $.ajax(options).done(function (data) {
+                var target = $a.parents("div.pagedList").attr("data-pxp-target");
+                $(target).replaceWith(data);
+                e.preventDefault();
+            });
+        }
         return false;
     };
 

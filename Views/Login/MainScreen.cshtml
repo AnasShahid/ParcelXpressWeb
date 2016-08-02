@@ -8,20 +8,21 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Parcel Xpress</title>
+    <link rel="icon" href="~/Styles/Resources/favicon.ico">
+    <title>Swiftee</title>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
     @Styles.Render("~/bundles/styles")
     
 </head>
 <body class="app-theme">
     <div class="container">
-        <img class="img-responsive center-block" src="~/Styles/Resources/ParcelExpressLogo.png" />
+        <img class="img-responsive center-block" src="~/Styles/Resources/SwifteeCoverNobg.png" />
     </div>
     @using (Html.BeginForm("MainScreen", "Login", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
 
-        <div class="col-sm-6 col-sm-offset-3" style="margin-top:5%">
+        <div class="col-sm-6 col-sm-offset-3" >
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3>Login</h3>

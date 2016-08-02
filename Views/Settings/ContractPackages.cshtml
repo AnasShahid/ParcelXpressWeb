@@ -1,0 +1,53 @@
+﻿@model List<CONT_PKGS>
+    @{
+        ViewBag.Title = "ContractPackages";
+    }
+
+    <div class="container-fluid">
+        <section>
+            <h3>Contract Packages</h3>
+        </section>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5>Configured Packages</h5>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-bordered table-responsive table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Package Name</th>
+                                    <th>Price</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.PackageName</td>
+                                        <td>@item.Price</td>
+                                        <td><a href="/Settings/_EditPackage?PackageId=@item.PackageId" class="btn btn-default btnSelectDetails" data-pxp="true" data-pxp-target="#packageDetails">Select</a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a href="/Settings/_AddPackage" class="btn btn-success btnSelectDetails" data-pxp="true" data-pxp-target="#packageDetails">Add Package</a>
+                    </div>
+                    <div class="panel-body">
+                        @Html.Action("_PackageDetails","Settings")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@Html.Raw(TempData["toastMessage"])
+

@@ -1,6 +1,6 @@
 ﻿@model ParcelXpress.Helpers.AddChagesViewModel
 @{
-    Model.JobId = Convert.ToInt16(Request.QueryString["jobId"]);
+    Model.JobId = Convert.ToInt32(Request.QueryString["jobId"]);
 }
 
 @Html.BeginForm("AddCharges", "Jobs", FormMethod.Post, new { @class = "form-horizontal" }){

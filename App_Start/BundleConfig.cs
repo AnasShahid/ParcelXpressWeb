@@ -60,12 +60,14 @@ namespace ParcelXpress
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/scripts/libraries").Include(
-               
+               "~/Lib/moment/moment.js",
                 "~/Lib/bootstrap/js/bootstrap.js",
                 "~/Lib/toastr/toastr.js",
                 "~/Lib/bootstrap-dialog/bootstrap-dialog.js",
                 "~/Lib/bootstrap-datepicker/bootstrap-datepicker.js",
-                "~/Lib/material-design-lite/material.js"
+                "~/Lib/material-design-lite/material.js",
+                "~/Lib/jquery-session/jquerysession.js",
+                "~/Lib/bootstrap-datetimepicker/bootstrap-datetimepicker.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/scripts/myscripts").Include(
@@ -81,7 +83,8 @@ namespace ParcelXpress
                "~/Styles/AdminLTE.css",
                "~/Content/PagedList.css",
                "~/Lib/bootstrap-dialog/bootstrap-dialog.css",
-               "~/Lib/bootstrap-datepicker/bootstrap-datepicker.css"
+               "~/Lib/bootstrap-datepicker/bootstrap-datepicker.css",
+               "~/Lib/bootstrap-datetimepicker/bootstrap-datetimepicker.css"
                ));
             #endregion
         }

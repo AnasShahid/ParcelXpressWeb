@@ -7,55 +7,13 @@
                     <div class="mdl-card__title zero-margins">
                         <h5 style="color:white;" class="zero-margins">Active Jobs</h5>
                         <div class="mdl-layout-spacer"></div>
-                        <a href="/Jobs/_ActiveJobsDashboard" class="btn mdl-button--accent mdl-button--raised refreshButton" data-pxp="true" data-pxp-target="#activeJobsGrid"><span class="glyphicon glyphicon-refresh"></span></a>
-                     </div>
-                   
-                </div>
-                <div class="panel-body">
-                    @if (Model.Count <= 0)
-                    {
-                        <div class="container custom-list">
-                            <div class="text-danger">
-                                <h6 class="col-sm-12">There are no active jobs</h6>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="row label-primary">
-                            <div class="label-primary" style="color:#e9e5b6; margin-left:3px;">Open Jobs:@ViewBag.OpenJobs</div>                         
-                            <div class="label-primary" style="color: #e9e5b6; margin-left: 3px; ">Active Jobs:@ViewBag.AssignedJobs</div>
-                        </div>
-                        <div class="panel-body custom-list" id="activeJobsList">
-                            @foreach (var item in Model)
-                            {
-                                @Html.Partial("_JobListItemCompact", item)
-                                <hr />
-                            }
-
-                        </div>
-                    }
-                </div>
-                <div class="panel-footer text-center">
-                    <div class="pagedList" data-pxp-target="#activeJobsGrid">
-                        @Html.PagedListPager(Model, page => Url.Action("_ActiveJobsDashboard", new { page }), PagedListRenderOptions.MinimalWithPageCountText)
+                        <a href="/Jobs/_ActiveJobsDashboard" class="btn mdl-button--accent mdl-button--raised refreshButton" data-pxp="true" data-pxp-target="#activeJobsList"><span class="glyphicon glyphicon-refresh"></span></a>
                     </div>
+
                 </div>
+                @Html.Partial("_ActiveJobsList", Model)
             </div>
         </div>
     </div>
 </div>
 
-@*<script>
-    (function worker() {
-        $.ajax({
-            url: '/Jobs/_ActiveJobsDashboard',
-            success: function (data) {
-                $('#activeJobsGrid').html(data);
-            },
-            complete: function () {
-                setInterval(worker, 15000);
-            }
-        });
-    })();
-</script>*@

@@ -1,0 +1,27 @@
+﻿@model JOB
+@{
+    Model.JobId = Convert.ToInt32(Request.QueryString["jobId"]);
+}
+<form method="post" action="@Url.Action("ReassignDriver")" class="form-horizontal">
+    <div class="box box-info ">
+        <div class="box-header">
+            <h4>Select Driver</h4>
+        </div>
+
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <label class="control-label col-lg-3">Driver</label>
+                    <div class="col-lg-8">
+                        @Html.DropDownListFor(m => m.DriverId, (IEnumerable<SelectListItem>)ViewBag.DriversList, "Please Select", new { @class = "form-control dropdown dropdown-toggle" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(m => m.JobId)
+        <div class="box-footer">
+            <button class="btn btn-default">Reassign Driver</button>
+        </div>
+    </div>
+</form>
+

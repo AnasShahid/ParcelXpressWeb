@@ -13,7 +13,6 @@ namespace ParcelXpress.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-    
     public partial class CUST_DATA
     {
         public CUST_DATA()
@@ -22,6 +21,8 @@ namespace ParcelXpress.Models
             this.CUST_BILL = new HashSet<CUST_BILL>();
             this.CUST_CRDT = new HashSet<CUST_CRDT>();
             this.DUES_ALRT = new HashSet<DUES_ALRT>();
+            this.DALY_PRCL_MSTR = new HashSet<DALY_PRCL_MSTR>();
+            this.CUST_INVC = new HashSet<CUST_INVC>();
         }
 
         public int CustomerId { get; set; }
@@ -37,10 +38,19 @@ namespace ParcelXpress.Models
         public Nullable<bool> HasAccount { get; set; }
         public Nullable<int> AccountId { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
-    
+        public Nullable<bool> HasContract { get; set; }
+        public string ContactNo2 { get; set; }
+        public string ContactNo3 { get; set; }
+        public string ContactNo4 { get; set; }
+        public string ContactNo5 { get; set; }
+        public string PersonalAddress { get; set; }
+        public bool RecieveNotifications { get; set; }
+
         public virtual ICollection<JOB> JOBS { get; set; }
         public virtual ICollection<CUST_BILL> CUST_BILL { get; set; }
         public virtual ICollection<CUST_CRDT> CUST_CRDT { get; set; }
         public virtual ICollection<DUES_ALRT> DUES_ALRT { get; set; }
+        public virtual ICollection<DALY_PRCL_MSTR> DALY_PRCL_MSTR { get; set; }
+        public virtual ICollection<CUST_INVC> CUST_INVC { get; set; }
     }
 }

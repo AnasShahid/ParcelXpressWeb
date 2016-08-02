@@ -1,0 +1,47 @@
+﻿@model CONT_PKGS
+@{
+
+    var htmlAttributes = new Dictionary<string, object>();
+    htmlAttributes.Add("class", "form-control");
+    bool fromEdit = ViewBag.FromEdit == null ? false : (bool)ViewBag.FromEdit;
+    bool fromAdd = ViewBag.FromAdd == null ? false : (bool)ViewBag.FromAdd;
+
+    if (!fromAdd && !fromEdit) {
+        htmlAttributes.Add("disabled", "disabled");
+    }
+
+}
+<div id="packageDetails">
+    <div class="container-fluid">
+        @using (Html.BeginForm("SavePackage", "Settings", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.HiddenFor(m=>m.PackageId)
+                <div class="row" style="margin-top:15px;">
+                    <label class="control-label col-lg-5">Package Name</label>
+                    <div class="col-lg-7">
+                        @Html.TextBoxFor(m => m.PackageName, htmlAttributes)
+                        @Html.ValidationMessageFor(m => m.PackageName)
+                    </div>
+                </div>
+                <div class="row" style="margin-top:15px;">
+                    <label class="control-label col-lg-5">Price</label>
+                    <div class="col-lg-7">
+                        @Html.TextBoxFor(m => m.Price, htmlAttributes)
+                        @Html.ValidationMessageFor(m => m.Price)
+                    </div>
+                </div>
+                    <div class="row" style="margin-top:25px;">
+                        <button type="submit" class="btn btn-primary col-xs-offset-4 col-xs-4" id="savePackage">Save Package</button>
+                </div>
+        }
+
+        <div class="row" style="margin-top:25px;">
+            @using (Html.BeginForm("_DeletePackage", "Settings", null, FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                @Html.HiddenFor(m => m.PackageId);
+                <button type="submit" role="button" class="btn btn-danger col-xs-offset-4 col-xs-4" id="btnDelete"> Delete Package</button>
+            }
+        </div>
+
+    </div>
+</div>

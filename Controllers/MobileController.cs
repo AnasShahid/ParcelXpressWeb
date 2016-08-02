@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Data.Objects;
 using System.Globalization;
 using System.Configuration;
+using Newtonsoft.Json;
 
 namespace ParcelXpress.Controllers
 {
@@ -19,7 +20,10 @@ namespace ParcelXpress.Controllers
     {
 
         ParcelXpressConnection _db = new ParcelXpressConnection();
-
+        //public MobileController()
+        //{
+        //    System.Web.Http.GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings =new JsonSerializerSettings{DateTimeZoneHandling = DateTimeZoneHandling.Local};
+        //}
         #region Driver Application
         [HttpPost]
         public JsonResult Register(REQT_DRVR driverRequest)
@@ -75,6 +79,7 @@ namespace ParcelXpress.Controllers
             if (driver != null)
             {
                 driver.IsActive = true;
+                driver.LoginTime = DateTime.Now.ToUniversalTime();
                 _db.Entry(driver).State = EntityState.Modified;
                 _db.SaveChanges();
             }
@@ -93,6 +98,7 @@ namespace ParcelXpress.Controllers
             if (driver != null)
             {
                 driver.IsActive = true;
+                driver.LoginTime = DateTime.Now.ToUniversalTime();
                 _db.Entry(driver).State = EntityState.Modified;
                 _db.SaveChanges();
             }
@@ -112,7 +118,8 @@ namespace ParcelXpress.Controllers
             {
                 _db.Configuration.ProxyCreationEnabled = false;
                 var availablejobs = _db.JOBS.Where(j => j.JobStatus == open)
-                                    .OrderByDescending(j => j.JobDate);
+                                    .OrderByDescending(j => j.LastUpdated);
+                SetDateTimeKindOfList(availablejobs);
                 return Json(availablejobs, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -134,7 +141,9 @@ namespace ParcelXpress.Controllers
             {
                 _db.Configuration.ProxyCreationEnabled = false;
                 var myJobs = _db.JOBS.Where(j => j.DriverId == driverId && (j.JobStatus == assigned || j.JobStatus == pickedUp || j.JobStatus == droppedOff))
-                                        .OrderByDescending(j => j.JobDate);
+                                        .OrderByDescending(j => j.LastUpdated);
+                SetDateTimeKindOfList(myJobs);
+
                 return Json(myJobs, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -199,12 +208,13 @@ namespace ParcelXpress.Controllers
             {
                 _db.Configuration.ProxyCreationEnabled = false;
                 var jobs = _db.JOBS.Where(j => j.JobStatus != closed)
-                .OrderByDescending(j => j.JobDate);
-
+                .OrderByDescending(j => j.LastUpdated);
+                SetDateTimeKindOfList(jobs);
                 return Json(jobs, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "");
                 return Json(ex.Message, JsonRequestBehavior.AllowGet);
             }
         }
@@ -225,10 +235,12 @@ namespace ParcelXpress.Controllers
                 var thisjob = _db.JOBS.Find(job.JobId);
                 DateTime transDate = DateTime.Now.ToUniversalTime();
                 string dropped = StringEnum.GetStringValue(StatusCode.DroppedOff);
+                string pickedup = StringEnum.GetStringValue(StatusCode.PickedUp);
                 if (job.JobStatus == dropped)           //Accounting when dropped off
                 {
+                    thisjob.DropoffTime = transDate;
                     var driver = _db.DRVR_DATA.Find(job.DriverId);
-                    decimal commission = (job.Price * (driver.CommissionRate / 100)).GetValueOrDefault(0);
+                    decimal commission = Math.Round((job.Price * (driver.CommissionRate / 100)).GetValueOrDefault(0), 2);
                     var driverTransactionCommission = new DRVR_TRAN()
                     {
                         DriverId = driver.DriverId,
@@ -250,8 +262,8 @@ namespace ParcelXpress.Controllers
                             JobId = job.JobId,
                             TransactionDate = transDate,
                             TransactionType = StringEnum.GetStringValue(TransactionTypeCode.Out),
-                            Amount = (job.Price - commission),
-                            Balance = (job.Price - commission),
+                            Amount = Math.Round((job.Price - commission).GetValueOrDefault(0), 2),
+                            Balance = Math.Round((job.Price - commission).GetValueOrDefault(0), 2),
                             SettledInd = false
                         };
                         _db.DRVR_TRAN.Add(diverTransactionPXP);
@@ -286,11 +298,16 @@ namespace ParcelXpress.Controllers
                         Task.Run(() => sendCustomerOverdueAlert(job.CustomerId.GetValueOrDefault(0)));
                     }
                     job.JobStatus = StringEnum.GetStringValue(StatusCode.Closed);
+                    Task.Run(() => SMSSender.SendSmsToCustomer(job.CustomerPhone, (int)StatusCode.Closed, "", job.CustomerId));
+                }
+                else if (job.JobStatus == pickedup)
+                {
+                    thisjob.PickupTime = transDate;
                 }
                 thisjob.PaymentMode = job.PaymentMode;
                 thisjob.AccountPaymentInd = job.AccountPaymentInd;
                 thisjob.JobStatus = job.JobStatus;
-                thisjob.JobDate = transDate;
+                thisjob.LastUpdated = transDate;
                 _db.Entry(thisjob).State = EntityState.Modified;
                 _db.SaveChanges();
 
@@ -310,17 +327,25 @@ namespace ParcelXpress.Controllers
             {
                 var dbDriver = _db.DRVR_DATA.Find(driver.DriverId);
                 dbDriver.IsActive = driver.IsActive;
+
+                if (dbDriver.IsActive == true)
+                {
+                    result = "You are now active in the system, you will receive job updates";
+                    dbDriver.LoginTime = DateTime.Now.ToUniversalTime();
+                }
+                else
+                {
+                    result = "You are now marked as busy, you wont be able to receive new job updates";
+                    dbDriver.LogoutTime = DateTime.Now.ToUniversalTime();
+                }
                 _db.Entry(dbDriver).State = EntityState.Modified;
                 _db.SaveChanges();
-                if (dbDriver.IsActive == true)
-                    result = "You are now active in the system, you will receive job updates";
-                else
-                    result = "You are now marked as busy, you wont be able to receive new job updates";
-
             }
             catch (Exception ex)
             {
+                string parameters = "DriverId:" + driver.DriverId + " IsActive:" + driver.IsActive;
                 result = "An exception occured on the system " + ex.Message;
+                new CustomException().SaveExceptionToDB(ex, parameters);
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -334,11 +359,11 @@ namespace ParcelXpress.Controllers
                 job.Price = currentJob.Price;
                 if ((job.Notes == null ? "" : job.Notes).Trim() == "")
                 {
-                    job.Notes = "Driver Comments: " + currentJob.Notes;
+                    job.Notes = " Driver Comments: " + currentJob.Notes;
                 }
                 else
                 {
-                    job.Notes = (job.Notes == null ? "" : job.Notes) + "\nDriver Comments: " + currentJob.Notes;
+                    job.Notes = (job.Notes == null ? "" : job.Notes) + "\n Driver Comments: " + currentJob.Notes;
                 }
                 if ((job.ChargesDescription == null ? "" : job.ChargesDescription).Trim() == "")
                 {
@@ -348,6 +373,7 @@ namespace ParcelXpress.Controllers
                 {
                     job.ChargesDescription = (job.ChargesDescription == null ? "" : job.ChargesDescription) + "\n" + currentJob.Notes;
                 }
+                job.LastUpdated = DateTime.Now.ToUniversalTime();
                 _db.Entry(job).State = EntityState.Modified;
                 _db.SaveChanges();
                 return Json("Charges have been successfully added", JsonRequestBehavior.AllowGet);
@@ -355,6 +381,7 @@ namespace ParcelXpress.Controllers
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "");
                 return Json("An exception occurred on the server " + ex.Message, JsonRequestBehavior.AllowGet);
             }
         }
@@ -373,6 +400,8 @@ namespace ParcelXpress.Controllers
                     responseTime = getResponseTimeFromCode(jobResponse.ResponseCode);
                     job.DriverId = jobResponse.DriverId;
                     job.JobStatus = StringEnum.GetStringValue(StatusCode.Assigned);
+                    job.AssignedTime = DateTime.Now.ToUniversalTime();
+                    job.LastUpdated = DateTime.Now.ToUniversalTime();
                     jobResponse.IsAssigned = true;
                     _db.Entry(job).State = EntityState.Modified;
                     _db.SaveChanges();
@@ -381,7 +410,8 @@ namespace ParcelXpress.Controllers
                     sb.AppendLine("Job has been assigned to you.");
                     sb.AppendLine(" ");
                     sb.Append("Pickup from: " + job.PickupAddress + "||" + responseTime + "||" + job.CustomerPhone);
-                    GcmSender.SendToSingle(driver, sb.ToString(), "job_assigned");
+                    Task.Run(() => GcmSender.SendToSingle(driver, sb.ToString(), "job_assigned"));
+                    //Task.Run(() => SMSSender.SendSmsToCustomer(job.CustomerPhone, (int)StatusCode.Assigned, responseTime, job.CustomerId));
                     result = "assigned";
                 }
                 else
@@ -395,6 +425,7 @@ namespace ParcelXpress.Controllers
             catch (Exception ex)
             {
                 result = "error";
+                new CustomException().SaveExceptionToDB(ex, "");
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -419,12 +450,14 @@ namespace ParcelXpress.Controllers
             {
                 var job = _db.JOBS.Find(jobId);
                 job.AccountPaymentInd = accountPayment;
+                job.LastUpdated = DateTime.Now.ToUniversalTime();
                 _db.Entry(job).State = EntityState.Modified;
                 _db.SaveChanges();
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "");
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
         }
@@ -436,13 +469,15 @@ namespace ParcelXpress.Controllers
             {
                 var job = _db.JOBS.Find(jobId);
                 job.PaymentMode = paymentMode;
-                job.AccountPaymentInd = job.PaymentMode==(int) PaymentModes.Account?true:false;
+                job.AccountPaymentInd = job.PaymentMode == (int)PaymentModes.Account ? true : false;
+                job.LastUpdated = DateTime.Now.ToUniversalTime();
                 _db.Entry(job).State = EntityState.Modified;
                 _db.SaveChanges();
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "");
                 return Json("true", JsonRequestBehavior.AllowGet);
             }
         }
@@ -455,6 +490,7 @@ namespace ParcelXpress.Controllers
             var driverCommission = _db.DRVR_DATA.Find(driverId).CommissionRate;
 
             var Jobs = _db.JOBS.Where(j => j.JobDate.Year == today.Year && j.JobDate.Month == today.Month && j.JobDate.Day == today.Day && j.JobStatus == closed);
+            SetDateTimeKindOfList(Jobs);
             //.Select(j=>new{j.JobId,j.JobDate,j.JobStatus,j.DriverId,j.DriverCommission,j.CustomerPhone,j.CustomerName,j.CustomerId,j.AccountPaymentInd,j.DropAddress,j.PickupAddress,j.Price,j.Notes,j});
             List<JOB> myJobs = new List<JOB>();
             foreach (var job in Jobs)
@@ -488,6 +524,7 @@ namespace ParcelXpress.Controllers
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "");
                 return Json(ex.Message, JsonRequestBehavior.AllowGet);
             }
             return Json("Request has been successfully submitted to server.", JsonRequestBehavior.AllowGet);
@@ -508,7 +545,7 @@ namespace ParcelXpress.Controllers
                 job.DriverId = null;
                 job.JobStatus = StringEnum.GetStringValue(StatusCode.Open);
                 job.CancelledText = getResponseTimeFromCode(response.ResponseCode);
-
+                job.LastUpdated = DateTime.Now.ToUniversalTime();
                 _db.Entry(job).State = EntityState.Modified;
                 _db.SaveChanges();
 
@@ -540,7 +577,9 @@ namespace ParcelXpress.Controllers
             catch (Exception ex)
             {
                 result = false;
-                new CustomException().LogExceptionMessage(ex, jobId.ToString());
+                //new CustomException().LogExceptionMessage(ex, jobId.ToString());
+                new CustomException().SaveExceptionToDB(ex, "");
+
 
             }
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -554,12 +593,14 @@ namespace ParcelXpress.Controllers
             {
                 var job = _db.JOBS.Find(jobId);
                 job.IsPaid = paidInd;
+                job.LastUpdated = DateTime.Now.ToUniversalTime();
                 _db.Entry(job).State = EntityState.Modified;
                 _db.SaveChanges();
                 result = true;
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "");
                 result = false;
             }
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -570,13 +611,14 @@ namespace ParcelXpress.Controllers
             try
             {
                 var job = _db.JOBS.Find(currentJob.JobId);
+                job.LastUpdated = DateTime.Now.ToUniversalTime();
                 if ((job.Notes == null ? "" : job.Notes).Trim() == "")
                 {
-                    job.Notes = "Driver Comments: " + currentJob.Notes;
+                    job.Notes = " Driver Comments: " + currentJob.Notes;
                 }
                 else
                 {
-                    job.Notes = (job.Notes == null ? "" : job.Notes) + "\nDriver Comments: " + currentJob.Notes;
+                    job.Notes = (job.Notes == null ? "" : job.Notes) + "\n Driver Comments: " + currentJob.Notes;
                 }
 
                 _db.Entry(job).State = EntityState.Modified;
@@ -585,6 +627,7 @@ namespace ParcelXpress.Controllers
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "");
                 return Json("An exception occurred on the server " + ex.Message, JsonRequestBehavior.AllowGet);
             }
         }
@@ -626,21 +669,19 @@ namespace ParcelXpress.Controllers
         [HttpGet]
         public JsonResult GetActiveDrivers()
         {
-           
-
             var model = _db.DRVR_DATA.Where(d => d.IsActive == true && d.IsDeleted != true).ToList();
             List<Dictionary<string, string>> activeDrivers = new List<Dictionary<string, string>>();
             foreach (var item in model)
             {
                 item.ActiveJobsCount = item.JOBS.Where(p => (p.JobStatus == StringEnum.GetStringValue(StatusCode.Assigned)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.PickedUp)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff))).Count();
+                item.LongDistanceJobCount = item.JOBS.Where(p => (p.LongDistanceInd == true) && ((p.JobStatus == StringEnum.GetStringValue(StatusCode.Assigned)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.PickedUp)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff)))).Count();
                 var driver = new Dictionary<string, string>();
                 driver.Add("Name", item.DriverName);
                 driver.Add("JobCount", item.ActiveJobsCount.ToString());
                 driver.Add("Number", item.ContactNo);
+                driver.Add("LongDistanceCount", item.LongDistanceJobCount.ToString());
                 activeDrivers.Add(driver);
             }
-            
-
             return Json(activeDrivers, JsonRequestBehavior.AllowGet);
         }
 
@@ -677,8 +718,8 @@ namespace ParcelXpress.Controllers
             string result = "";
             JOB job = new JOB()
             {
-                PaymentMode=receivedJob.PaymentMode,
-                AccountPaymentInd = receivedJob.PaymentMode==(int)PaymentModes.Account?true:false,
+                PaymentMode = receivedJob.PaymentMode,
+                AccountPaymentInd = receivedJob.PaymentMode == (int)PaymentModes.Account ? true : false,
                 CustomerId = receivedJob.CustomerId,
                 CustomerName = receivedJob.CustomerName,
                 CustomerPhone = receivedJob.CustomerPhone,
@@ -697,6 +738,7 @@ namespace ParcelXpress.Controllers
                 {
                     job.JobStatus = StringEnum.GetStringValue(StatusCode.Open);
                     job.JobDate = (DateTime.Now).ToUniversalTime();
+                    job.LastUpdated = DateTime.Now.ToUniversalTime();
                     _db.JOBS.Add(job);
                     _db.SaveChanges();
                     var activeDrivers = _db.DRVR_DATA.Where(d => d.IsActive == true && d.IsDeleted != true);
@@ -753,6 +795,7 @@ namespace ParcelXpress.Controllers
                 {
                     job.JobStatus = StringEnum.GetStringValue(StatusCode.Open);
                     job.JobDate = (DateTime.Now).ToUniversalTime();
+                    job.LastUpdated = DateTime.Now.ToUniversalTime();
                     _db.JOBS.Add(job);
                     _db.SaveChanges();
                     var activeDrivers = _db.DRVR_DATA.Where(d => d.IsActive == true && d.IsDeleted != true);
@@ -840,9 +883,10 @@ namespace ParcelXpress.Controllers
 
         #endregion
 
-        # region Other Methods
+        #region Other Methods
         private string getResponseTimeFromCode(string responseCode)
         {
+
             if (responseCode == StringEnum.GetStringValue(ResponseCode.LessThanFive))
                 return StringEnum.GetDisplayName(ResponseCode.LessThanFive);
             else if (responseCode == StringEnum.GetStringValue(ResponseCode.FiveToTen))
@@ -866,23 +910,23 @@ namespace ParcelXpress.Controllers
                 if (customerId <= 0)
                     return;
                 var customer = conn.CUST_DATA.Find(customerId);
-                var lastDueAlert = customer.DUES_ALRT.LastOrDefault(due => due.IsPaid != true); 
-                decimal lastAlertAmount=lastDueAlert==null? 0:lastDueAlert.AlertAmount.GetValueOrDefault(0);
+                var lastDueAlert = customer.DUES_ALRT.LastOrDefault(due => due.IsPaid != true);
+                decimal lastAlertAmount = lastDueAlert == null ? 0 : lastDueAlert.AlertAmount.GetValueOrDefault(0);
                 decimal customerOverdues = conn.CUST_TRAN.Where(c => c.CustomerId == customerId && c.SettledInd != true).Sum(t => t.RemainingAmount).GetValueOrDefault(0);
                 string targetEmailAddress = ConfigurationManager.AppSettings["alertEmailAddress"].ToString();
                 decimal alertDifferenceAmount = Decimal.Parse(ConfigurationManager.AppSettings["alertDifferenceAmount"].ToString());
 
                 if ((customerOverdues - lastAlertAmount) >= alertDifferenceAmount)
                 {
-                    DUES_ALRT alertObj = new DUES_ALRT() { AlertDate=DateTime.Now.ToUniversalTime(),IsPaid=false,CustomerId=customerId };
+                    DUES_ALRT alertObj = new DUES_ALRT() { AlertDate = DateTime.Now.ToUniversalTime(), IsPaid = false, CustomerId = customerId };
                     alertObj.AlertAmount = alertDifferenceAmount * (((int)(lastAlertAmount / alertDifferenceAmount)) + 1);
                     conn.DUES_ALRT.Add(alertObj);
                     conn.SaveChanges();
 
                     string emailSubject = "PXP Customer due alert";
-                    StringBuilder sb = new StringBuilder("Dear Pxp Admin,<br /><br />This is to alert you that the dues of the customer " + customer.CustomerName + " have reached " + alertObj.AlertAmount+"£");
+                    StringBuilder sb = new StringBuilder("Dear Pxp Admin,<br /><br />This is to alert you that the dues of the customer " + customer.CustomerName + " have reached " + alertObj.AlertAmount + "£");
                     sb.Append("<br />");
-                    sb.Append("<br />Customer Name: "+customer.CustomerName);
+                    sb.Append("<br />Customer Name: " + customer.CustomerName);
                     sb.Append("<br />Total Due Amount: £" + customerOverdues);
                     sb.Append("<br />Contact Number: " + customer.ContactNo);
                     sb.Append("<br />Email: " + customer.EmailAddress);
@@ -899,7 +943,56 @@ namespace ParcelXpress.Controllers
         #endregion
 
 
-     
+        [HttpGet]
+        public JsonResult GetJobDetails(int jobId)
+        {
+            string closed = StringEnum.GetStringValue(StatusCode.Closed);
+            try
+            {
+                _db.Configuration.ProxyCreationEnabled = false;
+                var jobs = _db.JOBS.Find(jobId);
+                SetDateTimeKind(jobs);
+                // jobs.AssignedTime= DateTime.SpecifyKind(jobs.AssignedTime.Value, DateTimeKind.Utc);
+                // jobs.JobDate = DateTime.SpecifyKind(jobs.JobDate, DateTimeKind.Utc);
+
+                //.OrderByDescending(j => j.LastUpdated);
+
+                return Json(jobs, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                new CustomException().SaveExceptionToDB(ex, "");
+                return Json(ex.Message, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public void SetDateTimeKind(dynamic obj)
+        {
+            var properties = obj.GetType().GetProperties();
+            foreach (var property in properties)
+            {
+                if (property.PropertyType == typeof(DateTime) || property.PropertyType == typeof(Nullable<DateTime>))
+                {
+                    if (property.GetValue(obj) != null)
+                        property.SetValue(obj, DateTime.SpecifyKind((DateTime)property.GetValue(obj), DateTimeKind.Utc));
+                }
+            }
+
+        }
+        public void SetDateTimeKindOfList(IQueryable<dynamic> objects)
+        {
+            foreach (var obj in objects)
+            {
+                var properties = obj.GetType().GetProperties();
+                foreach (var property in properties)
+                {
+                    if (property.PropertyType == typeof(DateTime) || property.PropertyType == typeof(Nullable<DateTime>))
+                    {
+                        if (property.GetValue(obj) != null)
+                            property.SetValue(obj, DateTime.SpecifyKind((DateTime)property.GetValue(obj), DateTimeKind.Utc));
+                    }
+                }
+            }
+        }
 
     }
 }

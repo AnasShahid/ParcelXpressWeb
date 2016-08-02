@@ -22,5 +22,8 @@ namespace ParcelXpress.Models
         public Nullable<decimal> RemainingAmount { get; set; }
         public Nullable<int> JobId { get; set; }
         public Nullable<bool> SettledInd { get; set; }
+        public Nullable<int> InvoiceId { get; set; }
+    
+        public virtual CUST_INVC CUST_INVC { get; set; }
     }
 }

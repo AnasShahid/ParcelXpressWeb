@@ -23,6 +23,7 @@ namespace ParcelXpress.Controllers
                 ViewBag.HasAccount = true;
                 ViewBag.AccountRefNumber = accountRefNumber;
             }
+            customer.RecieveNotifications = true;
             return View(customer);
         }
 
@@ -47,8 +48,11 @@ namespace ParcelXpress.Controllers
         {
             try
             {
+                
                 if (ModelState.IsValid)
                 {
+                    customer.HasContract= customer.HasContractCheckboxValue== true ? true : false;
+                    customer.HasAccount = customer.HasAccount == true ? true : false;
                     if (customer.AccountRefNumber != null)
                     {
                         var code = customer.AccountRefNumber.Split('C');
@@ -91,6 +95,8 @@ namespace ParcelXpress.Controllers
                 ViewBag.HasAccount = customer.HasAccount;
                 ViewBag.AccountRefNumber = customer.AccountRefNumber;
             }
+            customer.HasContractCheckboxValue = customer.HasContract.GetValueOrDefault(false);
+            ViewBag.fromEdit = true;
             return View(customer);
         }
 
@@ -102,11 +108,15 @@ namespace ParcelXpress.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    customer.HasContract = customer.HasContractCheckboxValue == true ? true : false;
+                    customer.HasAccount = customer.HasAccount == true ? true : false;
+
                     if (customer.AccountRefNumber != null)
                     {
                         var code = customer.AccountRefNumber.Split('C');
                         customer.AccountId = Convert.ToInt32(code[1]);
                     }
+                    customer.IsDeleted = false;
                     _db.Entry(customer).State = EntityState.Modified;
                     _db.SaveChanges();
                     TempData["toastMessage"] = "<script>toastr.success('Customer has been successfully updated in the system.');</script>";
@@ -142,6 +152,15 @@ namespace ParcelXpress.Controllers
             return RedirectToAction("AllCustomers");
         }
 
+        [HttpGet] // this action result returns the partial containing the modal
+        public ActionResult _DailyParcels(List<DALY_PRCL_MSTR> dailyParcels)
+        {
+            var model = new DALY_PRCL_MSTR();
+            if (dailyParcels != null && dailyParcels.FirstOrDefault() != null)
+                model = dailyParcels.FirstOrDefault();
+
+            return PartialView("_DailyParcels", model);
+        }
         public ActionResult generateAccountRef(string fromAction = "CreateCustomerAccount",int custId=0)
         {
             string accountCode = accountCodeGenerator();
@@ -151,6 +170,7 @@ namespace ParcelXpress.Controllers
             }
             return RedirectToAction(fromAction, new { accountRefNumber=accountCode });
         }
+
 
 
         private string accountCodeGenerator()

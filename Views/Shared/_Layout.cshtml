@@ -3,9 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Parcel Xpress</title>
- 
-    
+    <link rel="icon" href="~/Styles/Resources/favicon.ico">
+    <title>Swiftee</title>
 </head>
 <body class="app-theme">
     <nav role="navigation" class="navbar navbar-inverse navbar-static-top">
@@ -16,17 +15,18 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="/Index/Dashboard" class="navbar-brand active"><strong>Parcel Xpress</strong></a>
+            <a href="/Index/Dashboard" class="navbar-brand active"><strong>Swiftee</strong></a>
         </div>
         <div id="navbarCollapse" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li><a href="~/Index/Home" >Home</a></li>
+                <li><a href="~/Index/Home">Home</a></li>
                 <li><a href="~/Message/MainPage">Messages</a></li>
                 <li class="dropdown">
                     <a data-toggle="dropdown" class="dropdown-toggle">Jobs <b class="caret"></b></a>
                     <ul role="menu" class="dropdown-menu">
                         <li><a href="~/Jobs/CreateNewJob">New Job</a></li>
                         <li><a href="~/Jobs/ActiveJobs">Active Jobs</a></li>
+                        <li><a href="~/Jobs/DailyJobs">Daily Jobs</a></li>
                         <li><a href="~/Jobs/AllJobs">All Jobs</a></li>
                     </ul>
                 </li>
@@ -40,12 +40,26 @@
                 <li class="dropdown">
                     <a data-toggle="dropdown" class="dropdown-toggle">Accounts <b class="caret"></b></a>
                     <ul role="menu" class="dropdown-menu">
-                        <li><a href="~/Accounts/CustomerAccounts">Customer Accounts</a></li>
-                        <li><a href="~/Accounts/DriverAccounts">Driver Commission</a></li>
+                        <li><a href="~/Accounts/AllCustomersAccount">Customer Accounts</a></li>
+                        <li><a href="~/Accounts/AllDriversAccounts">Driver Commission</a></li>
                         <li><a href="~/Accounts/AccountOverview">Accounts Summary</a></li>
                     </ul>
                 </li>
-                <li><a href="~/Index/Configuration">Settings</a></li>
+                <li class="dropdown">
+                    <a data-toggle="dropdown" class="dropdown-toggle">Invoices <b class="caret"></b></a>
+                    <ul role="menu" class="dropdown-menu">
+                        <li><a href="~/Invoice/PendingInvoices">Pending Invoices</a></li>
+                        <li><a href="~/Invoice/PaidInvoices">Paid Invoices</a></li>
+                        <li><a href="~/Invoice/AllInvoices">All Invoices</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a data-toggle="dropdown" class="dropdown-toggle">Settings <b class="caret"></b></a>
+                    <ul role="menu" class="dropdown-menu">
+                        <li><a href="~/Settings/Configuration">Email Settings</a></li>
+                        <li><a href="~/Settings/ContractPackages">Contract Packages</a></li>
+                    </ul>
+                </li>
                 <li><a href="~/FAQ/ShowFAQS">FAQ</a></li>
 
             </ul>
@@ -61,11 +75,13 @@
     @Scripts.Render("~/bundles/scripts/jquery")
     @Scripts.Render("~/bundles/scripts/libraries")
     @Scripts.Render("~/bundles/scripts/myscripts")
+
+
     <section class="main-content">
         @RenderBody()
     </section>
-   
-    
+
+
     @RenderSection("scripts", required: false)
 </body>
 </html>

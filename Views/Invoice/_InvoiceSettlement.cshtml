@@ -1,0 +1,35 @@
+﻿@model CUST_INVC
+
+<div class="container" id="selectedInvoice">
+    @if (Model.InvoiceId > 0)
+            {
+        <div class="row" style="margin-left:10px;">
+            <div class="row">
+                <label class="control-label">Invoice Number: @Model.InvoiceNumber</label>
+            </div>
+            <div class="row">
+                <label class="control-label">Invoice Date: @Model.InvoiceDate.ToString("dd/MM/yyyy")</label>
+            </div>
+            <div class="row">
+                <label class="control-label ">Amount Payable: @Model.InvoiceAmount</label>
+            </div>
+            @using(Html.BeginForm("SettleInvoice", "Invoice", FormMethod.Post, new { @class = "form-horizontal" })){
+
+            <div class="row">
+                <label class="control-label" style="margin-right:10px;">Payment Mode</label>
+                    @Html.DropDownListFor(m => m.InvoicePaymentMode, (IEnumerable<SelectListItem>)ViewBag.PaymentModeList, "Please Select", new { @class = "dropdown dropdown-toggle",@id= "paymentModeSelectionCombo" })
+            </div>
+            @Html.HiddenFor(i => i.InvoiceId)
+            <div class="row" style="margin-top:20px;">
+                <button class="btn btn-success" type="submit" data-accounttype="invoice" id="settleAccount">Settle Invoice</button>
+            </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <h5>No invoice selected</h5>
+        </div>
+    }
+</div>

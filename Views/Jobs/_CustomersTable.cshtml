@@ -1,0 +1,31 @@
+﻿@model IPagedList<CUST_DATA>
+
+<div class="row col-md-12" id="registeredCustomers">
+    <table class="table table-bordered table-responsive table-hover">
+        <thead>
+            <tr>
+                <th>Customer Name</th>
+                <th>Contact Number</th>
+                <th>Address</th>
+                <th>Email</th>
+                <th>Account Code</th>
+                <th>Contract</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.CustomerName</td>
+                    <td>@item.ContactNo</td>
+                    <td>@item.Address</td>
+                    <td>@item.EmailAddress</td>
+                    <td>@item.AccountRefNumber</td>
+                    <td><input type="checkbox" class="checkbox-inline" value="@item.HasContract" checked="@item.HasContract" disabled="disabled" /></td>
+                    <td>@Html.ActionLink("Scheduled Jobs", "CustomerScheduledJobs", "Jobs", new { id = @item.CustomerId }, new { @class = "btn btn-default" })</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

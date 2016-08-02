@@ -45,5 +45,11 @@ namespace ParcelXpress.Models
         public DbSet<CUST_CRDT> CUST_CRDT { get; set; }
         public DbSet<FAQ> FAQS { get; set; }
         public DbSet<DUES_ALRT> DUES_ALRT { get; set; }
+        public DbSet<ERR_LOG> ERR_LOG { get; set; }
+        public DbSet<DALY_PRCL> DALY_PRCL { get; set; }
+        public DbSet<DALY_PRCL_MSTR> DALY_PRCL_MSTR { get; set; }
+        public DbSet<CUST_INVC> CUST_INVC { get; set; }
+        public DbSet<INVC_PYMT_MODE> INVC_PYMT_MODE { get; set; }
+        public DbSet<CONT_PKGS> CONT_PKGS { get; set; }
     }
 }

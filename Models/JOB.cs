@@ -19,6 +19,7 @@ namespace ParcelXpress.Models
         {
             this.JOBS_HTRY = new HashSet<JOBS_HTRY>();
             this.JOBS_RESP = new HashSet<JOBS_RESP>();
+            this.CUST_INVC = new HashSet<CUST_INVC>();
         }
 
         public int JobId { get; set; }
@@ -50,10 +51,16 @@ namespace ParcelXpress.Models
         public Nullable<bool> IsPaid { get; set; }
         public string CancelledText { get; set; }
         public Nullable<int> PaymentMode { get; set; }
-    
+        public Nullable<System.DateTime> PickupTime { get; set; }
+        public Nullable<System.DateTime> AssignedTime { get; set; }
+        public Nullable<System.DateTime> DropoffTime { get; set; }
+        public string Reference { get; set; }
+        public Nullable<System.DateTime> LastUpdated { get; set; }
+
         public virtual CUST_DATA CUST_DATA { get; set; }
         public virtual ICollection<JOBS_HTRY> JOBS_HTRY { get; set; }
         public virtual ICollection<JOBS_RESP> JOBS_RESP { get; set; }
         public virtual DRVR_DATA DRVR_DATA { get; set; }
+        public virtual ICollection<CUST_INVC> CUST_INVC { get; set; }
     }
 }

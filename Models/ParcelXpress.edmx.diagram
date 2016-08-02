@@ -15,7 +15,7 @@
         <EntityTypeShape EntityType="ParcelXpressModel.REQT_DRVR" Width="1.5" PointX="10.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ParcelXpressModel.RESP_CODE" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ParcelXpressModel.SCRT_QUES" Width="1.5" PointX="1.5" PointY="3.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="ParcelXpressModel.SESN" Width="1.5" PointX="6" PointY="12.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ParcelXpressModel.SESN" Width="1.5" PointX="6" PointY="15.25" IsExpanded="true" />
         <EntityTypeShape EntityType="ParcelXpressModel.STUS_CODE" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="ParcelXpressModel.SYS_USER" Width="1.5" PointX="3.75" PointY="12.625" IsExpanded="true" />
         <EntityTypeShape EntityType="ParcelXpressModel.TRAN_TYPE" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
@@ -31,12 +31,24 @@
         <AssociationConnector Association="ParcelXpressModel.FK_DRVR_MSGS_DRVR_DATA" />
         <AssociationConnector Association="ParcelXpressModel.FK_JOBS_DRVR" />
         <AssociationConnector Association="ParcelXpressModel.FK_JOBS_RESP_DRVR" />
-        <EntityTypeShape EntityType="ParcelXpressModel.EMAL_ACNT" Width="1.5" PointX="0.75" PointY="11.75" />
+        <EntityTypeShape EntityType="ParcelXpressModel.EMAL_ACNT" Width="1.5" PointX="0.75" PointY="12.875" />
         <EntityTypeShape EntityType="ParcelXpressModel.CUST_CRDT" Width="1.5" PointX="3" PointY="0.75" />
         <AssociationConnector Association="ParcelXpressModel.FK_CRDT_CUST_DATA" />
         <EntityTypeShape EntityType="ParcelXpressModel.FAQ" Width="1.5" PointX="8.375" PointY="11.75" />
         <EntityTypeShape EntityType="ParcelXpressModel.DUES_ALRT" Width="1.5" PointX="3" PointY="21.5" />
         <AssociationConnector Association="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA" />
+        <EntityTypeShape EntityType="ParcelXpressModel.ERR_LOG" Width="1.5" PointX="10.375" PointY="4.75" />
+        <EntityTypeShape EntityType="ParcelXpressModel.DALY_PRCL" Width="1.5" PointX="5.25" PointY="25.375" />
+        <EntityTypeShape EntityType="ParcelXpressModel.DALY_PRCL_MSTR" Width="1.5" PointX="3" PointY="25.375" />
+        <AssociationConnector Association="ParcelXpressModel.FK__DALY_PRCL__Custo__1DB06A4F" />
+        <AssociationConnector Association="ParcelXpressModel.FK__DALY_PRCL__Maste__208CD6FA" />
+        <EntityTypeShape EntityType="ParcelXpressModel.CUST_INVC" Width="1.5" PointX="11" PointY="11.75" />
+        <EntityTypeShape EntityType="ParcelXpressModel.INVC_PYMT_MODE" Width="1.5" PointX="8.75" PointY="18.5" />
+        <AssociationConnector Association="ParcelXpressModel.FK__CUST_INVC__Custo__42E1EEFE" />
+        <AssociationConnector Association="ParcelXpressModel.FK__CUST_INVC__Invoi__45BE5BA9" />
+        <AssociationConnector Association="ParcelXpressModel.FK__CUST_TRAN__Invoi__46B27FE2" />
+        <AssociationConnector Association="ParcelXpressModel.FK__CUST_INVC__JobId__489AC854" />
+        <EntityTypeShape EntityType="ParcelXpressModel.CONT_PKGS" Width="1.5" PointX="12.375" PointY="4.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

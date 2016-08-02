@@ -1,5 +1,8 @@
 ﻿@model CUST_DATA
 @{
+    var htmlAttributes = new Dictionary<string, object>();
+    htmlAttributes.Add("class", "form-control");
+
     var accountRefNum = "No account is yet generated for this customer";
     if (Model.AccountRefNumber != null)
     {
@@ -8,7 +11,15 @@
             accountRefNum = Model.AccountRefNumber.ToString();
         }
     }
-
+    else
+    {
+        htmlAttributes.Add("disabled", "disabled");
+    }
+    bool fromEdit = false;
+    if (ViewBag.fromEdit != null)
+    {
+        fromEdit = ViewBag.fromEdit;
+    }
 
 }
 
@@ -16,6 +27,25 @@
     <div class="col-lg-6 form-group">
         <label class="control-label col-lg-4" style="text-align:left !important;">Account Reference Number:</label>
         <label class="control-label col-lg-7 text-warning">@accountRefNum</label>
+    </div>
+    <div class="col-lg-6">
+        <div class="row form-group">
+            <label class="control-label col-lg-4 ">Customer with contract</label>
+            <div class="col-lg-1">
+                @Html.CheckBoxFor(m => m.HasContractCheckboxValue, htmlAttributes)
+            </div>
+
+            @if (Model.HasAccount == false || Model.AccountRefNumber == null)
+            {
+                <label class="control-label col-lg-6 col-lg-offset-1 text-warning" style="font-size:smaller;text-align:left">Generate account first to configure contract</label>
+            }
+        </div>
+        <div class="row form-group">
+            <label class="control-label col-lg-4 ">Receive Notifications</label>
+            <div class="col-lg-1">
+                @Html.CheckBoxFor(m => m.RecieveNotifications, new { @class="form-control" })
+            </div>
+        </div>
     </div>
 </div>
 
@@ -40,7 +70,10 @@
     <div class="col-lg-6 form-group">
         <label class="control-label col-lg-3">Contact No.</label>
         <div class="col-lg-8">
-            @Html.TextBoxFor(m => m.ContactNo, new { @class = "form-control" })
+            <div class="input-group">
+                @Html.TextBoxFor(m => m.ContactNo, new { @class = "form-control" })
+                <span class="input-group-btn"><a href="#" class="btn btn-success" id="addContactNo"><span class="glyphicon glyphicon-plus"></span></a></span>
+            </div>
             @Html.ValidationMessageFor(m => m.ContactNo, null, new { @class = "text-danger" })
         </div>
     </div>
@@ -52,9 +85,55 @@
         </div>
     </div>
 </div>
+@if (fromEdit)
+{
+    <div class="row">
+        <div class="col-lg-6 form-group" id="contact1">
+            <label class="control-label col-lg-3">Contact No. 2</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(m => m.ContactNo2, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ContactNo2, null, new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-lg-6 form-group" id="contact2">
+            <label class="control-label col-lg-3">Contact No. 3</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(m => m.ContactNo3, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ContactNo3, null, new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row VisiblityHidden">
+        <div class="col-lg-6 form-group VisiblityHidden" id="contact1">
+            <label class="control-label col-lg-3">Contact No. 2</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(m => m.ContactNo2, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ContactNo2, null, new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-lg-6 form-group VisiblityHidden" id="contact2">
+            <label class="control-label col-lg-3">Contact No. 3</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(m => m.ContactNo3, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ContactNo3, null, new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Personal Address</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.PersonalAddress, new { @class = "form-control isDisabled" })
+            @Html.ValidationMessageFor(m => m.PersonalAddress, null, new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
 
-
-@Html.HiddenFor(m=>m.AccountRefNumber)
+@Html.HiddenFor(m => m.AccountRefNumber)
 @Html.HiddenFor(m => m.HasAccount)
 @Html.HiddenFor(m => m.CustomerId)
 

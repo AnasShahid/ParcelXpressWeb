@@ -1,6 +1,6 @@
 ﻿@model IPagedList<CUST_DATA>
 
-<div class="row col-lg-11" id="registeredCustomers">
+<div class="row col-md-12" id="registeredCustomers">
     <table class="table table-bordered table-responsive table-hover">
         <thead>
             <tr>
@@ -9,6 +9,7 @@
                 <th>Address</th>
                 <th>Email</th>
                 <th>Account Code</th>
+                <th>Contract</th>
                 <th></th>
             </tr>
         </thead>
@@ -21,6 +22,7 @@
                     <td>@item.Address</td>
                     <td>@item.EmailAddress</td>
                     <td>@item.AccountRefNumber</td>
+                    <td><input type="checkbox" class="checkbox-inline" value="@item.HasContract" checked="@item.HasContract" disabled="disabled" /></td>
                     <td>@Html.ActionLink("View Details", "EditCustomer", "Customer", new { id = @item.CustomerId }, new { @class = "btn btn-default" })</td>
                 </tr>
             }

@@ -7,18 +7,17 @@
 <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.blue-red.min.css" />
 
 <div class="row">
-    <div class="col-lg-5 col-md-7">
+    <div class="col-lg-5 col-md-7" style="padding-right:0;">
         @Html.Action("_NewJobDashboard", "Jobs", new { customerId = id });
     </div>
-    <div class="col-lg-4 col-md-5">
+    <div class="col-lg-4 col-md-5" style="padding-right:0;padding-left:0;">
         @Html.Action("_ActiveJobsDashboard", "Jobs")
-        @Html.Action("_NewMessageDashboard", "Message")
-        
+        @Html.Action("_LongDistanceJobsDashboard", "Jobs")        
 
     </div> 
-    <div class="col-lg-3 col-md-4">        
+    <div class="col-lg-3 col-md-4" style="padding-left:0;">        
         @Html.Action("_ActiveDriversDashboard", "Driver")
-        @Html.Action("_LongDistanceJobsDashboard", "Jobs")
+        @Html.Action("_NewMessageDashboard", "Message")
     </div> 
 </div>
 <div class="row">

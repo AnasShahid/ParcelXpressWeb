@@ -1,6 +1,6 @@
 ﻿@model IPagedList<JOB>
 
-<div class="row col-lg-12" id="jobTable">
+<div class="row col-md-12" id="jobTable">
     <table class="table table-bordered table-responsive table-hover">
         <thead>
             <tr>
@@ -8,6 +8,7 @@
                 <th>Driver Name</th>
                 <th>Pickup Address</th>
                 <th>Drop Address</th>
+                <th>Created</th>
                 <th>Last Modified</th>
                 <th>Charges</th>
                 <th>Account Payment</th>
@@ -28,7 +29,13 @@
                     </td>
                     <td>@item.PickupAddress</td>
                     <td>@item.DropAddress</td>
-                    <td>@item.JobDate.AddHours(1).ToString("dd-MMM-yyyy hh:mm tt")</td>
+                    <td>@ParcelXpress.Helpers.TimezoneHelper.ConvertUTCtoLocal(item.JobDate).ToString("dd-MMM-yyyy hh:mm tt")</td>
+                    @if (@item.LastUpdated != null)
+                    {
+                    <td>@ParcelXpress.Helpers.TimezoneHelper.ConvertUTCtoLocal(item.LastUpdated.Value).ToString("dd-MMM-yyyy hh:mm tt")</td>
+                    }
+                    else
+                    { <td></td>}
                     <td>&pound; @item.Price</td>
                     <td><input type="checkbox" class="checkbox-inline" value="@item.AccountPaymentInd" checked="@item.AccountPaymentInd" disabled="disabled" /></td>
                     <td>@StringEnum.Parse(typeof(StatusCode),item.JobStatus)</td>

@@ -7,8 +7,12 @@ namespace ParcelXpress.Models
 {
     public partial class DRVR_DATA
     {
+
         public int ActiveJobsCount { get; set; }
 
+        public int LongDistanceJobCount { get; set; }
+
         public decimal DriverCommissionAmount { get; set; }
+
     }
 }

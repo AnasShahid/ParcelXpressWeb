@@ -29,7 +29,7 @@
 <div class="col-lg-11">
     <div class="box box-info">
         <div class="box-header">
-            <h3 class="box-title">@Model.CustomerName <small style="margin-left:2em;"><b> @Model.JobDate.AddHours(1).ToString("dd-MMM-yy hh:mm tt")</b></small></h3>
+            <h3 class="box-title">@Model.CustomerName <small style="margin-left:2em;"><b> @TimezoneHelper.ConvertUTCtoLocal(Model.JobDate).ToString("dd-MMM-yy hh:mm tt")</b></small></h3>
             @if (Model.LongDistanceInd == true)
             {
                 <h4 class="box-title" style="margin-left:3em;">Long Distance Job</h4>
@@ -100,6 +100,10 @@
                         <label class=" col-lg-4">Dropoff Contact: </label>
                         <label class="col-lg-8 ">@Model.DropoffContact</label>
                     </div>
+                    <div class="col-lg-6 form-group">
+                        <label class=" col-lg-4">Reference: </label>
+                        <label class="col-lg-8 ">@Model.Reference</label>
+                    </div>
                 </div>
                 <hr />
                 <div class="row">
@@ -121,6 +125,29 @@
                         <label class="col-lg-4">Note: </label>
                         <label class="col-lg-8">@Model.Notes</label>
                     </div>
+                </div>
+                <div class="row">
+                    @if (Model.AssignedTime != null)
+                    {
+                        <div class="col-lg-6 form-group">
+                            <label class="col-lg-4">Assigned time: </label>
+                            <label class="col-lg-8">@TimezoneHelper.ConvertUTCtoLocal(Model.AssignedTime.Value).ToString("dd-MMM-yy hh:mm tt")</label>
+                        </div>
+                    }
+                    @if (Model.PickupTime != null)
+                    {
+                        <div class="col-lg-6 form-group">
+                            <label class="col-lg-4">Pickup time: </label>
+                            <label class="col-lg-8">@TimezoneHelper.ConvertUTCtoLocal(Model.PickupTime.Value).ToString("dd-MMM-yy hh:mm tt")</label>
+                        </div>
+                    }
+                    @if (Model.DropoffTime != null)
+                    {
+                        <div class="col-lg-6 form-group">
+                            <label class="col-lg-4">Dropoff time: </label>
+                            <label class="col-lg-8">@TimezoneHelper.ConvertUTCtoLocal(Model.DropoffTime.Value).ToString("dd-MMM-yy hh:mm tt")</label>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -145,11 +172,17 @@
                     <button class="btn btn-primary" data-toggle="modal" data-target="#addChargesModal"><span class="glyphicon glyphicon-plus"></span> Add Charges</button>
                 </div>
             }
+            @if (Model.JobStatus == StringEnum.GetStringValue(StatusCode.Assigned))
+            {
+                <div class="col-lg-2 ">
+                    <button class="btn btn-danger" id="showDriverDiv"><span class="glyphicon glyphicon-repeat"></span> Cancel & Resend</button>
+                </div>
+            }
             <div class="col-lg-2 ">
 
                 @if (emailAddress == null || emailAddress.Trim().Equals(""))
                 {
-                    <button id="showEmailDiv" class="btn btn-primary" ><span class="glyphicon glyphicon-send"></span> Send Invoice</button>
+                    <button id="showEmailDiv" class="btn btn-primary"><span class="glyphicon glyphicon-send"></span> Send Invoice</button>
                 }
                 else
                 {
@@ -163,9 +196,14 @@
 
         </div>
     </div>
-    <div id="enterEmailDiv" class="row hidden" >
+    <div id="enterEmailDiv" class="row hidden">
         <div class="container-fluid">
             @Html.Partial("_EnterEmail", new ParcelXpress.Helpers.CustomerJobDriver())
+        </div>
+    </div>
+    <div id="selectDriverDiv" class="row" style="display:none;">
+        <div class="container-fluid">
+            @Html.Partial("_SelectDriver", new JOB())
         </div>
     </div>
 </div>

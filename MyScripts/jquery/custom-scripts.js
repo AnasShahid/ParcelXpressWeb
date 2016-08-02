@@ -75,7 +75,7 @@ $(function () {
             type:'get'
         };
         $.ajax(options).done(function (data) {
-            $("#activeJobsGrid").replaceWith(data);
+            $("#activeJobsList").replaceWith(data);
         });
         return false;
     };
@@ -96,6 +96,37 @@ $(function () {
     };
 
     $("#activeDriverRefresh").on('click', '.refreshDriverButton', activeDriverRefresh);
+
+    var selectInvoiceForPayment = function () {
+        var $a = $(this);
+        var targetUrl = $a.attr("href");
+        var options = {
+            url: targetUrl,
+            type: 'get'
+        };
+        $.ajax(options).done(function (data) {
+            $("#selectedInvoice").replaceWith(data);
+        });
+        return false;
+    }
+    $(".btnSelectInvoice").click(selectInvoiceForPayment);
+
+    var loadDetailAjax = function () {
+        var $a = $(this);
+        var targetUrl = $a.attr("href");
+        var targetElement = $a.attr("data-pxp-target");
+        var options = {
+            url: targetUrl,
+            type: 'get'
+        };
+        $.ajax(options).done(function (data) {
+            $(targetElement).replaceWith(data);
+        });
+        return false;
+    }
+    $(".btnSelectDetails").click(loadDetailAjax);
+
+
     var cancelJobConfirm = function () {
         var $button = $(this);
         var $form = $button.parents("form").first();
@@ -138,8 +169,11 @@ $(function () {
         if (accountType == 'driver') {
             msg = "Please confirm that you want to post driver account. (This will settle his commission)"
         }
+        else if (accountType = 'invoice') {
+            msg = "Do you want to mark this invoice as paid?"
+        }
         else {
-            msg="Are you sure you want to post customer receipt?"
+            msg = "Are you sure you want to post customer receipt?"
         }
         BootstrapDialog.show({
 
@@ -200,6 +234,7 @@ $(function () {
     };
     $('#btnDelete').click(deleteConfirmation);
 
+
     var generateEmailConfirmation = function () {
         var $button = $(this);
         var $form = $button.parents("form").first();
@@ -229,7 +264,7 @@ $(function () {
 
         return false;
     };
-    $('#btnGenerateStatement').click(generateEmailConfirmation);
+    $('#btnGenerateStatement,[name="btnGenerateStatement"]').click(generateEmailConfirmation);
     
     var submitWithLoader = function () {
         var $button = $(this);
@@ -241,12 +276,15 @@ $(function () {
     $('#btnSubmitWithShowLoading').click(submitWithLoader);
 
     var showEmailDiv = function () {
-        
         $("#enterEmailDiv").removeClass("hidden");
-        
-
     }
     $('#showEmailDiv').click(showEmailDiv);
+
+    var showSelectDriverDiv = function () {
+        $("#selectDriverDiv").toggle();
+    }
+    $('#showDriverDiv').click(showSelectDriverDiv);
+
 
     var count = 0;
     var showAnotherDropField = function () {
@@ -265,4 +303,24 @@ $(function () {
 
     };
     $("#addField").click(showAnotherDropField);
+
+    var contactCount = 0;
+    var showAnotherContactNp = function () {
+        if (contactCount == 0 || contactCount == 'undefined')
+        { contactCount = 1; }
+        else
+        { contactCount = contactCount + 1; }
+        if (contactCount < 3) {
+            var elementName = "#contact" + contactCount;
+            var element = $(elementName);
+            element.removeClass('VisiblityHidden');
+            var parent = element.parent('div');
+            parent.removeClass('VisiblityHidden');
+        }
+        return false;
+
+    };
+    $("#addContactNo").click(showAnotherContactNp);
+
+   
 });

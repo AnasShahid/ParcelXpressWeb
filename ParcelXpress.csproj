@@ -8,7 +8,7 @@
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{982AE7C9-36CA-460E-A193-15B8B8B716F6}</ProjectGuid>
-    <ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ParcelXpress</RootNamespace>
@@ -47,14 +47,38 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Hangfire.Core, Version=1.5.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Hangfire.Core.1.5.8\lib\net45\Hangfire.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Hangfire.SqlServer, Version=1.5.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Hangfire.SqlServer.1.5.8\lib\net45\Hangfire.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="itextsharp">
       <HintPath>packages\iTextSharp.5.5.8\lib\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp">
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.3.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.3.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MVC Foolproof Validation">
       <HintPath>..\packages\foolproof.0.9.4517\lib\MVC Foolproof Validation.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.5.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PagedList">
       <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
@@ -156,9 +180,6 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http">
       <Private>True</Private>
     </Reference>
@@ -201,13 +222,17 @@
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\DriverController.cs" />
     <Compile Include="Controllers\FAQController.cs" />
+    <Compile Include="Controllers\InvoiceController.cs" />
     <Compile Include="Controllers\JobsController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\IndexController.cs" />
     <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\MobileController.cs" />
+    <Compile Include="Controllers\SettingsController.cs" />
+    <Compile Include="Enums\InvoicePaymentModes.cs" />
     <Compile Include="Enums\PaymentModes.cs" />
     <Compile Include="Enums\MailClients.cs" />
+    <Compile Include="Enums\InvoiceStatus.cs" />
     <Compile Include="Enums\ResponseCode.cs" />
     <Compile Include="Enums\TransactionTypeCode.cs" />
     <Compile Include="Enums\StatusCode.cs" />
@@ -227,6 +252,11 @@
     <Compile Include="Helpers\GcmSender.cs" />
     <Compile Include="Helpers\JobHelper.cs" />
     <Compile Include="Helpers\PDFGenerator.cs" />
+    <Compile Include="Helpers\SMSSender.cs" />
+    <Compile Include="Helpers\TimezoneHelper.cs" />
+    <Compile Include="Models\CONT_PKGS.cs">
+      <DependentUpon>ParcelXpress.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CUST_BILL.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
@@ -236,7 +266,16 @@
     <Compile Include="Models\CUST_DATA.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CUST_INVC.cs">
+      <DependentUpon>ParcelXpress.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CUST_TRAN.cs">
+      <DependentUpon>ParcelXpress.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DALY_PRCL.cs">
+      <DependentUpon>ParcelXpress.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DALY_PRCL_MSTR.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DRVR_DATA.cs">
@@ -254,7 +293,13 @@
     <Compile Include="Models\EMAL_ACNT.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ERR_LOG.cs">
+      <DependentUpon>ParcelXpress.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\FAQ.cs">
+      <DependentUpon>ParcelXpress.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\INVC_PYMT_MODE.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\JOB.cs">
@@ -303,6 +348,7 @@
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\loading.gif" />
@@ -365,6 +411,9 @@
     <Content Include="Content\Site.css" />
     <Content Include="Lib\angular\angular-route.js" />
     <Content Include="Lib\angular\angular.js" />
+    <Content Include="Lib\bootstrap-datetimepicker\bootstrap-datetimepicker.css" />
+    <Content Include="Lib\bootstrap-datetimepicker\bootstrap-datetimepicker.js" />
+    <Content Include="Lib\bootstrap-datetimepicker\bootstrap-datetimepicker.min.js" />
     <Content Include="Lib\bootstrap-datepicker\bootstrap-datepicker.css" />
     <Content Include="Lib\bootstrap-datepicker\bootstrap-datepicker.js" />
     <Content Include="Lib\bootstrap-dialog\bootstrap-dialog.css" />
@@ -376,9 +425,14 @@
     <Content Include="Lib\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Lib\bootstrap\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Lib\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Lib\jquery-session\jquerysession.js" />
     <Content Include="Lib\jquery\jquery-2.1.4.js" />
     <Content Include="Lib\material-design-lite\material.js" />
     <Content Include="Lib\material-design-lite\material.css" />
+    <Content Include="Lib\moment\moment-with-locales.js" />
+    <Content Include="Lib\moment\moment-with-locales.min.js" />
+    <Content Include="Lib\moment\moment.js" />
+    <Content Include="Lib\moment\moment.min.js" />
     <Content Include="Lib\toastr\toastr.css" />
     <Content Include="Lib\toastr\toastr.js" />
     <Content Include="Lib\toastr\toastr.min.css" />
@@ -440,10 +494,17 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Styles\AdminLTE.css" />
     <Content Include="Styles\custom.css" />
+    <Content Include="Styles\Resources\browserLogo.ico" />
+    <Content Include="Styles\Resources\favicon.ico" />
     <Content Include="Styles\Resources\ParcelExpressLogo.png" />
     <Content Include="Styles\Resources\ParcelExpressTransparent.png" />
     <Content Include="Styles\Resources\pxpBG.png" />
     <Content Include="Styles\Resources\PxpLogoLatest.png" />
+    <Content Include="Styles\Resources\Swiftee Icon 48px.png" />
+    <Content Include="Styles\Resources\SwifteeCoverNobg.png" />
+    <Content Include="Styles\Resources\swifteeCoverYellowBlack.png" />
+    <Content Include="Styles\Resources\SwifteeInvoiceLogo.png" />
+    <Content Include="Styles\Resources\SwifteeYellowWhite.png" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -500,7 +561,7 @@
     <Content Include="Views\Accounts\_CustomerAccountGrid.cshtml" />
     <Content Include="Views\Accounts\_BillHistoryGrid.cshtml" />
     <Content Include="Views\Message\_MessageReply.cshtml" />
-    <Content Include="Views\Index\Configuration.cshtml" />
+    <Content Include="Views\Settings\Configuration.cshtml" />
     <Content Include="Views\Jobs\_AddCharges.cshtml" />
     <Content Include="Views\Jobs\DriverActiveJobs.cshtml" />
     <Content Include="Views\Driver\_ActiveDriversDashboard.cshtml" />
@@ -513,9 +574,26 @@
     <Content Include="Views\Accounts\AccountOverview.cshtml" />
     <Content Include="Views\Jobs\_EnterEmail.cshtml" />
     <Content Include="Views\Accounts\ShowAccountHistory.cshtml" />
+    <Content Include="Views\Accounts\AllCustomersAccount.cshtml" />
+    <Content Include="Views\Accounts\_CustomersTableAccount.cshtml" />
+    <Content Include="Views\Accounts\AllDriversAccounts.cshtml" />
+    <Content Include="Views\Accounts\_DriversTableAccounts.cshtml" />
+    <Content Include="Views\Jobs\_SelectDriver.cshtml" />
+    <Content Include="Views\Jobs\DailyCustomers.cshtml" />
+    <Content Include="Views\Jobs\_CustomersTable.cshtml" />
+    <Content Include="Views\Jobs\_ActiveJobsList.cshtml" />
+    <Content Include="Views\Invoice\AllInvoices.cshtml" />
+    <Content Include="Views\Invoice\_InvoiceTable.cshtml" />
+    <Content Include="Views\Invoice\PaidInvoices.cshtml" />
+    <Content Include="Views\Invoice\PendingInvoices.cshtml" />
+    <Content Include="Views\Invoice\_InvoicePayableSummary.cshtml" />
+    <Content Include="Views\Invoice\_InvoiceSettlement.cshtml" />
+    <Content Include="Views\Settings\ContractPackages.cshtml" />
+    <Content Include="Views\Settings\_PackageDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Entities\" />
     <Folder Include="Lib\css\" />
     <Folder Include="MyScripts\angular\" />
   </ItemGroup>

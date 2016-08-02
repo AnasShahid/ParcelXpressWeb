@@ -8,6 +8,7 @@
                 <th>Contact Number</th>
                 <th>Commission %</th>
                 <th>Active now</th>
+                <th>Last Logout</th>
                 <th></th>
             </tr>
         </thead>
@@ -19,6 +20,7 @@
                     <td>@item.ContactNo</td>
                     <td>@item.CommissionRate</td>
                     <td><input type="checkbox" class="checkbox-inline" value="@item.IsActive" checked="@item.IsActive" disabled="disabled" /></td>
+                    <td>@(item.LogoutTime!=null?TimezoneHelper.ConvertUTCtoLocal(item.LogoutTime.Value).ToString("dd-MMM-yyyy hh:mm tt"):"")</td>
                     <td>@Html.ActionLink("View Details", "EditDriver", "Driver", new { id = @item.DriverId }, new { @class = "btn btn-primary" })</td>
                 </tr>
             }

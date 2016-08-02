@@ -1,0 +1,42 @@
+﻿@model IPagedList<CUST_DATA>
+
+<div class="row col-md-12" id="registeredCustomers">
+    <table class="table table-bordered table-responsive table-hover">
+        <thead>
+            <tr>
+                <th>Customer Name</th>
+                <th>Total Payable</th>
+                <th>Last Payment Date</th>
+                <th>Contract</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.CustomerName</td>
+                    <td>@item.CustomerPayable</td>
+                    <td>@(item.LastPaymentDate.HasValue?item.LastPaymentDate.Value.ToString("dd/MM/yyyy"):"")</td>
+                    <td><input type="checkbox" class="checkbox-inline" value="@item.HasContract" checked="@item.HasContract" disabled="disabled" /></td>
+                    <td>@Html.ActionLink("View Job Report", "CustomerAccounts", "Accounts", new { customerId = @item.CustomerId }, new { @class = "btn btn-default" })</td>
+                    <td>@using (Html.BeginForm("CreateCustomerStatement", "Accounts", new { CustomerId = item.CustomerId,FromAllCustomers=true}, FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                      //  @Html.HiddenFor(m => item.CustomerId);
+                        <button type="submit" role="button" class="btn btn-default" id="btnGenerateStatement" name="btnGenerateStatement" > Send Customer Statement</button>
+                    }</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+
+<div id="loading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 0%; left: 30%; color: White;">
+        Please Wait. . .<img src="~/Content/loading.gif" height="200px" width="200px">
+    </p>
+</div>

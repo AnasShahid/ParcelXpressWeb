@@ -1,5 +1,9 @@
 ﻿@model JOB
 @{
+    var htmlAttributes = new Dictionary<string, object>();
+    var htmlAttributesContract = new Dictionary<string, object>();
+    var htmlAttributesAmount = new Dictionary<string, object>();
+
 
     List<CUST_DATA> customersModel = new List<CUST_DATA>();
     var htmlAttributesForEdit = new Dictionary<string, object>();
@@ -12,214 +16,275 @@
             htmlAttributesForEdit.Add("disabled", "disabled");
         }
     }
-    bool accountInd = false;
     if (ViewBag.CustomerAccountInd != null)
     {
-        accountInd = ViewBag.CustomerAccountInd;
+        if (ViewBag.CustomerAccountInd == false)
+        {
+            htmlAttributes.Add("disabled", "disabled");
+        }
+        else
+        {
+            if (fromEdit == false)
+            {
+                htmlAttributes.Add("checked", "checked");
+            }
+        }
     }
-
-    var htmlAttributes = new Dictionary<string, object>();
-    if (!accountInd)
+    if (ViewBag.CustomerContractInd != null)
     {
-        htmlAttributes.Add("disabled", "disabled");
+        if (ViewBag.CustomerContractInd == false)
+        {
+            htmlAttributesContract.Add("disabled", "disabled");
+        }
+        else
+        {
+            if (fromEdit == false)
+            {
+                htmlAttributesContract.Add("checked", "checked");
+                Model.Price = 0.00M;
+                htmlAttributesAmount.Add("disabled", "disabled");
+            }
+        }
+    }
+    htmlAttributes.Add("class", "paymentModeRadio");
+    htmlAttributesContract.Add("class", "paymentModeRadio");
+
+    htmlAttributesAmount.Add("class", "form-control");
+    htmlAttributesAmount.Add("id", "txtAmount");
+
+}
+
+    <div class="row">
+        <div class="col-lg-6 form-group">
+            <label class="control-label col-lg-3">Payment Mode</label>
+            <div class="col-lg-8">
+                <label class="form-control inline-radio"> @Html.RadioButtonFor(m => m.PaymentMode, 1, new { @class = "paymentModeRadio" }) Cash </label>
+                <label class="form-control inline-radio"> @Html.RadioButtonFor(m => m.PaymentMode, 2, new { @class = "paymentModeRadio" }) Credit Card </label>
+                <label class="form-control inline-radio">@Html.RadioButtonFor(m => m.PaymentMode, 3, htmlAttributes) Account </label>
+                <label class="form-control inline-radio">@Html.RadioButtonFor(m => m.PaymentMode, 4, htmlAttributesContract) Contract </label>
+                @*@if (!accountInd)
+                    {
+                    <label class="text-warning">Account is not configured.</label>
+                    }*@
+            </div>
+        </div>
+        <div class="col-lg-6 form-group">
+            <label class="control-label col-lg-3">Pickup Address</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(m => m.PickupAddress, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.PickupAddress, null, new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+<div class="@(fromEdit==true? "": "jobFormInput")">
+
+    <div class="row">
+
+        <div class="col-lg-6 form-group">
+            <label class="control-label col-lg-3">Drop Address</label>
+            <div class="col-lg-8">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.DropAddress, new { @class = "form-control" })
+                    <span class="input-group-btn"><a href="#" class="btn btn-success" id="addField"><span class="glyphicon glyphicon-plus"></span></a></span>
+                </div>
+                @Html.ValidationMessageFor(m => m.DropAddress, null, new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    @if (fromEdit)
+    {
+        <div class="row ">
+
+            <div class="col-lg-6 form-group " id="address1">
+                <label class="control-label col-lg-3">Drop Address 2</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(m => m.DropAddress1, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.DropAddress1, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg-6 form-group " id="address2">
+                <label class="control-label col-lg-3">Drop Address3</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(m => m.DropAddress2, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.DropAddress2, null, new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row ">
+            <div class="col-lg-6 form-group " id="address3">
+                <label class="control-label col-lg-3">Drop Address 4</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(m => m.DropAddress3, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.DropAddress3, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg-6 form-group " id="address4">
+                <label class="control-label col-lg-3">Drop Address 5</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(m => m.DropAddress4, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.DropAddress4, null, new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
     }
     else
     {
-        if (fromEdit == false)
-        {
-            htmlAttributes.Add("checked", "checked");
-        }
+        <div class="row VisiblityHidden">
+
+            <div class="col-lg-6 form-group VisiblityHidden" id="address1">
+                <label class="control-label col-lg-3">Drop Address 2</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(m => m.DropAddress1, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.DropAddress1, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg-6 form-group VisiblityHidden" id="address2">
+                <label class="control-label col-lg-3">Drop Address3</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(m => m.DropAddress2, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.DropAddress2, null, new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="row VisiblityHidden">
+            <div class="col-lg-6 form-group VisiblityHidden" id="address3">
+                <label class="control-label col-lg-3">Drop Address 4</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(m => m.DropAddress3, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.DropAddress3, null, new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg-6 form-group VisiblityHidden" id="address4">
+                <label class="control-label col-lg-3">Drop Address 5</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(m => m.DropAddress4, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.DropAddress4, null, new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
     }
 
-}
-
-<div class="row">
-
-    <div class="col-lg-6 form-group" @*style="margin-left:0.20%;margin-right:0.25%"*@>
-        <label class="control-label col-lg-3">Customer Name</label>
-        <div class="col-lg-8">
-            <div class="input-group">
-                <form method="get" action="@Url.Action("CustomerSearch")" data-pxp-ajax="true" data-pxp-target="#searchResults">
-                    @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", @name = "searchTerm", @id = "searchTerm" })
-                    <span class="input-group-btn">
-                        <button type="button" role="button" class="btn btn-default" id="btnSearchCustomer"><span class="glyphicon glyphicon-search"></span></button>
-                    </span>
-                </form>
-            </div>
-            @Html.ValidationMessageFor(m => m.CustomerName, null, new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="col-lg-6 form-group">
-        <label class="control-label col-lg-3">Contact Number</label>
-        <div class="col-lg-8">
-            @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.CustomerPhone, null, new { @class = "text-danger" })
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-6 form-group">
-        <label class="control-label col-lg-3">Pickup Address</label>
-        <div class="col-lg-8">
-            @Html.TextBoxFor(m => m.PickupAddress, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.PickupAddress, null, new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="col-lg-6 form-group">
-        <label class="control-label col-lg-3">Drop Address</label>
-        <div class="col-lg-8">
-            <div class="input-group">
-                @Html.TextBoxFor(m => m.DropAddress, new { @class = "form-control" })
-                <span class="input-group-btn"><a href="#" class="btn btn-success" id="addField"><span class="glyphicon glyphicon-plus"></span></a></span>
-            </div>
-            @Html.ValidationMessageFor(m => m.DropAddress, null, new { @class = "text-danger" })
-        </div>
-    </div>
-</div>
-@if (fromEdit)
-{
-    <div class="row ">
-
-        <div class="col-lg-6 form-group " id="address1">
-            <label class="control-label col-lg-3">Drop Address 2</label>
+    <div class="row">
+        <div class="col-lg-6 form-group" @*style="margin-left:0.20%;margin-right:0.25%"*@>
+            <label class="control-label col-lg-3">Customer Name</label>
             <div class="col-lg-8">
-                @Html.TextBoxFor(m => m.DropAddress1, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.DropAddress1, null, new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="col-lg-6 form-group " id="address2">
-            <label class="control-label col-lg-3">Drop Address3</label>
-            <div class="col-lg-8">
-                @Html.TextBoxFor(m => m.DropAddress2, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.DropAddress2, null, new { @class = "text-danger" })
-            </div>
-        </div>
-    </div>
+                <div class="input-group">
 
-    <div class="row ">
-        <div class="col-lg-6 form-group " id="address3">
-            <label class="control-label col-lg-3">Drop Address 4</label>
-            <div class="col-lg-8">
-                @Html.TextBoxFor(m => m.DropAddress3, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.DropAddress3, null, new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="col-lg-6 form-group " id="address4">
-            <label class="control-label col-lg-3">Drop Address 5</label>
-            <div class="col-lg-8">
-                @Html.TextBoxFor(m => m.DropAddress4, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.DropAddress4, null, new { @class = "text-danger" })
-            </div>
-        </div>
-    </div>
-}
-else
-{
-    <div class="row VisiblityHidden">
-
-        <div class="col-lg-6 form-group VisiblityHidden" id="address1">
-            <label class="control-label col-lg-3">Drop Address 2</label>
-            <div class="col-lg-8">
-                @Html.TextBoxFor(m => m.DropAddress1, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.DropAddress1, null, new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="col-lg-6 form-group VisiblityHidden" id="address2">
-            <label class="control-label col-lg-3">Drop Address3</label>
-            <div class="col-lg-8">
-                @Html.TextBoxFor(m => m.DropAddress2, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.DropAddress2, null, new { @class = "text-danger" })
-            </div>
-        </div>
-    </div>
-    <div class="row VisiblityHidden">
-        <div class="col-lg-6 form-group VisiblityHidden" id="address3">
-            <label class="control-label col-lg-3">Drop Address 4</label>
-            <div class="col-lg-8">
-                @Html.TextBoxFor(m => m.DropAddress3, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.DropAddress3, null, new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="col-lg-6 form-group VisiblityHidden" id="address4">
-            <label class="control-label col-lg-3">Drop Address 5</label>
-            <div class="col-lg-8">
-                @Html.TextBoxFor(m => m.DropAddress4, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.DropAddress4, null, new { @class = "text-danger" })
-            </div>
-        </div>
-    </div>
-}
-<div class="row">
-    <div class="col-lg-6 form-group">
-        <label class="control-label col-lg-3">Amount (&pound;)</label>
-        <div class="col-lg-8">
-            @Html.TextBoxFor(m => m.Price, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Price, null, new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="col-lg-6 form-group">
-        <label class="control-label col-lg-3">Notes</label>
-        <div class="col-lg-8">
-            @Html.TextAreaFor(m => m.Notes, new { @class = "form-control" })
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-6 form-group">
-        <label class="control-label col-lg-3">Dropoff Contact Number</label>
-        <div class="col-lg-8">
-            @Html.TextBoxFor(m => m.DropoffContact, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.DropoffContact, null, new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="col-lg-6 form-group">
-        <label class="control-label col-lg-4 ">Long Distance Job</label>
-        <div class="col-lg-1">
-            @Html.CheckBoxFor(m => m.longDistanceCheckboxValue, new { @class = "form-control" })
-        </div>
-    </div>
-</div>
+                    <form method="get" action="@Url.Action("CustomerSearch")" data-pxp-ajax="true" data-pxp-target="#searchResults">
+                        @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", @name = "searchTerm", @id = "searchTerm" })
+                        <span class="input-group-btn">
+                            <button type="button" role="button" class="btn btn-default" id="btnSearchCustomer"><span class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                        @Html.HiddenFor(m => m.PickupAddress, new { @name = "PickupAddress", @id = "PickupAddress" })
+                        @Html.HiddenFor(m => m.DropAddress, new { @name = "DropAddress", @id = "DropAddress" })
+                        @Html.HiddenFor(m => m.PaymentMode, new { @name = "PaymentMode", @id = "PaymentMode" })
 
 
-
-
-
-<div class="row">
-    <div class="col-lg-6 form-group">
-        <label class="control-label col-lg-3">Payment Mode</label>
-        <div class="col-lg-8">
-            <label class="form-control"> @Html.RadioButtonFor(m => m.PaymentMode, 1, new { @checked = "checked" }) Cash </label>
-            <label class="form-control"> @Html.RadioButtonFor(m => m.PaymentMode, 2, new {  }) Credit Card </label>
-            <label class="form-control">@Html.RadioButtonFor(m => m.PaymentMode, 3, htmlAttributes) Account </label>
-            @if (!accountInd)
-            {
-                <label class="text-warning">Account is not configured.</label>
-            }
-
-        </div>
-    </div>
-    <div class="col-lg-6 form-group">
-        @if (fromEdit != true)
-        {
-            <div class="row">
-
-                <label class="control-label col-lg-3">Driver</label>
-                <div class="col-lg-8">
-                    @Html.DropDownListFor(m => m.DriverId, (IEnumerable<SelectListItem>)ViewBag.DriversList, "Please Select", new { @class = "form-control dropdown dropdown-toggle" })
+                    </form>
                 </div>
-
+                @Html.ValidationMessageFor(m => m.CustomerName, null, new { @class = "text-danger" })
             </div>
-        }
-        <div class="row form-group">
+        </div>
+
+        <div class="col-lg-6 form-group">
 
             <label class="control-label col-lg-3">Type of parcel</label>
             <div class="col-lg-8">
                 @Html.TextBoxFor(m => m.TypeOfParcel, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="col-lg-6 form-group">
+            <label class="control-label col-lg-3">Amount (&pound;)</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(m => m.Price, htmlAttributesAmount)
+                @Html.ValidationMessageFor(m => m.Price, null, new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-lg-6 form-group">
+            <label class="control-label col-lg-3">Contact Number</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.CustomerPhone, null, new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 form-group">
+            <label class="control-label col-lg-3">Notes</label>
+            <div class="col-lg-8">
+                @Html.TextAreaFor(m => m.Notes, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-lg-6 form-group">
+            <label class="control-label col-lg-3">Dropoff Contact Number</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(m => m.DropoffContact, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.DropoffContact, null, new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 form-group">
+            <label class="control-label col-lg-3">Reference</label>
+            <div class="col-lg-8">
+                @Html.TextBoxFor(m => m.Reference, new { @class = "form-control" })
+            </div>
+        </div>
+        @if (fromEdit != true)
+        {
+            <div class="col-lg-6 form-group">
+                <label class="control-label col-lg-3">Choose Date Time</label>
+                <div class="col-lg-8">
+                    @Html.TextBoxFor(m => m.SendDateTime, new { @class = "form-control", @id = "futuredate" })
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 form-group">
+            @if (fromEdit != true)
+            {
+                <div class="row">
+
+                    <label class="control-label col-lg-3">Driver</label>
+                    <div class="col-lg-8">
+                        @Html.DropDownListFor(m => m.DriverId, (IEnumerable<SelectListItem>)ViewBag.DriversList, "Please Select", new { @class = "form-control dropdown dropdown-toggle" })
+                    </div>
+
+                </div>
+            }
+        </div>
+        <div class="col-lg-6 form-group">
+            <label class="control-label col-lg-4 ">Long Distance Job</label>
+            <div class="col-lg-1">
+                @Html.CheckBoxFor(m => m.longDistanceCheckboxValue, new { @class = "form-control" })
             </div>
         </div>
     </div>
 </div>
 
 @Html.HiddenFor(m => m.CustomerId)
+<script>
+    $(function () {
+        var query = window.location.href.slice(window.location.href.indexOf('?') + 1).split('=');;//$.session.get('DoSearch');
+        if (query[0] == "customerId")
+            $.session.set('DoSearch', false);
+        else {
+            $.session.set('DoSearch', true);
+            $('.jobFormInput').find('.form-control').attr("disabled", "disabled");
+        }
+        $('#futuredate').datetimepicker({
+            // minDate: moment()
+        });
+    });
+
+</script>

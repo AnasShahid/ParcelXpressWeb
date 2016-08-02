@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ParcelXpress.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,9 +9,11 @@ namespace ParcelXpress.Helpers
 {
     public class CustomException : Exception
     {
+        ParcelXpressConnection _db = new ParcelXpressConnection();
+
         public string CustomMessage { get; set; }
         public string ExceptionType { get; set; }
-
+        
 
         public void LogExceptionMessage(Exception ex, string additionalData)
         {
@@ -33,6 +36,23 @@ namespace ParcelXpress.Helpers
                 writer.WriteLine(additionalData);
                 writer.WriteLine(Environment.NewLine + "-----------------------------------------------------------------------------" + Environment.NewLine);
             }
+        }
+
+        public void SaveExceptionToDB(Exception ex, string additionalInformation)
+        {
+            try
+            {
+                var error = new ERR_LOG();
+                error.ErrorMessage = ex.Message ;
+                error.ErrorSource = ex.Source;
+                error.StackTrace = ex.StackTrace;
+                error.AdditionalInfo = additionalInformation;
+                error.ReportedTime = DateTime.Now.ToUniversalTime();
+                _db.ERR_LOG.Add(error);
+                _db.SaveChanges();
+            }
+            catch (Exception exception)
+            { }
         }
 
     }

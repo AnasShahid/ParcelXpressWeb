@@ -1,6 +1,6 @@
 ﻿@model ParcelXpress.Helpers.CustomerJobDriver
     @{
-        Model.JobId = Convert.ToInt16(Request.QueryString["jobId"]);
+        Model.JobId = Convert.ToInt32(Request.QueryString["jobId"]);
     }
 
     @*@Html.BeginForm("SendInvoiceToEmail", "Jobs", FormMethod.Get, new { @class = "form-horizontal" })

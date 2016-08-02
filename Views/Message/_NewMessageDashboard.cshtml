@@ -1,13 +1,5 @@
 ﻿@model DRVR_MSGS
-           <style>
-               .badge-notify {
-                   color: #8a0606 !important;
-                   position: relative !important;                   
-                   left: 5px !important;
-                   font-size:16px !important;
-        
-               }
-           </style>
+
 
 <div class="container-fluid">
     <div class="panel panel-primary mdl-shadow--4dp">
@@ -15,7 +7,13 @@
             <div class="mdl-card__title">
                 <h5 style="color:white;">New Message</h5>
                 <div class="mdl-layout-spacer"></div>
-                <a href="/Message/MainPage" class="btn mdl-button--accent mdl-button--raised refreshButton">Inbox &nbsp;<span class="badge badge-notify"><b>@ViewBag.MessageCount</b></span></a>
+                <a href="/Message/MainPage" class="btn mdl-button--accent mdl-button--raised refreshButton">
+                    Inbox &nbsp;
+                    @if ((int)ViewBag.MessageCount > 0)
+                    {
+                        <span class="badge badge-notify"><b>@ViewBag.MessageCount</b></span>
+                    }
+                </a>
             </div>
         </div>
         <div class="panel-body">

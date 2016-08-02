@@ -13,6 +13,8 @@
     {
         responseText = StringEnum.Parse(typeof(ResponseCode), jobResponse.ResponseCode).ToString() + " minutes";
     }
+    char[] splitter = "Driver Comments:".ToCharArray();
+    var comments= (Model.Notes==null?"":Model.Notes).Split(new string[] { "Driver Comments:" }, StringSplitOptions.None);
 }
 
 <a href="/Jobs/SingleJobDetails?jobId=@Model.JobId">
@@ -23,11 +25,17 @@
         </h6>
     </div>
     <div class="row">
-        <div style="color:#3d3c3c"> @Model.PickupAddress </div>
-      
-    </div>
-    <div class="row">
-        <div style="color:#8a8a8a"> @Model.DropAddress </div>
+        <div class="col-sm-10">
+            <div class="row">
+                <div style="color:#3d3c3c"> @Model.PickupAddress </div>
+            </div>
+            <div class="row">
+                <div style="color:#8a8a8a"> @Model.DropAddress </div>
+            </div>
+        </div>
+        @if (comments.Length>1&&comments[1]!=null &&!comments[1].Trim().Equals("")) {
+            <div class="col-sm-2" style="float:right; font-size:1.8em"><span style="float:right;" class="glyphicon glyphicon-exclamation-sign"></span></div>
+        }
     </div>
     <div class="row">
         <div style="color: #8a8a8a !important;">
@@ -36,15 +44,24 @@
                 {
                     @responseText
                 }
-                else
-                {
-                    @jobStatus
-                }
             </b>
             @if (Model.DRVR_DATA != null)
             {
                 <span>(@Model.DRVR_DATA.DriverName)</span> 
             }
         </div>
+    </div>
+    <div class="row" style="color:#337ab7;">
+        <div class="col-md-6 zero-paddings-leftright">
+            Sent: @TimezoneHelper.ConvertUTCtoLocal(Model.JobDate).ToString("hh:mm tt")
+        </div>
+        @if (Model.AssignedTime != null)
+        {
+            <div class="col-md-6 zero-paddings-leftright">Assigned: @TimezoneHelper.ConvertUTCtoLocal(Model.AssignedTime.Value).ToString("hh:mm tt")</div>
+        }
+        @if (Model.PickupTime != null)
+        {
+            <div class="col-md-6 zero-paddings-leftright">Pickedup: @TimezoneHelper.ConvertUTCtoLocal(Model.PickupTime.Value).ToString("hh:mm tt")</div>
+        }
     </div>
 </a>

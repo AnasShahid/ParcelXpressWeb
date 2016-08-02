@@ -12,7 +12,7 @@ namespace ParcelXpress.Models
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-
+    
     public partial class DRVR_DATA
     {
         public DRVR_DATA()
@@ -45,6 +45,8 @@ namespace ParcelXpress.Models
         public Nullable<decimal> CommissionRate { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
         public System.DateTime CreatedOn { get; set; }
+        public Nullable<System.DateTime> LoginTime { get; set; }
+        public Nullable<System.DateTime> LogoutTime { get; set; }
     
         public virtual SCRT_QUES SCRT_QUES { get; set; }
         public virtual ICollection<DRVR_MSGS> DRVR_MSGS { get; set; }

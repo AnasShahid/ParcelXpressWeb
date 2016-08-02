@@ -16,7 +16,7 @@
 <div class="col-lg-11">
     <div class="box box-warning">
         <div class="box-header">
-            <h3 class="col-lg-10">@driverName <small style="margin-left:2em;"><b> @Model.MessageDate.AddHours(1).ToString("dd-MMM-yy hh:mm tt")</b></small></h3>
+            <h3 class="col-lg-10">@driverName <small style="margin-left:2em;"><b> @TimezoneHelper.ConvertUTCtoLocal(Model.MessageDate).ToString("dd-MMM-yy hh:mm tt")</b></small></h3>
         </div>
         <div class="box-body">
             <div class="col-lg-10" style="padding-bottom:5em !important;">@Model.Message</div>
