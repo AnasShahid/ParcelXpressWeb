@@ -42,6 +42,7 @@
             {
                 <label class="col-lg-6 control-label">Customer: @ViewBag.CustomerName</label>
             }
+
         </div>
 
         <div class="panel-body">
@@ -100,16 +101,23 @@
                                             @Html.TextBoxFor(m => m.DueAmount, new { @class = "form-control", @disabled = "disabled" })
                                             @Html.HiddenFor(m => m.DueAmount)
                                         </div>
-                                        <div class="row" style="margin-top: 2px; margin-left: 3px; margin-right: 3px;">
+                                        @if (ViewBag.TotalDropoffs != null)
+                                        {
+                                        <div class="row" style="margin-top:2px; margin-left:3px;margin-right:3px;">
+                                            <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Number of Dropoffs: </label>
+                                            <input class="form-control" disabled="disabled" placeholder="@ViewBag.TotalDropoffs" />
+                                        </div>
+                                        }
+                                        @*<div class="row" style="margin-top: 2px; margin-left: 3px; margin-right: 3px;">
                                             <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Paid Amount: </label>
                                             @Html.TextBoxFor(m => m.PaidAmount, new { @class = "form-control" })
                                             @Html.ValidationMessageFor(m => m.PaidAmount)
-                                        </div>
+                                        </div>*@
                                         <hr />
                                     </div>
                                     <div class="box-footer">
                                         <div class="row" style="margin-top:4px;">
-                                            <button class="btn btn-success col-md-offset-3" data-accounttype="customer" type="submit" id="settleAccount">Post Receipt</button>
+                                          @*  <button class="btn btn-success col-md-offset-3" data-accounttype="customer" type="submit" id="settleAccount">Post Receipt</button>*@
                                         </div>
                                     </div>
                                 </div>

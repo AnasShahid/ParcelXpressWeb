@@ -19,17 +19,17 @@ namespace ParcelXpress.Controllers
         //
         // GET: /Message/
 
-        public ActionResult MainPage(string partialActionName=null)
+        public ActionResult MainPage(string partialActionName = null)
         {
             ViewBag.MessageCount = _db.DRVR_MSGS.Where(m => m.MessageReadInd == false).Count();
             return View();
         }
 
-        
-        public ActionResult Inbox(int page=1)
+
+        public ActionResult Inbox(int page = 1)
         {
-            var messages = loadInbox(page);           
-            return PartialView("_Inbox",messages);
+            var messages = loadInbox(page);
+            return PartialView("_Inbox", messages);
         }
 
         public void clearRead()
@@ -44,7 +44,7 @@ namespace ParcelXpress.Controllers
             }
         }
 
-        private object loadInbox(int pageNumber=1)
+        private object loadInbox(int pageNumber = 1)
         {
             var msgs = _db.DRVR_MSGS
                 .Where(m => m.MessageReceivedInd == true)
@@ -53,19 +53,19 @@ namespace ParcelXpress.Controllers
                 .ToPagedList(pageNumber, 10);
             return msgs;
         }
-        
-        public ActionResult Sent(int page=1)
+
+        public ActionResult Sent(int page = 1)
         {
             var msgs = _db.DRVR_MSGS
                 .Where(m => m.MessageReceivedInd == false)
                 .OrderByDescending(m => m.MessageDate)
                 .ToPagedList(page, 10);
-            return PartialView("_SentItems",msgs);
+            return PartialView("_SentItems", msgs);
         }
-        
+
         public ActionResult WriteNew()
         {
-            var drivers = _db.DRVR_DATA.Where(d=>d.IsDeleted!=true).OrderBy(d => d.DriverName);
+            var drivers = _db.DRVR_DATA.Where(d => d.IsDeleted != true).OrderBy(d => d.DriverName);
             var selectList = new List<SelectListItem>();
             foreach (var item in drivers)
             {
@@ -83,7 +83,7 @@ namespace ParcelXpress.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult sendToSingle(DRVR_MSGS drvrMsg)
         {
-            try 
+            try
             {
                 if (ModelState.IsValid)
                 {
@@ -104,9 +104,9 @@ namespace ParcelXpress.Controllers
                 TempData["toastMessage"] = "<script>toastr.error('An Error occured, message not sent.');</script>";
             }
 
-            return RedirectToAction("MainPage");  
+            return RedirectToAction("MainPage");
         }
-       
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -133,23 +133,23 @@ namespace ParcelXpress.Controllers
                 TempData["toastMessage"] = "<script>toastr.error('An Error occured, message not sent.');</script>";
             }
 
-            return RedirectToAction("MainPage"); 
+            return RedirectToAction("MainPage");
         }
 
         private void SendMessagetoDriver(DRVR_MSGS drvrMsg)
         {
-            if(drvrMsg.DriverId!=null&&drvrMsg.DriverId>0)
+            if (drvrMsg.DriverId != null && drvrMsg.DriverId > 0)
             {
                 var driver = _db.DRVR_DATA.Find(drvrMsg.DriverId);
                 GcmSender.SendToSingle(driver, drvrMsg.Message, "new_message");
             }
             else if (drvrMsg.DriverId == null)
-            {               
-                var activeDrivers = _db.DRVR_DATA.Where(d => d.IsActive == true&&d.IsDeleted!=true);
+            {
+                var activeDrivers = _db.DRVR_DATA.Where(d => d.IsActive == true && d.IsDeleted != true);
                 foreach (var driver in activeDrivers)
                 {
                     GcmSender.SendToSingle(driver, drvrMsg.Message, "new_message");
-                }              
+                }
             }
         }
 
@@ -171,6 +171,9 @@ namespace ParcelXpress.Controllers
             if ((int)ViewBag.MessageCount > 0)
             {
                 TempData["toastMessageForInbox"] = "<script>toastr.info('You have unread messages in inbox.');</script>";
+            }
+            if (Request.IsAjaxRequest()) {
+                return PartialView("_InboxCountDashboard");
             }
             return PartialView();
         }
@@ -200,7 +203,7 @@ namespace ParcelXpress.Controllers
                 TempData["toastMessage"] = "<script>toastr.error('An Error occured, message not sent.');</script>";
             }
 
-            return RedirectToAction("Dashboard","Index");
+            return RedirectToAction("Dashboard", "Index");
         }
 
 
@@ -230,7 +233,7 @@ namespace ParcelXpress.Controllers
                 TempData["toastMessage"] = "<script>toastr.error('An Error occured, message not sent.');</script>";
             }
 
-            return RedirectToAction("Dashboard","Index");
+            return RedirectToAction("Dashboard", "Index");
         }
     }
 }

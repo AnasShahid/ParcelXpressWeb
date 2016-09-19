@@ -87,6 +87,9 @@ namespace ParcelXpress.Controllers
             requestData = _db.REQT_DRVR.Find(reqtId);
             try
             {
+                driver.CommissionRate = driver.CommissionRate == null ? 0.00M : driver.CommissionRate;
+                if (ModelState.ContainsKey("CommissionRate"))
+                    ModelState["CommissionRate"].Errors.Clear();
                 if (ModelState.IsValid)
                 {
                     driver.IsDeleted = false;
@@ -124,6 +127,9 @@ namespace ParcelXpress.Controllers
         {
             try
             {
+                driver.CommissionRate = driver.CommissionRate == null ? 0.00M : driver.CommissionRate;
+                if (ModelState.ContainsKey("CommissionRate"))
+                    ModelState["CommissionRate"].Errors.Clear();
                 if (ModelState.IsValid)
                 {
                     _db.Entry(driver).State = EntityState.Modified;
@@ -166,11 +172,67 @@ namespace ParcelXpress.Controllers
             var model = _db.DRVR_DATA.Where(d => d.IsActive == true && d.IsDeleted != true).ToList();
             foreach (var item in model)
             {
-               item.ActiveJobsCount= item.JOBS.Where(p => (p.JobStatus == StringEnum.GetStringValue(StatusCode.Assigned)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.PickedUp)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff))).Count();
+                item.ActiveJobsCount = item.JOBS.Where(p => (p.JobStatus == StringEnum.GetStringValue(StatusCode.Assigned)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.PickedUp)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff))).Count();
+                item.isTimeIn = item.DRVR_TIME_SHET.LastOrDefault(p => p.IsLoggedIn == true) != null;
+                item.AdditionalInfo = item.DRVR_TIME_SHET.LastOrDefault(d => d.IsLoggedIn == true) != null ? TimezoneHelper.ConvertUTCtoLocal(item.DRVR_TIME_SHET.LastOrDefault(d => d.IsLoggedIn == true).LoginTime.Value).ToString("hh:mm tt") : "";
+            }
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_ActiveDriversList", model);
             }
             return PartialView(model);
         }
 
+        public ActionResult AcceptHourlyDriver(int driverId)
+        {
+            try
+            {
+                var driver = _db.DRVR_DATA.Find(driverId);
+                if (driver.IsOnHourlyRate == false || !driver.HourlyRate.HasValue || driver.HourlyRate <= 0)
+                {
+                    throw new Exception("Hourly rate is not defined for selected driver");
+                }
+                DRVR_TIME_SHET timeSheet = new DRVR_TIME_SHET()
+                {
+                    DriverId = driver.DriverId,
+                    HourlyRate = driver.HourlyRate,
+                    IsLoggedIn = true,
+                    LoginTime = DateTime.Now.ToUniversalTime(),
+                    SettledInd = false
+                };
+                _db.DRVR_TIME_SHET.Add(timeSheet);
+                _db.SaveChanges();
+                TempData["toastMessage"] = "<script>toastr.success('Driver has been successfully accepted. Driver time recording has been started');</script>";
+            }
+            catch (Exception ex)
+            {
+                TempData["toastMessage"] = "<script>toastr.error('" + ex.Message + "');</script>";
+            }
+            return RedirectToAction("Dashboard", "Index");
+        }
 
+        public ActionResult LogoutHourlyDriver(int driverId)
+        {
+            try
+            {
+                var driverTimeSheet = _db.DRVR_TIME_SHET.Where(d => d.DriverId == driverId && d.IsLoggedIn == true);
+                foreach (var item in driverTimeSheet)
+                {
+                    item.IsLoggedIn = false;
+                    item.LogoutTime = DateTime.Now.ToUniversalTime();
+                    TimeSpan hoursWorked = (item.LogoutTime - item.LoginTime).GetValueOrDefault(new TimeSpan());
+                    item.AmountEarned = (decimal)(hoursWorked.TotalHours) * item.HourlyRate.GetValueOrDefault(0);
+                    _db.Entry(item).State = EntityState.Modified;
+                }
+                _db.SaveChanges();
+                TempData["toastMessage"] = "<script>toastr.success('Driver time recording has been stopped successfully.');</script>";
+
+            }
+            catch (Exception ex)
+            {
+                TempData["toastMessage"] = "<script>toastr.error('" + ex.Message + "');</script>";
+            }
+            return RedirectToAction("Dashboard", "Index");
+        }
     }
 }

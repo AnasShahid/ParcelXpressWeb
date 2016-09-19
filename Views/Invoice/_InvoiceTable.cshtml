@@ -3,6 +3,8 @@
     string targetPage = (string)ViewData["view"];
     string fromDate = (string)ViewData["fromDate"];
     string toDate = (string)ViewData["toDate"];
+    string searchTxt = (string)ViewData["searchTxt"];
+
 }
 <div class="row col-md-12" id="invoiceData">
     <table class="table table-bordered table-responsive table-hover">
@@ -63,7 +65,7 @@
 
     <div class="box-footer">
         <div class="pagedList" data-pxp-target="#invoiceData">
-            @Html.PagedListPager(Model, page => Url.Action(targetPage, new { page, fromDate, toDate }), PagedListRenderOptions.OnlyShowFivePagesAtATime)
+            @Html.PagedListPager(Model, page => Url.Action(targetPage, new { page, searchTxt ,fromDate, toDate }), PagedListRenderOptions.OnlyShowFivePagesAtATime)
         </div>
     </div>
 </div>

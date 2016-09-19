@@ -47,6 +47,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.76.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>packages\ClosedXML.0.76.0\lib\net40-client\ClosedXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Hangfire.Core, Version=1.5.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Hangfire.Core.1.5.8\lib\net45\Hangfire.Core.dll</HintPath>
       <Private>True</Private>
@@ -229,6 +237,8 @@
     <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\MobileController.cs" />
     <Compile Include="Controllers\SettingsController.cs" />
+    <Compile Include="Entities\DailyParcelEntity.cs" />
+    <Compile Include="Entities\JobEntity.cs" />
     <Compile Include="Enums\InvoicePaymentModes.cs" />
     <Compile Include="Enums\PaymentModes.cs" />
     <Compile Include="Enums\MailClients.cs" />
@@ -240,18 +250,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\AddChagesViewModel.cs" />
+    <Compile Include="Entities\AddChagesViewModel.cs" />
     <Compile Include="Helpers\CustomerHelper.cs" />
-    <Compile Include="Helpers\CustomerJobDriver.cs" />
+    <Compile Include="Entities\CustomerJobDriver.cs" />
     <Compile Include="Helpers\CustomException.cs" />
-    <Compile Include="Helpers\DriverAccounts.cs" />
+    <Compile Include="Entities\DriverAccounts.cs" />
     <Compile Include="Helpers\DriverHelper.cs" />
     <Compile Include="Helpers\EmailAccount.cs" />
-    <Compile Include="Helpers\Balance.cs" />
+    <Compile Include="Entities\Balance.cs" />
     <Compile Include="Helpers\EmailSender.cs" />
     <Compile Include="Helpers\GcmSender.cs" />
+    <Compile Include="Entities\InvoiceInfo.cs" />
     <Compile Include="Helpers\JobHelper.cs" />
     <Compile Include="Helpers\PDFGenerator.cs" />
+    <Compile Include="Entities\ReportParameters.cs" />
     <Compile Include="Helpers\SMSSender.cs" />
     <Compile Include="Helpers\TimezoneHelper.cs" />
     <Compile Include="Models\CONT_PKGS.cs">
@@ -272,16 +284,13 @@
     <Compile Include="Models\CUST_TRAN.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DALY_PRCL.cs">
-      <DependentUpon>ParcelXpress.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\DALY_PRCL_MSTR.cs">
-      <DependentUpon>ParcelXpress.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\DRVR_DATA.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DRVR_MSGS.cs">
+      <DependentUpon>ParcelXpress.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\DRVR_TIME_SHET.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DRVR_TRAN.cs">
@@ -325,6 +334,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ParcelXpress.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PNDG_JOBS.cs">
+      <DependentUpon>ParcelXpress.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\REQT_DRVR.cs">
       <DependentUpon>ParcelXpress.tt</DependentUpon>
@@ -503,6 +515,7 @@
     <Content Include="Styles\Resources\Swiftee Icon 48px.png" />
     <Content Include="Styles\Resources\SwifteeCoverNobg.png" />
     <Content Include="Styles\Resources\swifteeCoverYellowBlack.png" />
+    <Content Include="Styles\Resources\SwifteeInvoiceLogo.jpg" />
     <Content Include="Styles\Resources\SwifteeInvoiceLogo.png" />
     <Content Include="Styles\Resources\SwifteeYellowWhite.png" />
     <Content Include="Web.config">
@@ -590,10 +603,17 @@
     <Content Include="Views\Invoice\_InvoiceSettlement.cshtml" />
     <Content Include="Views\Settings\ContractPackages.cshtml" />
     <Content Include="Views\Settings\_PackageDetails.cshtml" />
+    <Content Include="Views\Accounts\_SelectedCustomerAccount.cshtml" />
+    <Content Include="Views\Jobs\PendingJobs.cshtml" />
+    <Content Include="Views\Jobs\_PendingJobsListItem.cshtml" />
+    <Content Include="Views\Jobs\CreateDailyJob.cshtml" />
+    <Content Include="Views\Jobs\_DailyParcelSchedule.cshtml" />
+    <Content Include="Views\Jobs\_DailyParcelJobDetails.cshtml" />
+    <Content Include="Views\Driver\_ActiveDriversList.cshtml" />
+    <Content Include="Views\Message\_InboxCountDashboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Entities\" />
     <Folder Include="Lib\css\" />
     <Folder Include="MyScripts\angular\" />
   </ItemGroup>

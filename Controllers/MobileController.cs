@@ -13,6 +13,7 @@ using System.Data.Objects;
 using System.Globalization;
 using System.Configuration;
 using Newtonsoft.Json;
+using ParcelXpress.Entities;
 
 namespace ParcelXpress.Controllers
 {
@@ -114,19 +115,30 @@ namespace ParcelXpress.Controllers
         public JsonResult AvailableJobs()
         {
             string open = StringEnum.GetStringValue(StatusCode.Open);
+            List<JobEntity> Jobs = new List<JobEntity>();
             try
             {
                 _db.Configuration.ProxyCreationEnabled = false;
                 var availablejobs = _db.JOBS.Where(j => j.JobStatus == open)
                                     .OrderByDescending(j => j.LastUpdated);
                 SetDateTimeKindOfList(availablejobs);
-                return Json(availablejobs, JsonRequestBehavior.AllowGet);
+
+                foreach (var item in availablejobs)
+                {
+                    JobEntity job = new JobEntity();
+                    job.JOB = item;
+                    if (item.CustomerId != null && item.CustomerId > 0)
+                    {
+                        job.CUST_DATA = _db.CUST_DATA.Find(item.CustomerId);
+                        job.CUST_DATA.JOBS = null;
+                    }
+                    Jobs.Add(job);
+                }
             }
             catch (Exception ex)
             {
-                List<JOB> availablejobs = null;
-                return Json(availablejobs, JsonRequestBehavior.AllowGet);
             }
+            return Json(Jobs, JsonRequestBehavior.AllowGet);
 
         }
 
@@ -136,6 +148,7 @@ namespace ParcelXpress.Controllers
             string assigned = StringEnum.GetStringValue(StatusCode.Assigned);
             string pickedUp = StringEnum.GetStringValue(StatusCode.PickedUp);
             string droppedOff = StringEnum.GetStringValue(StatusCode.DroppedOff);
+            List<JobEntity> Jobs = new List<JobEntity>();
 
             try
             {
@@ -144,19 +157,30 @@ namespace ParcelXpress.Controllers
                                         .OrderByDescending(j => j.LastUpdated);
                 SetDateTimeKindOfList(myJobs);
 
-                return Json(myJobs, JsonRequestBehavior.AllowGet);
+                foreach (var item in myJobs)
+                {
+                    JobEntity job = new JobEntity();
+                    job.JOB = item;
+                    if (item.CustomerId != null && item.CustomerId > 0)
+                    {
+                        job.CUST_DATA = _db.CUST_DATA.Find(item.CustomerId);
+                        job.CUST_DATA.JOBS = null;
+                    }
+                    Jobs.Add(job);
+                }
+
             }
             catch (Exception ex)
             {
-                List<JOB> myJobs = null;
-                return Json(myJobs, JsonRequestBehavior.AllowGet);
             }
+            return Json(Jobs, JsonRequestBehavior.AllowGet);
 
         }
 
         [HttpGet]
         public JsonResult GetBalance(int driverId)
         {
+            var driver = _db.DRVR_DATA.Find(driverId);
             string inTransaction = StringEnum.GetStringValue(TransactionTypeCode.In);
             string outTransaction = StringEnum.GetStringValue(TransactionTypeCode.Out);
             _db.Configuration.ProxyCreationEnabled = false;
@@ -167,9 +191,28 @@ namespace ParcelXpress.Controllers
                 if (tran.TransactionType == inTransaction)
                     bal.DriverBalance += tran.Balance.GetValueOrDefault(0);
                 else if (tran.TransactionType == outTransaction)
-                    bal.PxpBalance += tran.Balance.GetValueOrDefault(0);
+                {
+                    if (tran.Balance.GetValueOrDefault(0) >= 0)
+                        bal.PxpBalance += tran.Balance.GetValueOrDefault(0);
+                    else
+                    {
+                        bal.DriverAccountBalance += Math.Abs(tran.Balance.GetValueOrDefault(0));
+                        bal.DriverBalance-= Math.Abs(tran.Balance.GetValueOrDefault(0));  //Need to deduct the amount from cash balance as its already added in account balance
+                    }
+                }
             }
-
+            if (driver.IsOnHourlyRate == true)
+            {
+                var unsettledAmount = _db.DRVR_TIME_SHET.Where(x => x.DriverId == driver.DriverId && x.SettledInd == false && x.LogoutTime.HasValue).Sum(y => y.AmountEarned).GetValueOrDefault(0);
+                bal.DriverBalance += unsettledAmount;
+                var currentLogin = _db.DRVR_TIME_SHET.Where(x => x.DriverId == driver.DriverId && x.SettledInd == false && !x.LogoutTime.HasValue);
+                foreach (var item in currentLogin)
+                {
+                    TimeSpan hoursWorked = (DateTime.Now.ToUniversalTime() - item.LoginTime).Value;
+                    bal.DriverBalance += (decimal)hoursWorked.TotalHours * item.HourlyRate.GetValueOrDefault(0);
+                }
+            }
+            bal.DriverBalance = Math.Round(bal.DriverBalance, 2);
             return Json(bal, JsonRequestBehavior.AllowGet);
 
         }
@@ -239,12 +282,13 @@ namespace ParcelXpress.Controllers
                 if (job.JobStatus == dropped)           //Accounting when dropped off
                 {
                     thisjob.DropoffTime = transDate;
+                    thisjob.IsDelivered = job.IsDelivered;
                     var driver = _db.DRVR_DATA.Find(job.DriverId);
                     decimal commission = Math.Round((job.Price * (driver.CommissionRate / 100)).GetValueOrDefault(0), 2);
                     var driverTransactionCommission = new DRVR_TRAN()
                     {
                         DriverId = driver.DriverId,
-                        JobId = job.JobId,
+                        JobId = thisjob.JobId,
                         TransactionDate = transDate,
                         TransactionType = StringEnum.GetStringValue(TransactionTypeCode.In),
                         Amount = commission,
@@ -256,10 +300,11 @@ namespace ParcelXpress.Controllers
 
                     if (!job.AccountPaymentInd.GetValueOrDefault(false))    //Customer paid the cash to driver
                     {
+
                         var diverTransactionPXP = new DRVR_TRAN()
                         {
                             DriverId = driver.DriverId,
-                            JobId = job.JobId,
+                            JobId = thisjob.JobId,
                             TransactionDate = transDate,
                             TransactionType = StringEnum.GetStringValue(TransactionTypeCode.Out),
                             Amount = Math.Round((job.Price - commission).GetValueOrDefault(0), 2),
@@ -268,26 +313,27 @@ namespace ParcelXpress.Controllers
                         };
                         _db.DRVR_TRAN.Add(diverTransactionPXP);
                         _db.SaveChanges();
+
                     }
                     else
                     {
                         var diverTransactionPXP = new DRVR_TRAN()
                         {
                             DriverId = driver.DriverId,
-                            JobId = job.JobId,
+                            JobId = thisjob.JobId,
                             TransactionDate = transDate,
                             TransactionType = StringEnum.GetStringValue(TransactionTypeCode.Out),
                             Amount = (0 - commission),
                             Balance = (0 - commission),
                             SettledInd = false
                         };
+
                         _db.DRVR_TRAN.Add(diverTransactionPXP);     //Driver does not have to pay PXP instead commission is dropped from pxp account
                         _db.SaveChanges();
-
                         var customerTransAccount = new CUST_TRAN()
                         {
-                            CustomerId = job.CustomerId,
-                            JobId = job.JobId,
+                            CustomerId = thisjob.CustomerId,
+                            JobId = thisjob.JobId,
                             TransactionDate = transDate,
                             PayableAmount = job.Price, //whole amount is receivable from customer
                             ReceivedAmount = 0,
@@ -295,10 +341,13 @@ namespace ParcelXpress.Controllers
                         };
                         _db.CUST_TRAN.Add(customerTransAccount);
                         _db.SaveChanges();
-                        Task.Run(() => sendCustomerOverdueAlert(job.CustomerId.GetValueOrDefault(0)));
+                        //Task.Run(() => sendCustomerOverdueAlert(job.CustomerId.GetValueOrDefault(0)));
                     }
                     job.JobStatus = StringEnum.GetStringValue(StatusCode.Closed);
-                    Task.Run(() => SMSSender.SendSmsToCustomer(job.CustomerPhone, (int)StatusCode.Closed, "", job.CustomerId));
+                    if (job.IsDelivered != false)
+                    {
+                        Task.Run(() => SMSSender.SendSmsToCustomer(job.CustomerPhone, (int)StatusCode.Closed, "", job.CustomerId));
+                    }
                 }
                 else if (job.JobStatus == pickedup)
                 {
@@ -469,7 +518,7 @@ namespace ParcelXpress.Controllers
             {
                 var job = _db.JOBS.Find(jobId);
                 job.PaymentMode = paymentMode;
-                job.AccountPaymentInd = job.PaymentMode == (int)PaymentModes.Account ? true : false;
+                job.AccountPaymentInd = job.PaymentMode == (int)PaymentModes.Account || job.PaymentMode == (int)PaymentModes.Contract ? true : false;
                 job.LastUpdated = DateTime.Now.ToUniversalTime();
                 _db.Entry(job).State = EntityState.Modified;
                 _db.SaveChanges();
@@ -492,15 +541,22 @@ namespace ParcelXpress.Controllers
             var Jobs = _db.JOBS.Where(j => j.JobDate.Year == today.Year && j.JobDate.Month == today.Month && j.JobDate.Day == today.Day && j.JobStatus == closed);
             SetDateTimeKindOfList(Jobs);
             //.Select(j=>new{j.JobId,j.JobDate,j.JobStatus,j.DriverId,j.DriverCommission,j.CustomerPhone,j.CustomerName,j.CustomerId,j.AccountPaymentInd,j.DropAddress,j.PickupAddress,j.Price,j.Notes,j});
-            List<JOB> myJobs = new List<JOB>();
+            List<JobEntity> myJobs = new List<JobEntity>();
             foreach (var job in Jobs)
             {
+                JobEntity jobEntity = new JobEntity();
                 if (job.DriverId == driverId)
                 {
                     job.DriverCommission = job.Price * (driverCommission / 100);
                     job.DRVR_DATA = null;
                     job.CUST_DATA = null;
-                    myJobs.Add(job);
+                    jobEntity.JOB = job;
+                    if (job.CustomerId != null && job.CustomerId > 0)
+                    {
+                        jobEntity.CUST_DATA = _db.CUST_DATA.Find(job.CustomerId);
+                        jobEntity.CUST_DATA.JOBS = null;
+                    }
+                    myJobs.Add(jobEntity);
                 }
             }
             return Json(myJobs, JsonRequestBehavior.AllowGet);
@@ -676,6 +732,7 @@ namespace ParcelXpress.Controllers
                 item.ActiveJobsCount = item.JOBS.Where(p => (p.JobStatus == StringEnum.GetStringValue(StatusCode.Assigned)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.PickedUp)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff))).Count();
                 item.LongDistanceJobCount = item.JOBS.Where(p => (p.LongDistanceInd == true) && ((p.JobStatus == StringEnum.GetStringValue(StatusCode.Assigned)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.PickedUp)) || (p.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff)))).Count();
                 var driver = new Dictionary<string, string>();
+                driver.Add("Id", item.DriverId.ToString());
                 driver.Add("Name", item.DriverName);
                 driver.Add("JobCount", item.ActiveJobsCount.ToString());
                 driver.Add("Number", item.ContactNo);
@@ -684,6 +741,8 @@ namespace ParcelXpress.Controllers
             }
             return Json(activeDrivers, JsonRequestBehavior.AllowGet);
         }
+
+
 
         #endregion
 
@@ -719,7 +778,7 @@ namespace ParcelXpress.Controllers
             JOB job = new JOB()
             {
                 PaymentMode = receivedJob.PaymentMode,
-                AccountPaymentInd = receivedJob.PaymentMode == (int)PaymentModes.Account ? true : false,
+                AccountPaymentInd = receivedJob.PaymentMode == (int)PaymentModes.Account|| receivedJob.PaymentMode == (int)PaymentModes.Contract ? true : false,
                 CustomerId = receivedJob.CustomerId,
                 CustomerName = receivedJob.CustomerName,
                 CustomerPhone = receivedJob.CustomerPhone,
@@ -924,7 +983,7 @@ namespace ParcelXpress.Controllers
                     conn.SaveChanges();
 
                     string emailSubject = "PXP Customer due alert";
-                    StringBuilder sb = new StringBuilder("Dear Pxp Admin,<br /><br />This is to alert you that the dues of the customer " + customer.CustomerName + " have reached " + alertObj.AlertAmount + "£");
+                    StringBuilder sb = new StringBuilder("Dear Swiftee Admin,<br /><br />This is to alert you that the dues of the customer " + customer.CustomerName + " have reached " + alertObj.AlertAmount + "£");
                     sb.Append("<br />");
                     sb.Append("<br />Customer Name: " + customer.CustomerName);
                     sb.Append("<br />Total Due Amount: £" + customerOverdues);
@@ -932,7 +991,7 @@ namespace ParcelXpress.Controllers
                     sb.Append("<br />Email: " + customer.EmailAddress);
                     string emailBody = sb.ToString();
 
-                    EmailSender.SendEmail(targetEmailAddress, emailSubject, emailBody, "PXP Alert");
+                    EmailSender.SendEmail(targetEmailAddress, emailSubject, emailBody, "Swiftee Dues Alert");
                 }
             }
             catch (Exception ex)

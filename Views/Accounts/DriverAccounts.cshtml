@@ -9,6 +9,7 @@
         ispayable = true;
         receivableAmount = Math.Abs(receivableAmount);
     }
+
     int driverId = (int)ViewBag.DriverId;
 }
 
@@ -70,22 +71,32 @@
                                             <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Cash Received: </label>
                                             @ViewBag.CashPayment
                                         </div>
-                                        <div class="row" style="margin-top:2px;">
-                                            <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Driver Commission on Jobs: </label>
-                                            @ViewBag.DriverCommission
-                                        </div>
-                                        <div class="row" style="margin-top:2px;">
-                                            <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Balance Driver Commission: </label>
-                                            @ViewBag.TotalBalanceDriverCommission
-                                        </div>
-                                        <hr />
-                                        <div class="row" style="margin-top:2px;">
-                                            @if (ispayable)
-                                            { <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Payable to driver</label> }
-                                            else
-                                            { <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Receivable from driver</label>}
-                                            <b>@receivableAmount</b>
-                                        </div>
+                                        @if (ViewBag.IsHoulyDriver != true)
+                                        {
+                                            <div class="row" style="margin-top:2px;">
+                                                <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Driver Commission on Jobs: </label>
+                                                @ViewBag.DriverCommission
+                                            </div>
+                                            <div class="row" style="margin-top:2px;">
+                                                <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Total Balance Driver Commission: </label>
+                                                @ViewBag.TotalBalanceDriverCommission
+                                            </div>
+                                            <hr />
+                                            <div class="row" style="margin-top:2px;">
+                                                @if (ispayable)
+                                                { <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Payable to driver</label> }
+                                                else
+                                                { <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Receivable from driver</label>}
+                                                <b>@receivableAmount</b>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="row" style="margin-top:2px;">
+                                                <label class="control-label col-lg-8 col-sm-6" style="padding-top:0px !important;">Driver Earnings on Houly jobs: </label>
+                                                @ViewBag.TotalHourlyEarned
+                                            </div>
+                                        }
                                         <div class="box-footer">
                                             <div class="row" style="margin-top:4px;">
                                                 <button class="btn btn-success col-md-offset-3" data-accounttype="driver" type="submit" id="settleAccount">Settle Driver Account</button>

@@ -2,14 +2,14 @@
 @{
     ViewBag.Title = "Edit Job";
     List<CUST_DATA> customersModel = new List<CUST_DATA>();
-
+ 
 }
 
 <div class="container-fluid">
     <section class="content-header">
         <h2>Jobs <small>Edit Job</small></h2>
     </section>
-    @using (Html.BeginForm("saveEditJob", "Jobs", null, FormMethod.Post, new { @class = "form-horizontal", @id = "formNewJob" }))
+    @using (Html.BeginForm("saveEditJob", "Jobs", new { HangfireId=ViewBag.HangfireId }, FormMethod.Post, new { @class = "form-horizontal", @id = "formNewJob" }))
     {
         <div class="col-lg-10">
             <div class="box box-primary">
@@ -27,6 +27,7 @@
                     @Html.HiddenFor(m => m.DriverId)
                     @Html.HiddenFor(m => m.DriverCommission)
                     @Html.HiddenFor(m => m.JobStatus)
+                    @Html.HiddenFor(m=>m.SendDateTime)
                     <div class="box-footer wrapper ">
                         <div class="col-sm-3 col-md-1">
                             <button id="btnJobFormSubmit" type="submit" class="btn btn-primary "><span class="glyphicon glyphicon-send"></span> Save Changes</button>

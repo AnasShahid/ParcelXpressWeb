@@ -12,7 +12,7 @@ namespace ParcelXpress.Models
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    
+
     public partial class JOB
     {
         public JOB()
@@ -57,10 +57,12 @@ namespace ParcelXpress.Models
         public string Reference { get; set; }
         public Nullable<System.DateTime> LastUpdated { get; set; }
 
-        public virtual CUST_DATA CUST_DATA { get; set; }
+        public Nullable<bool> IsDelivered { get; set; }
+    
         public virtual ICollection<JOBS_HTRY> JOBS_HTRY { get; set; }
         public virtual ICollection<JOBS_RESP> JOBS_RESP { get; set; }
         public virtual DRVR_DATA DRVR_DATA { get; set; }
         public virtual ICollection<CUST_INVC> CUST_INVC { get; set; }
+        public virtual CUST_DATA CUST_DATA { get; set; }
     }
 }

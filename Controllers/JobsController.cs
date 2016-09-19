@@ -13,6 +13,7 @@ using System.Data.Entity.Infrastructure;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.Data.Entity.Validation;
+using System.Runtime.Remoting;
 
 namespace ParcelXpress.Controllers
 {
@@ -34,17 +35,17 @@ namespace ParcelXpress.Controllers
             return View();
         }
 
-        public ActionResult CustomerSearch(string searchTerm = null,string searchCategory = null)
+        public ActionResult CustomerSearch(string searchTerm = null, string searchCategory = null)
         {
             var model = _db.CUST_DATA
                 .Where(c => (searchTerm == null || c.CustomerName.Contains(searchTerm) || c.Address.Contains(searchTerm) || c.ContactNo.Contains(searchTerm)) && c.IsDeleted != true)
                 .OrderBy(c => c.CustomerName);
 
-            if (searchCategory != null&&!searchCategory.Trim().Equals(""))
-            {                
+            if (searchCategory != null && !searchCategory.Trim().Equals(""))
+            {
                 if (searchCategory == ((int)PaymentModes.Account).ToString())
-                    return PartialView("_SearchResultCustomer", model.Where(m => m.HasAccount==true && m.HasContract != true));
-                else if(searchCategory == ((int)PaymentModes.Contract).ToString())
+                    return PartialView("_SearchResultCustomer", model.Where(m => m.HasAccount == true && m.HasContract != true));
+                else if (searchCategory == ((int)PaymentModes.Contract).ToString())
                     return PartialView("_SearchResultCustomer", model.Where(m => m.HasContract == true));
 
             }
@@ -193,7 +194,7 @@ namespace ParcelXpress.Controllers
                         JOB model = new JOB() { CustomerName = customerDetails.CustomerName, CustomerId = customerDetails.CustomerId, CustomerPhone = customerDetails.ContactNo, PickupAddress = customerDetails.Address };
 
 
-                        if(customerDetails.HasAccount != null)
+                        if (customerDetails.HasAccount != null)
                             ViewBag.CustomerAccountInd = (bool)customerDetails.HasAccount;
                         if (customerDetails.HasContract != null)
                             ViewBag.CustomerContractInd = (bool)customerDetails.HasContract;
@@ -296,7 +297,7 @@ namespace ParcelXpress.Controllers
         public ActionResult DailyJobs(string searchTerm = null, int page = 1)
         {
             var model = _db.CUST_DATA
-                .Where(r => (searchTerm == null || r.CustomerName.Contains(searchTerm)) && r.IsDeleted != true &&r.HasAccount==true)
+                .Where(r => (searchTerm == null || r.CustomerName.Contains(searchTerm)) && r.IsDeleted != true && r.HasAccount == true)
                 .OrderBy(r => r.CustomerName)
                 .ToPagedList(page, 15);
 
@@ -308,6 +309,71 @@ namespace ParcelXpress.Controllers
             }
             return View("DailyCustomers", model);
         }
+
+        public ActionResult PendingJobs(int page = 1)
+        {
+            var timeNow = DateTime.Now.ToUniversalTime();
+            var pending = StringEnum.GetStringValue(StatusCode.Pending);
+            var model = _db.PNDG_JOBS
+                .Where(j => j.ScheduledTime > timeNow && j.JobStatus==pending )
+                .OrderByDescending(j => j.ScheduledTime)
+                .ToPagedList(page, 10);
+            return View(model);
+        }
+
+
+        //public ActionResult CreateDailyJob(string customerId=null) {
+        //    DailyParcelEntity model = new DailyParcelEntity() { ParcelDetails = new DALY_PRCL_DETL(), DailyParcels = new List<DALY_PRCL>() };
+        //    var drivers = _db.DRVR_DATA.Where(d => d.IsDeleted != true).OrderBy(d => d.DriverName);
+        //    var selectList = new List<SelectListItem>();
+        //    foreach (var item in drivers)
+        //    {
+        //        selectList.Add(new SelectListItem
+        //        {
+        //            Value = item.DriverId.ToString(),
+        //            Text = item.DriverName
+        //        });
+        //    }
+        //    ViewBag.DriversList = selectList;
+        //    var typeOfParcelList = new List<SelectListItem>();
+        //    foreach (var item in TypesOfParcel)
+        //    {
+        //        typeOfParcelList.Add(new SelectListItem
+        //        {
+        //            Value = item,
+        //            Text = item
+        //        });
+        //    }
+        //    ViewBag.TypesOfParcel = typeOfParcelList;
+
+        //    //var customerAccountInd = false;
+        //    //var customerContractInd = false;
+        //    if (customerId != null)
+        //    {
+        //        try
+        //        {
+
+        //            int id = int.Parse(customerId);
+        //            var customerDetails = _db.CUST_DATA.Find(id);
+        //            if (customerDetails != null)
+        //            {
+        //                model.ParcelDetails= new DALY_PRCL_DETL() { CustomerName = customerDetails.CustomerName, CustomerId = customerDetails.CustomerId, CustomerPhone = customerDetails.ContactNo, PickupAddress = customerDetails.Address };
+
+        //                if (customerDetails.HasAccount != null)
+        //                    ViewBag.CustomerAccountInd = (bool)customerDetails.HasAccount;
+        //                if (customerDetails.HasContract != null)
+        //                    ViewBag.CustomerContractInd = (bool)customerDetails.HasContract;
+
+        //                return View(model);
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        { }
+        //    }
+        //    ViewBag.CustomerAccountInd = null;
+        //    ViewBag.CustomerContractInd = null;
+        //    return View(model);
+        //}
         #endregion
 
         #region Form Actions and Post methods
@@ -332,6 +398,7 @@ namespace ParcelXpress.Controllers
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "Job Posting");
                 TempData["toastMessage"] = "<script>toastr.error('An error occured while trying to post the job.');</script>";
             }
             return RedirectToAction("Dashboard", "Index");
@@ -357,6 +424,7 @@ namespace ParcelXpress.Controllers
 
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "Job Posting");
                 TempData["toastMessage"] = "<script>toastr.error('An error occured while trying to post the job.');</script>";
             }
             return RedirectToAction("Dashboard", "Index");
@@ -387,6 +455,7 @@ namespace ParcelXpress.Controllers
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "Job Posting");
                 TempData["toastMessage"] = "<script>toastr.error('An error occured while trying to post the job.');</script>";
             }
             return RedirectToAction("Dashboard", "Index");
@@ -412,6 +481,7 @@ namespace ParcelXpress.Controllers
             }
             catch (Exception ex)
             {
+                new CustomException().SaveExceptionToDB(ex, "Job Posting");
                 TempData["toastMessage"] = "<script>toastr.error('An error occured while trying to post the job.');</script>";
             }
             return null;
@@ -474,8 +544,12 @@ namespace ParcelXpress.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult saveEditJob(JOB job)
+        public ActionResult saveEditJob(JOB job,string HangfireId=null)
         {
+            if (HangfireId != null)
+            {
+                return UpdateScheduledJob(job, HangfireId);
+            }
             job.LastUpdated = DateTime.Now.ToUniversalTime();
             job.LongDistanceInd = job.longDistanceCheckboxValue == true ? true : false;
             job.AccountPaymentInd = job.PaymentMode == (int)PaymentModes.Account ? true : job.PaymentMode == (int)PaymentModes.Contract ? true : false;
@@ -498,7 +572,7 @@ namespace ParcelXpress.Controllers
                             var trans = _db.CUST_TRAN.Where(t => t.JobId == job.JobId);
                             foreach (var item in trans)
                             {
-                                item.PayableAmount = Math.Round(((updatedJobPrice / previousJobPrice) * item.PayableAmount).GetValueOrDefault(0),2);
+                                item.PayableAmount = Math.Round(((updatedJobPrice / previousJobPrice) * item.PayableAmount).GetValueOrDefault(0), 2);
                                 item.RemainingAmount = Math.Round(((updatedJobPrice / previousJobPrice) * item.RemainingAmount).GetValueOrDefault(0), 2);
                                 item.SettledInd = false;
                                 _db.Entry(item).State = EntityState.Modified;
@@ -509,8 +583,8 @@ namespace ParcelXpress.Controllers
                             foreach (var drvrTransItem in drverTrans)
                             {
                                 var oldAmount = drvrTransItem.Amount;
-                                drvrTransItem.Amount = Math.Round(((updatedJobPrice / previousJobPrice) * drvrTransItem.Amount).GetValueOrDefault(0),2);
-                                drvrTransItem.Balance = Math.Round(((drvrTransItem.Amount - oldAmount) + drvrTransItem.Balance).GetValueOrDefault(0),2);
+                                drvrTransItem.Amount = Math.Round(((updatedJobPrice / previousJobPrice) * drvrTransItem.Amount).GetValueOrDefault(0), 2);
+                                drvrTransItem.Balance = Math.Round(((drvrTransItem.Amount - oldAmount) + drvrTransItem.Balance).GetValueOrDefault(0), 2);
                                 drvrTransItem.SettledInd = false;
                                 _db.Entry(drvrTransItem).State = EntityState.Modified;
                             }
@@ -539,6 +613,8 @@ namespace ParcelXpress.Controllers
             return RedirectToAction("Dashboard", "Index");
         }
 
+
+
         [HttpPost]
         public ActionResult AddCharges(AddChagesViewModel model)
         {
@@ -563,8 +639,8 @@ namespace ParcelXpress.Controllers
                 foreach (var drvrTransItem in drverTrans)
                 {
                     var oldAmount = drvrTransItem.Amount;
-                    drvrTransItem.Amount = Math.Round(((updatedJobPrice / previousJobPrice) * drvrTransItem.Amount).GetValueOrDefault(0),2);
-                    drvrTransItem.Balance = Math.Round(((drvrTransItem.Amount - oldAmount) + drvrTransItem.Balance).GetValueOrDefault(0),2);
+                    drvrTransItem.Amount = Math.Round(((updatedJobPrice / previousJobPrice) * drvrTransItem.Amount).GetValueOrDefault(0), 2);
+                    drvrTransItem.Balance = Math.Round(((drvrTransItem.Amount - oldAmount) + drvrTransItem.Balance).GetValueOrDefault(0), 2);
                     drvrTransItem.SettledInd = false;
                     _db.Entry(drvrTransItem).State = EntityState.Modified;
                 }
@@ -602,7 +678,7 @@ namespace ParcelXpress.Controllers
             var dbJob = _db.JOBS.Find(job.JobId);
             try
             {
-       
+
                 if (dbJob.DriverId != null)
                 {
                     var driver = _db.DRVR_DATA.Find(dbJob.DriverId);
@@ -632,7 +708,8 @@ namespace ParcelXpress.Controllers
         [HttpGet]
         public ActionResult SendInvoice(int JobId)
         {
-            try{
+            try
+            {
                 var job = _db.JOBS.Find(JobId);
                 if (job.CustomerId == null || job.CUST_DATA == null || job.CUST_DATA.EmailAddress == null || job.CUST_DATA.EmailAddress.Trim().Equals(""))
                     throw new Exception("Customer does not have an email address configured in the system.");
@@ -654,26 +731,30 @@ namespace ParcelXpress.Controllers
                     DropAddress2 = job.DropAddress2,
                     DropAddress3 = job.DropAddress3,
                     DropAddress4 = job.DropAddress4,
-                    Reference=job.Reference
+                    Reference = job.Reference
                 });
 
-                bool isPaid = false;
-                if (job.PaymentReceived == true || job.JobStatus == StringEnum.GetStringValue(StatusCode.Closed) || job.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff) || job.JobStatus == StringEnum.GetStringValue(StatusCode.PaymentReceived))
-                {
-                    isPaid = true;
-                }
-                string result = PDFGenerator.createCustomerReportMarkup(job.CUST_DATA, reportParameters, 0,isPaid);
+                //bool isPaid = false;
+                //if (job.PaymentReceived == true || job.JobStatus == StringEnum.GetStringValue(StatusCode.Closed) || job.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff) || job.JobStatus == StringEnum.GetStringValue(StatusCode.PaymentReceived))
+                //{
+                //    isPaid = true;
+                //}
+                string reportMarkup;
+                string result = PDFGenerator.createCustomerReportMarkup(out reportMarkup,job.CUST_DATA, reportParameters, 0, false);
                 if (result != null)
                 {
                     TempData["toastMessage"] = "<script>toastr.success('Invoice has been successfully sent to customer.');</script>";
                     CUST_INVC invoice = new CUST_INVC()
                     {
                         InvoiceNumber = result,
-                        InvoiceAmount = (reportParameters.Sum(p => p.RemainingAmount) ),
+                        InvoiceAmount = (reportParameters.Sum(p => p.RemainingAmount)),
                         InvoiceDate = DateTime.Now.ToUniversalTime(),
                         CustomerId = job.CustomerId,
-                        JobId=job.JobId,
-                        IsPaid = isPaid
+                        JobId = job.JobId,
+                        InvoiceStatus = StringEnum.GetStringValue(InvoiceStatus.Due),
+                        EmailAddress = job.CUST_DATA.EmailAddress,
+                        ReportMarkup = System.Net.WebUtility.HtmlEncode(reportMarkup),
+                        IsPaid = false
                     };
                     _db.CUST_INVC.Add(invoice);
                     _db.SaveChanges();
@@ -682,7 +763,7 @@ namespace ParcelXpress.Controllers
                     TempData["toastMessage"] = "<script>toastr.error('There was an error connecting to the mail server, Please check your email connection settings.');</script>";
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (ex.Message.Contains("Authentication"))
                 {
@@ -697,9 +778,10 @@ namespace ParcelXpress.Controllers
         [HttpGet]
         public ActionResult SendInvoiceToEmail(CustomerJobDriver model)
         {
-            try {
+            try
+            {
                 var job = _db.JOBS.Find(model.JobId);
-                if(model.EmailAddress==null||model.EmailAddress.Trim().Equals(""))
+                if (model.EmailAddress == null || model.EmailAddress.Trim().Equals(""))
                     throw new Exception("Please provide a valid email address.");
                 var lastEmailAccount = _db.EMAL_ACNT.OrderByDescending(e => e.EmailAccountId).FirstOrDefault();
                 if (lastEmailAccount == null || lastEmailAccount.EmailAddress == null || lastEmailAccount.Password == null || lastEmailAccount.EmailClient == null)
@@ -719,16 +801,17 @@ namespace ParcelXpress.Controllers
                     DropAddress2 = job.DropAddress2,
                     DropAddress3 = job.DropAddress3,
                     DropAddress4 = job.DropAddress4,
-                    Reference=job.Reference
+                    Reference = job.Reference
                 });
-                CUST_DATA customerInformation = new CUST_DATA() { EmailAddress=model.EmailAddress,Address = job.PickupAddress, ContactNo = job.CustomerPhone, CustomerName = job.CustomerName, HasAccount = false, IsDeleted = false };
+                CUST_DATA customerInformation = new CUST_DATA() { EmailAddress = model.EmailAddress, Address = job.PickupAddress, ContactNo = job.CustomerPhone, CustomerName = job.CustomerName, HasAccount = false, IsDeleted = false };
                 //Check for paid (closed job is always paid)
-                bool isPaid = false;
-                if (job.PaymentReceived==true||job.JobStatus == StringEnum.GetStringValue(StatusCode.Closed) || job.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff) || job.JobStatus == StringEnum.GetStringValue(StatusCode.PaymentReceived))
-                {
-                    isPaid = true;
-                }
-                string result = PDFGenerator.createCustomerReportMarkup(job.CUST_DATA, reportParameters, 0, isPaid);
+                //bool isPaid = false;
+                //if (job.PaymentReceived == true || job.JobStatus == StringEnum.GetStringValue(StatusCode.Closed) || job.JobStatus == StringEnum.GetStringValue(StatusCode.DroppedOff) || job.JobStatus == StringEnum.GetStringValue(StatusCode.PaymentReceived))
+                //{
+                //    isPaid = true;
+                //}
+                string reportMarkup;
+                string result = PDFGenerator.createCustomerReportMarkup(out reportMarkup, customerInformation, reportParameters, 0, false);
                 if (result != null)
                 {
                     TempData["toastMessage"] = "<script>toastr.success('Invoice has been successfully sent to customer.');</script>";
@@ -739,7 +822,10 @@ namespace ParcelXpress.Controllers
                         InvoiceDate = DateTime.Now.ToUniversalTime(),
                         CustomerId = job.CustomerId,
                         JobId = job.JobId,
-                        IsPaid = isPaid
+                        InvoiceStatus = StringEnum.GetStringValue(InvoiceStatus.Due),
+                        EmailAddress=customerInformation.EmailAddress,
+                        ReportMarkup = System.Net.WebUtility.HtmlEncode(reportMarkup),
+                        IsPaid = false
                     };
                     _db.CUST_INVC.Add(invoice);
                     _db.SaveChanges();
@@ -773,6 +859,65 @@ namespace ParcelXpress.Controllers
             return PartialView("_SelectDriver");
         }
 
+        public ActionResult CancelPendingJob(int JobId)
+        {
+            var job = _db.PNDG_JOBS.Find(JobId);
+            try
+            {
+                job.JobStatus = StringEnum.GetStringValue(StatusCode.Closed);
+                _db.Entry(job).State = EntityState.Deleted;
+                _db.SaveChanges();
+
+                Hangfire.BackgroundJob.Delete(job.HangfireId);
+
+                TempData["toastMessage"] = "<script>toastr.success('Job has been successfully cancelled.');</script>";
+            }
+            catch (Exception ex)
+            {
+                TempData["toastMessage"] = "<script>toastr.error('Job could not be cancelled.');</script>";
+            }
+            return RedirectToAction("Dashboard", "Index");
+        }
+        public ActionResult EditPendingJob(int JobId)
+        {
+            var customerAccountInd = false;
+            PNDG_JOBS pendingJob = _db.PNDG_JOBS.Find(JobId);
+            if (pendingJob.CustomerId != null&& pendingJob.CustomerId>0)
+            {
+                var customer = _db.CUST_DATA.Find(pendingJob.CustomerId);
+                if (customer.HasAccount != null)
+                    customerAccountInd = (bool)customer.HasAccount;
+            }
+            JOB model = new JOB();
+            model = CopyJobDetails(pendingJob, model);
+            model.longDistanceCheckboxValue = model.LongDistanceInd.GetValueOrDefault(false);
+            string timeZone = ConfigurationManager.AppSettings["timeZone"].ToString();
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+            var jobTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(pendingJob.ScheduledTime.GetValueOrDefault(new DateTime()), timeZoneInfo);
+            model.SendDateTime = jobTimeUtc.ToString();
+            ViewBag.CustomerAccountInd = customerAccountInd;
+            ViewBag.fromEdit = true;
+            ViewBag.HangfireId = pendingJob.HangfireId;
+            var typeOfParcelList = new List<SelectListItem>();
+            foreach (var item in TypesOfParcel)
+            {
+                typeOfParcelList.Add(new SelectListItem
+                {
+                    Value = item,
+                    Text = item
+                });
+            }
+            ViewBag.TypesOfParcel = typeOfParcelList;
+
+            return View("EditJob",model);
+        }
+
+
+        //public ActionResult AddSchedule(DailyParcelEntity DailyParcel)
+        //{
+        //  //  DailyParcel.DailyParcels.Add(new DALY_PRCL() { DayOfWeek = (int)DayOfWeek.Monday, TimeOfDay = "00:10" });
+        //    return PartialView("_DailyParcelSchedule", DailyParcel);
+        //}
         #endregion
 
         #region Private methods
@@ -788,7 +933,16 @@ namespace ParcelXpress.Controllers
                 var jobTimeUtc = TimeZoneInfo.ConvertTimeToUtc(sendTime, timeZoneInfo);
                 var utcTimeNow = DateTime.Now.ToUniversalTime();
                 TimeSpan ts = jobTimeUtc - utcTimeNow;
-                Hangfire.BackgroundJob.Schedule(() => _SendJob(job), ts);
+                var id = Hangfire.BackgroundJob.Schedule(() => _SendJob(job), ts);
+
+                PNDG_JOBS pendingJob = new PNDG_JOBS();
+                pendingJob = CopyJobDetails(job, pendingJob);
+                pendingJob.HangfireId = id;
+                pendingJob.JobStatus = StringEnum.GetStringValue(StatusCode.Pending);
+                pendingJob.ScheduledTime = jobTimeUtc;
+                pendingJob.JobDate = DateTime.Now.ToUniversalTime();
+                _db.PNDG_JOBS.Add(pendingJob);
+                _db.SaveChanges();
                 TempData["toastMessage"] = "<script>toastr.success('Job has been scheduled and will be sent at selected time.');</script>";
 
 
@@ -890,7 +1044,7 @@ namespace ParcelXpress.Controllers
             job.LongDistanceInd = job.longDistanceCheckboxValue == true ? true : false;
             job.JobDate = (DateTime.Now).ToUniversalTime();
             job.LastUpdated = DateTime.Now.ToUniversalTime();
-            job.AccountPaymentInd = job.PaymentMode == (int) PaymentModes.Account ? true : false;
+            job.AccountPaymentInd = job.PaymentMode == (int)PaymentModes.Account ? true : false;
 
             if (job.DriverId == null)
             {
@@ -929,6 +1083,68 @@ namespace ParcelXpress.Controllers
             }
             _db.JOBS.Add(job);
             _db.SaveChanges();
+        }
+
+        private ActionResult UpdateScheduledJob(JOB job, string hangfireId)
+        {
+            try
+            {
+                job.Price = job.Price == null ? decimal.Parse("0.00") : job.Price;
+                if (ModelState.ContainsKey("Price"))
+                    ModelState["Price"].Errors.Clear();
+                if (ModelState.IsValid)
+                {
+                    var pendingJob = _db.PNDG_JOBS.FirstOrDefault(p => p.HangfireId == hangfireId);
+                    if (pendingJob != null)
+                    {
+                        pendingJob.JobStatus = StringEnum.GetStringValue(StatusCode.Sent);
+                        _db.Entry(pendingJob).State = EntityState.Modified;
+                    }
+                    Hangfire.BackgroundJob.Delete(hangfireId);
+                    SendJobToDrivers(job);
+                    return RedirectToAction("Dashboard", "Index");
+                }
+                else
+                {
+                    TempData["toastMessage"] = "<script>toastr.error('Job has been updated.');</script>";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["toastMessage"] = "<script>toastr.error('An error occured while trying to update the job.');</script>";
+            }
+            return RedirectToAction("Dashboard", "Index");
+        }
+
+        private dynamic CopyJobDetails(dynamic source, dynamic target)
+        {
+            target.AccountPaymentInd = source.AccountPaymentInd;
+            target.ChargesDescription = source.ChargesDescription;
+            target.CustomerId = source.CustomerId;
+            target.CustomerName = source.CustomerName;
+            target.CustomerPhone = source.CustomerPhone;
+            target.DropAddress = source.DropAddress;
+            target.DropAddress1 = source.DropAddress1;
+            target.DropAddress2 = source.DropAddress2;
+            target.DropAddress3 = source.DropAddress3;
+            target.DropAddress4 = source.DropAddress4;
+            target.DropoffContact = source.DropoffContact;
+            target.IsPaid = source.IsPaid;
+            target.JobDate = source.JobDate;
+            target.JobStatus = source.JobStatus;
+            target.Notes = source.Notes;
+            target.PaymentMode = source.PaymentMode;
+            target.PickupAddress = source.PickupAddress;
+            target.Price = source.Price;
+            target.Reference = source.Reference;
+            target.TypeOfParcel = source.TypeOfParcel;
+
+            if (target.GetType() == typeof(PNDG_JOBS))
+                target.LongDistanceInd = source.longDistanceCheckboxValue == true ? true : false;
+            else
+                target.LongDistanceInd = source.LongDistanceInd;
+
+            return target;
         }
 
         #endregion

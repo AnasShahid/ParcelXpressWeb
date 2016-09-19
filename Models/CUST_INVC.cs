@@ -30,10 +30,12 @@ namespace ParcelXpress.Models
         public string InvoiceStatus { get; set; }
         public Nullable<int> InvoicePaymentMode { get; set; }
         public Nullable<int> JobId { get; set; }
+        public string ReportMarkup { get; set; }
+        public string EmailAddress { get; set; }
     
-        public virtual CUST_DATA CUST_DATA { get; set; }
         public virtual INVC_PYMT_MODE INVC_PYMT_MODE { get; set; }
         public virtual ICollection<CUST_TRAN> CUST_TRAN { get; set; }
         public virtual JOB JOB { get; set; }
+        public virtual CUST_DATA CUST_DATA { get; set; }
     }
 }

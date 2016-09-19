@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<DRVR_DATA>
 
-<div class="row col-lg-10" id="registeredDrivers">
+<div class="row col-lg-12" id="registeredDrivers">
     <table class="table table-bordered table-responsive table-hover">
         <thead>
             <tr>
@@ -8,6 +8,7 @@
                 <th> Contact Number</th>
                 <th>Login Name</th>
                 <th>Commission %</th>
+                <th>Hourly Wage</th>
                 <th>Commission Amount</th>
                 <th></th>
             </tr>
@@ -22,6 +23,7 @@
                         <td>@item.ContactNo</td>
                         <td>@item.LoginName</td>
                         <td>@item.CommissionRate </td>
+                        <td>@item.HourlyRate</td>
                         <td>@item.DriverCommissionAmount</td>
                         <td>@Html.ActionLink("View Commission Report", "DriverAccounts", "Accounts", new { driverId = @item.DriverId }, new { @class = "btn btn-default" })</td>
                     </tr>

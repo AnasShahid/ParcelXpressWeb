@@ -68,6 +68,7 @@
           <Property Name="InvoiceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="InvoiceNumber" Type="varchar" MaxLength="10" />
           <Property Name="CustomerId" Type="int" />
+          <Property Name="JobId" Type="int" />
           <Property Name="InvoiceAmount" Type="decimal" Precision="18" Scale="2" />
           <Property Name="PaidAmount" Type="decimal" Precision="18" Scale="2" />
           <Property Name="InvoiceDate" Type="datetime" Nullable="false" />
@@ -75,7 +76,8 @@
           <Property Name="IsPaid" Type="bit" />
           <Property Name="InvoiceStatus" Type="varchar" MaxLength="5" />
           <Property Name="InvoicePaymentMode" Type="int" />
-          <Property Name="JobId" Type="int" />
+          <Property Name="ReportMarkup" Type="varchar(max)" />
+          <Property Name="EmailAddress" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="CUST_TRAN">
           <Key>
@@ -90,25 +92,6 @@
           <Property Name="JobId" Type="int" />
           <Property Name="SettledInd" Type="bit" />
           <Property Name="InvoiceId" Type="int" />
-        </EntityType>
-        <EntityType Name="DALY_PRCL">
-          <Key>
-            <PropertyRef Name="DailyParcelId" />
-          </Key>
-          <Property Name="DailyParcelId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="MasterId" Type="int" />
-          <Property Name="DayOfWeek" Type="int" />
-          <Property Name="TimeOfDay" Type="datetime" />
-          <Property Name="IsActive" Type="bit" />
-        </EntityType>
-        <EntityType Name="DALY_PRCL_MSTR">
-          <Key>
-            <PropertyRef Name="DailyParcelMasterId" />
-          </Key>
-          <Property Name="DailyParcelMasterId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CustomerId" Type="int" />
-          <Property Name="DropAddress" Type="nvarchar(max)" />
-          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="DRVR_DATA">
           <Key>
@@ -128,6 +111,8 @@
           <Property Name="CreatedOn" Type="datetime" Nullable="false" />
           <Property Name="LoginTime" Type="datetime" />
           <Property Name="LogoutTime" Type="datetime" />
+          <Property Name="HourlyRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="IsOnHourlyRate" Type="bit" />
         </EntityType>
         <EntityType Name="DRVR_MSGS">
           <Key>
@@ -139,6 +124,19 @@
           <Property Name="MessageReceivedInd" Type="bit" />
           <Property Name="MessageDate" Type="datetime" Nullable="false" />
           <Property Name="MessageReadInd" Type="bit" />
+        </EntityType>
+        <EntityType Name="DRVR_TIME_SHET">
+          <Key>
+            <PropertyRef Name="TimesheetId" />
+          </Key>
+          <Property Name="TimesheetId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DriverId" Type="int" />
+          <Property Name="LoginTime" Type="datetime" />
+          <Property Name="LogoutTime" Type="datetime" />
+          <Property Name="HourlyRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AmountEarned" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="SettledInd" Type="bit" Nullable="false" />
+          <Property Name="IsLoggedIn" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="DRVR_TRAN">
           <Key>
@@ -180,9 +178,9 @@
           <Property Name="ErrorId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ErrorMessage" Type="varchar(max)" />
           <Property Name="StackTrace" Type="varchar(max)" />
+          <Property Name="ErrorSource" Type="varchar(max)" />
           <Property Name="AdditionalInfo" Type="varchar(max)" />
           <Property Name="ReportedTime" Type="datetime" />
-          <Property Name="ErrorSource" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="FAQS">
           <Key>
@@ -234,8 +232,9 @@
           <Property Name="PickupTime" Type="datetime" />
           <Property Name="AssignedTime" Type="datetime" />
           <Property Name="DropoffTime" Type="datetime" />
-          <Property Name="Reference" Type="varchar(max)" />
           <Property Name="LastUpdated" Type="datetime" />
+          <Property Name="Reference" Type="varchar(max)" />
+          <Property Name="IsDelivered" Type="bit" />
         </EntityType>
         <EntityType Name="JOBS_HTRY">
           <Key>
@@ -255,6 +254,35 @@
           <Property Name="ResponseCode" Type="varchar" MaxLength="5" Nullable="false" />
           <Property Name="IsAssigned" Type="bit" Nullable="false" />
           <Property Name="ResponseTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PNDG_JOBS">
+          <Key>
+            <PropertyRef Name="JobId" />
+          </Key>
+          <Property Name="JobId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="JobStatus" Type="varchar" MaxLength="5" />
+          <Property Name="PickupAddress" Type="nvarchar(max)" />
+          <Property Name="DropAddress" Type="nvarchar(max)" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="CustomerPhone" Type="varchar" MaxLength="50" />
+          <Property Name="CustomerName" Type="varchar" MaxLength="50" />
+          <Property Name="CustomerId" Type="int" />
+          <Property Name="Notes" Type="text" />
+          <Property Name="JobDate" Type="datetime" />
+          <Property Name="AccountPaymentInd" Type="bit" />
+          <Property Name="ChargesDescription" Type="text" />
+          <Property Name="LongDistanceInd" Type="bit" />
+          <Property Name="DropoffContact" Type="varchar" MaxLength="20" />
+          <Property Name="DropAddress1" Type="nvarchar(max)" />
+          <Property Name="DropAddress2" Type="nvarchar(max)" />
+          <Property Name="DropAddress3" Type="nvarchar(max)" />
+          <Property Name="DropAddress4" Type="nvarchar(max)" />
+          <Property Name="TypeOfParcel" Type="varchar" MaxLength="50" />
+          <Property Name="IsPaid" Type="bit" />
+          <Property Name="PaymentMode" Type="int" />
+          <Property Name="Reference" Type="varchar(max)" />
+          <Property Name="HangfireId" Type="varchar(max)" />
+          <Property Name="ScheduledTime" Type="datetime" />
         </EntityType>
         <EntityType Name="REQT_DRVR">
           <Key>
@@ -320,7 +348,7 @@
           <Property Name="TransactionTypeCode" Type="varchar" MaxLength="5" />
           <Property Name="TransactionTypeDsc" Type="varchar" MaxLength="50" />
         </EntityType>
-        <Association Name="FK__CUST_INVC__Custo__42E1EEFE">
+        <Association Name="FK__CUST_INVC__Custo__114A936A">
           <End Role="CUST_DATA" Type="Self.CUST_DATA" Multiplicity="0..1" />
           <End Role="CUST_INVC" Type="Self.CUST_INVC" Multiplicity="*" />
           <ReferentialConstraint>
@@ -332,7 +360,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__CUST_INVC__Invoi__45BE5BA9">
+        <Association Name="FK__CUST_INVC__Invoi__151B244E">
           <End Role="INVC_PYMT_MODE" Type="Self.INVC_PYMT_MODE" Multiplicity="0..1" />
           <End Role="CUST_INVC" Type="Self.CUST_INVC" Multiplicity="*" />
           <ReferentialConstraint>
@@ -344,7 +372,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__CUST_INVC__JobId__489AC854">
+        <Association Name="FK__CUST_INVC__JobId__123EB7A3">
           <End Role="JOBS" Type="Self.JOBS" Multiplicity="0..1" />
           <End Role="CUST_INVC" Type="Self.CUST_INVC" Multiplicity="*" />
           <ReferentialConstraint>
@@ -356,7 +384,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__CUST_TRAN__Invoi__46B27FE2">
+        <Association Name="FK__CUST_TRAN__Invoi__160F4887">
           <End Role="CUST_INVC" Type="Self.CUST_INVC" Multiplicity="0..1" />
           <End Role="CUST_TRAN" Type="Self.CUST_TRAN" Multiplicity="*" />
           <ReferentialConstraint>
@@ -368,27 +396,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__DALY_PRCL__Custo__245D67DE">
-          <End Role="CUST_DATA" Type="Self.CUST_DATA" Multiplicity="0..1" />
-          <End Role="DALY_PRCL_MSTR" Type="Self.DALY_PRCL_MSTR" Multiplicity="*" />
+        <Association Name="FK__DRVR_TIME__Drive__2A164134">
+          <End Role="DRVR_DATA" Type="Self.DRVR_DATA" Multiplicity="0..1" />
+          <End Role="DRVR_TIME_SHET" Type="Self.DRVR_TIME_SHET" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="CUST_DATA">
-              <PropertyRef Name="CustomerId" />
+            <Principal Role="DRVR_DATA">
+              <PropertyRef Name="DriverId" />
             </Principal>
-            <Dependent Role="DALY_PRCL_MSTR">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__DALY_PRCL__Maste__2739D489">
-          <End Role="DALY_PRCL_MSTR" Type="Self.DALY_PRCL_MSTR" Multiplicity="0..1" />
-          <End Role="DALY_PRCL" Type="Self.DALY_PRCL" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DALY_PRCL_MSTR">
-              <PropertyRef Name="DailyParcelMasterId" />
-            </Principal>
-            <Dependent Role="DALY_PRCL">
-              <PropertyRef Name="MasterId" />
+            <Dependent Role="DRVR_TIME_SHET">
+              <PropertyRef Name="DriverId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -537,10 +553,9 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySet Name="CUST_DATA" EntityType="Self.CUST_DATA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CUST_INVC" EntityType="Self.CUST_INVC" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CUST_TRAN" EntityType="Self.CUST_TRAN" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="DALY_PRCL" EntityType="Self.DALY_PRCL" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="DALY_PRCL_MSTR" EntityType="Self.DALY_PRCL_MSTR" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DRVR_DATA" EntityType="Self.DRVR_DATA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DRVR_MSGS" EntityType="Self.DRVR_MSGS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DRVR_TIME_SHET" EntityType="Self.DRVR_TIME_SHET" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DRVR_TRAN" EntityType="Self.DRVR_TRAN" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DUES_ALRT" EntityType="Self.DUES_ALRT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EMAL_ACNT" EntityType="Self.EMAL_ACNT" Schema="dbo" store:Type="Tables" />
@@ -550,6 +565,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySet Name="JOBS" EntityType="Self.JOBS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="JOBS_HTRY" EntityType="Self.JOBS_HTRY" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="JOBS_RESP" EntityType="Self.JOBS_RESP" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PNDG_JOBS" EntityType="Self.PNDG_JOBS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="REQT_DRVR" EntityType="Self.REQT_DRVR" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RESP_CODE" EntityType="Self.RESP_CODE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SCRT_QUES" EntityType="Self.SCRT_QUES" Schema="dbo" store:Type="Tables" />
@@ -557,29 +573,25 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySet Name="STUS_CODE" EntityType="Self.STUS_CODE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SYS_USER" EntityType="Self.SYS_USER" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TRAN_TYPE" EntityType="Self.TRAN_TYPE" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__CUST_INVC__Custo__42E1EEFE" Association="Self.FK__CUST_INVC__Custo__42E1EEFE">
+          <AssociationSet Name="FK__CUST_INVC__Custo__114A936A" Association="Self.FK__CUST_INVC__Custo__114A936A">
             <End Role="CUST_DATA" EntitySet="CUST_DATA" />
             <End Role="CUST_INVC" EntitySet="CUST_INVC" />
           </AssociationSet>
-          <AssociationSet Name="FK__CUST_INVC__Invoi__45BE5BA9" Association="Self.FK__CUST_INVC__Invoi__45BE5BA9">
+          <AssociationSet Name="FK__CUST_INVC__Invoi__151B244E" Association="Self.FK__CUST_INVC__Invoi__151B244E">
             <End Role="INVC_PYMT_MODE" EntitySet="INVC_PYMT_MODE" />
             <End Role="CUST_INVC" EntitySet="CUST_INVC" />
           </AssociationSet>
-          <AssociationSet Name="FK__CUST_INVC__JobId__489AC854" Association="Self.FK__CUST_INVC__JobId__489AC854">
+          <AssociationSet Name="FK__CUST_INVC__JobId__123EB7A3" Association="Self.FK__CUST_INVC__JobId__123EB7A3">
             <End Role="JOBS" EntitySet="JOBS" />
             <End Role="CUST_INVC" EntitySet="CUST_INVC" />
           </AssociationSet>
-          <AssociationSet Name="FK__CUST_TRAN__Invoi__46B27FE2" Association="Self.FK__CUST_TRAN__Invoi__46B27FE2">
+          <AssociationSet Name="FK__CUST_TRAN__Invoi__160F4887" Association="Self.FK__CUST_TRAN__Invoi__160F4887">
             <End Role="CUST_INVC" EntitySet="CUST_INVC" />
             <End Role="CUST_TRAN" EntitySet="CUST_TRAN" />
           </AssociationSet>
-          <AssociationSet Name="FK__DALY_PRCL__Custo__245D67DE" Association="Self.FK__DALY_PRCL__Custo__245D67DE">
-            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
-            <End Role="DALY_PRCL_MSTR" EntitySet="DALY_PRCL_MSTR" />
-          </AssociationSet>
-          <AssociationSet Name="FK__DALY_PRCL__Maste__2739D489" Association="Self.FK__DALY_PRCL__Maste__2739D489">
-            <End Role="DALY_PRCL_MSTR" EntitySet="DALY_PRCL_MSTR" />
-            <End Role="DALY_PRCL" EntitySet="DALY_PRCL" />
+          <AssociationSet Name="FK__DRVR_TIME__Drive__2A164134" Association="Self.FK__DRVR_TIME__Drive__2A164134">
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+            <End Role="DRVR_TIME_SHET" EntitySet="DRVR_TIME_SHET" />
           </AssociationSet>
           <AssociationSet Name="FK_CRDT_CUST_DATA" Association="Self.FK_CRDT_CUST_DATA">
             <End Role="CUST_DATA" EntitySet="CUST_DATA" />
@@ -630,33 +642,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ParcelXpressModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="CUST_DATA">
-          <Key>
-            <PropertyRef Name="CustomerId" />
-          </Key>
-          <Property Name="CustomerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CustomerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ContactNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="EmailAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="AccountRefNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
-          <Property Name="HasAccount" Type="Boolean" />
-          <Property Name="AccountId" Type="Int32" />
-          <NavigationProperty Name="JOBS" Relationship="Self.FK_JOBS_CUST" FromRole="CUST_DATA" ToRole="JOBS" />
-          <NavigationProperty Name="CUST_BILL" Relationship="ParcelXpressModel.FK_CUST_BILL_CUST_DATA" FromRole="CUST_DATA" ToRole="CUST_BILL" />
-          <NavigationProperty Name="CUST_CRDT" Relationship="ParcelXpressModel.FK_CRDT_CUST_DATA" FromRole="CUST_DATA" ToRole="CUST_CRDT" />
-          <NavigationProperty Name="DUES_ALRT" Relationship="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA" FromRole="CUST_DATA" ToRole="DUES_ALRT" />
-          <Property Name="IsDeleted" Type="Boolean" />
-          <Property Name="HasContract" Type="Boolean" />
-          <Property Name="ContactNo2" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ContactNo3" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ContactNo4" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ContactNo5" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PersonalAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="RecieveNotifications" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="DALY_PRCL_MSTR" Relationship="ParcelXpressModel.FK__DALY_PRCL__Custo__1DB06A4F" FromRole="CUST_DATA" ToRole="DALY_PRCL_MSTR" />
-          <NavigationProperty Name="CUST_INVC" Relationship="ParcelXpressModel.FK__CUST_INVC__Custo__42E1EEFE" FromRole="CUST_DATA" ToRole="CUST_INVC" />
-        </EntityType>
         <EntityType Name="CUST_TRAN">
           <Key>
             <PropertyRef Name="TransactionId" />
@@ -715,7 +700,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="PaymentReceived" Type="Boolean" />
           <Property Name="JobDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="AccountPaymentInd" Type="Boolean" />
-          <NavigationProperty Name="CUST_DATA" Relationship="Self.FK_JOBS_CUST" FromRole="JOBS" ToRole="CUST_DATA" />
           <NavigationProperty Name="JOBS_HTRY" Relationship="Self.FK_HSTRY_JOB" FromRole="JOBS" ToRole="JOBS_HTRY" />
           <NavigationProperty Name="JOBS_RESP" Relationship="Self.FK_JOBS_RESP_JOBS" FromRole="JOBS" ToRole="JOBS_RESP" />
           <NavigationProperty Name="DRVR_DATA" Relationship="ParcelXpressModel.FK_JOBS_DRVR" FromRole="JOB" ToRole="DRVR_DATA" />
@@ -736,6 +720,8 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="Reference" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="LastUpdated" Type="DateTime" Precision="3" />
           <NavigationProperty Name="CUST_INVC" Relationship="ParcelXpressModel.FK__CUST_INVC__JobId__489AC854" FromRole="JOB" ToRole="CUST_INVC" />
+          <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK_JOBS_CUST" FromRole="JOB" ToRole="CUST_DATA" />
+          <Property Name="IsDelivered" Type="Boolean" />
         </EntityType>
         <EntityType Name="JOBS_HTRY">
           <Key>
@@ -828,18 +814,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="TransactionTypeCode" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
           <Property Name="TransactionTypeDsc" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
-        <Association Name="FK_JOBS_CUST">
-          <End Role="CUST_DATA" Type="Self.CUST_DATA" Multiplicity="0..1" />
-          <End Role="JOBS" Type="Self.JOB" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CUST_DATA">
-              <PropertyRef Name="CustomerId" />
-            </Principal>
-            <Dependent Role="JOBS">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_HSTRY_JOB">
           <End Role="JOBS" Type="Self.JOB" Multiplicity="0..1" />
           <End Role="JOBS_HTRY" Type="Self.JOBS_HTRY" Multiplicity="*" />
@@ -889,7 +863,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="ParcelXpressConnection" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="CUST_DATA" EntityType="Self.CUST_DATA" />
           <EntitySet Name="CUST_TRAN" EntityType="Self.CUST_TRAN" />
           <EntitySet Name="DRVR_MSGS" EntityType="Self.DRVR_MSGS" />
           <EntitySet Name="DRVR_TRAN" EntityType="Self.DRVR_TRAN" />
@@ -903,10 +876,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySet Name="STUS_CODE" EntityType="Self.STUS_CODE" />
           <EntitySet Name="SYS_USER" EntityType="Self.SYS_USER" />
           <EntitySet Name="TRAN_TYPE" EntityType="Self.TRAN_TYPE" />
-          <AssociationSet Name="FK_JOBS_CUST" Association="Self.FK_JOBS_CUST">
-            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
-            <End Role="JOBS" EntitySet="JOBS" />
-          </AssociationSet>
           <AssociationSet Name="FK_HSTRY_JOB" Association="Self.FK_HSTRY_JOB">
             <End Role="JOBS" EntitySet="JOBS" />
             <End Role="JOBS_HTRY" EntitySet="JOBS_HTRY" />
@@ -924,10 +893,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
             <End Role="SESN" EntitySet="SESNs" />
           </AssociationSet>
           <EntitySet Name="CUST_BILL" EntityType="ParcelXpressModel.CUST_BILL" />
-          <AssociationSet Name="FK_CUST_BILL_CUST_DATA" Association="ParcelXpressModel.FK_CUST_BILL_CUST_DATA">
-            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
-            <End Role="CUST_BILL" EntitySet="CUST_BILL" />
-          </AssociationSet>
           <EntitySet Name="DRVR_DATA" EntityType="ParcelXpressModel.DRVR_DATA" />
           <AssociationSet Name="FK_DRVR_DATA_SCRT_QUES" Association="ParcelXpressModel.FK_DRVR_DATA_SCRT_QUES">
             <End Role="SCRT_QUES" EntitySet="SCRT_QUES" />
@@ -947,33 +912,11 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           </AssociationSet>
           <EntitySet Name="EMAL_ACNT" EntityType="ParcelXpressModel.EMAL_ACNT" />
           <EntitySet Name="CUST_CRDT" EntityType="ParcelXpressModel.CUST_CRDT" />
-          <AssociationSet Name="FK_CRDT_CUST_DATA" Association="ParcelXpressModel.FK_CRDT_CUST_DATA">
-            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
-            <End Role="CUST_CRDT" EntitySet="CUST_CRDT" />
-          </AssociationSet>
           <EntitySet Name="FAQS" EntityType="ParcelXpressModel.FAQ" />
           <EntitySet Name="DUES_ALRT" EntityType="ParcelXpressModel.DUES_ALRT" />
-          <AssociationSet Name="FK_DUES_ALRT_CUST_DATA" Association="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA">
-            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
-            <End Role="DUES_ALRT" EntitySet="DUES_ALRT" />
-          </AssociationSet>
           <EntitySet Name="ERR_LOG" EntityType="ParcelXpressModel.ERR_LOG" />
-          <EntitySet Name="DALY_PRCL" EntityType="ParcelXpressModel.DALY_PRCL" />
-          <EntitySet Name="DALY_PRCL_MSTR" EntityType="ParcelXpressModel.DALY_PRCL_MSTR" />
-          <AssociationSet Name="FK__DALY_PRCL__Custo__1DB06A4F" Association="ParcelXpressModel.FK__DALY_PRCL__Custo__1DB06A4F">
-            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
-            <End Role="DALY_PRCL_MSTR" EntitySet="DALY_PRCL_MSTR" />
-          </AssociationSet>
-          <AssociationSet Name="FK__DALY_PRCL__Maste__208CD6FA" Association="ParcelXpressModel.FK__DALY_PRCL__Maste__208CD6FA">
-            <End Role="DALY_PRCL_MSTR" EntitySet="DALY_PRCL_MSTR" />
-            <End Role="DALY_PRCL" EntitySet="DALY_PRCL" />
-          </AssociationSet>
           <EntitySet Name="CUST_INVC" EntityType="ParcelXpressModel.CUST_INVC" />
           <EntitySet Name="INVC_PYMT_MODE" EntityType="ParcelXpressModel.INVC_PYMT_MODE" />
-          <AssociationSet Name="FK__CUST_INVC__Custo__42E1EEFE" Association="ParcelXpressModel.FK__CUST_INVC__Custo__42E1EEFE">
-            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
-            <End Role="CUST_INVC" EntitySet="CUST_INVC" />
-          </AssociationSet>
           <AssociationSet Name="FK__CUST_INVC__Invoi__45BE5BA9" Association="ParcelXpressModel.FK__CUST_INVC__Invoi__45BE5BA9">
             <End Role="INVC_PYMT_MODE" EntitySet="INVC_PYMT_MODE" />
             <End Role="CUST_INVC" EntitySet="CUST_INVC" />
@@ -987,6 +930,29 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
             <End Role="CUST_INVC" EntitySet="CUST_INVC" />
           </AssociationSet>
           <EntitySet Name="CONT_PKGS" EntityType="ParcelXpressModel.CONT_PKGS" />
+          <EntitySet Name="PNDG_JOBS" EntityType="ParcelXpressModel.PNDG_JOBS" />
+          <EntitySet Name="CUST_DATA" EntityType="ParcelXpressModel.CUST_DATA" />
+          <AssociationSet Name="FK_CRDT_CUST_DATA" Association="ParcelXpressModel.FK_CRDT_CUST_DATA">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="CUST_CRDT" EntitySet="CUST_CRDT" />
+          </AssociationSet>
+          <AssociationSet Name="FK__CUST_INVC__Custo__42E1EEFE" Association="ParcelXpressModel.FK__CUST_INVC__Custo__42E1EEFE">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="CUST_INVC" EntitySet="CUST_INVC" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DUES_ALRT_CUST_DATA" Association="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="DUES_ALRT" EntitySet="DUES_ALRT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_JOBS_CUST" Association="ParcelXpressModel.FK_JOBS_CUST">
+            <End Role="CUST_DATA" EntitySet="CUST_DATA" />
+            <End Role="JOB" EntitySet="JOBS" />
+          </AssociationSet>
+          <EntitySet Name="DRVR_TIME_SHET" EntityType="ParcelXpressModel.DRVR_TIME_SHET" />
+          <AssociationSet Name="FK__DRVR_TIME__Drive__2A164134" Association="ParcelXpressModel.FK__DRVR_TIME__Drive__2A164134">
+            <End Role="DRVR_DATA" EntitySet="DRVR_DATA" />
+            <End Role="DRVR_TIME_SHET" EntitySet="DRVR_TIME_SHET" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="CUST_BILL">
           <Key>
@@ -998,21 +964,8 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="DueAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="PaidAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="RemainingAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK_CUST_BILL_CUST_DATA" FromRole="CUST_BILL" ToRole="CUST_DATA" />
           <Property Name="PreviousCredit" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
-        <Association Name="FK_CUST_BILL_CUST_DATA">
-          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="1" />
-          <End Type="ParcelXpressModel.CUST_BILL" Role="CUST_BILL" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CUST_DATA">
-              <PropertyRef Name="CustomerId" />
-            </Principal>
-            <Dependent Role="CUST_BILL">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="DRVR_DATA">
           <Key>
             <PropertyRef Name="DriverId" />
@@ -1035,6 +988,9 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <NavigationProperty Name="JOBS_RESP" Relationship="ParcelXpressModel.FK_JOBS_RESP_DRVR" FromRole="DRVR_DATA" ToRole="JOBS_RESP" />
           <Property Name="LoginTime" Type="DateTime" Precision="3" />
           <Property Name="LogoutTime" Type="DateTime" Precision="3" />
+          <Property Name="HourlyRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="IsOnHourlyRate" Type="Boolean" />
+          <NavigationProperty Name="DRVR_TIME_SHET" Relationship="ParcelXpressModel.FK__DRVR_TIME__Drive__2A164134" FromRole="DRVR_DATA" ToRole="DRVR_TIME_SHET" />
         </EntityType>
         <Association Name="FK_DRVR_DATA_SCRT_QUES">
           <End Type="ParcelXpressModel.SCRT_QUES" Role="SCRT_QUES" Multiplicity="0..1" />
@@ -1107,18 +1063,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="SettledInd" Type="Boolean" />
           <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK_CRDT_CUST_DATA" FromRole="CUST_CRDT" ToRole="CUST_DATA" />
         </EntityType>
-        <Association Name="FK_CRDT_CUST_DATA">
-          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="0..1" />
-          <End Type="ParcelXpressModel.CUST_CRDT" Role="CUST_CRDT" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CUST_DATA">
-              <PropertyRef Name="CustomerId" />
-            </Principal>
-            <Dependent Role="CUST_CRDT">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="FAQ">
           <Key>
             <PropertyRef Name="FaqId" />
@@ -1139,18 +1083,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="IsPaid" Type="Boolean" />
           <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA" FromRole="DUES_ALRT" ToRole="CUST_DATA" />
         </EntityType>
-        <Association Name="FK_DUES_ALRT_CUST_DATA">
-          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="1" />
-          <End Type="ParcelXpressModel.DUES_ALRT" Role="DUES_ALRT" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CUST_DATA">
-              <PropertyRef Name="CustomerId" />
-            </Principal>
-            <Dependent Role="DUES_ALRT">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="ERR_LOG">
           <Key>
             <PropertyRef Name="ErrorId" />
@@ -1162,52 +1094,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="ReportedTime" Type="DateTime" Precision="3" />
           <Property Name="ErrorSource" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
-        <EntityType Name="DALY_PRCL">
-          <Key>
-            <PropertyRef Name="DailyParcelId" />
-          </Key>
-          <Property Name="DailyParcelId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="MasterId" Type="Int32" />
-          <Property Name="DayOfWeek" Type="Int32" />
-          <Property Name="TimeOfDay" Type="DateTime" Precision="3" />
-          <Property Name="IsActive" Type="Boolean" />
-          <NavigationProperty Name="DALY_PRCL_MSTR" Relationship="ParcelXpressModel.FK__DALY_PRCL__Maste__208CD6FA" FromRole="DALY_PRCL" ToRole="DALY_PRCL_MSTR" />
-        </EntityType>
-        <EntityType Name="DALY_PRCL_MSTR">
-          <Key>
-            <PropertyRef Name="DailyParcelMasterId" />
-          </Key>
-          <Property Name="DailyParcelMasterId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CustomerId" Type="Int32" />
-          <Property Name="DropAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
-          <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK__DALY_PRCL__Custo__1DB06A4F" FromRole="DALY_PRCL_MSTR" ToRole="CUST_DATA" />
-          <NavigationProperty Name="DALY_PRCL" Relationship="ParcelXpressModel.FK__DALY_PRCL__Maste__208CD6FA" FromRole="DALY_PRCL_MSTR" ToRole="DALY_PRCL" />
-        </EntityType>
-        <Association Name="FK__DALY_PRCL__Custo__1DB06A4F">
-          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="0..1" />
-          <End Type="ParcelXpressModel.DALY_PRCL_MSTR" Role="DALY_PRCL_MSTR" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CUST_DATA">
-              <PropertyRef Name="CustomerId" />
-            </Principal>
-            <Dependent Role="DALY_PRCL_MSTR">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__DALY_PRCL__Maste__208CD6FA">
-          <End Type="ParcelXpressModel.DALY_PRCL_MSTR" Role="DALY_PRCL_MSTR" Multiplicity="0..1" />
-          <End Type="ParcelXpressModel.DALY_PRCL" Role="DALY_PRCL" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DALY_PRCL_MSTR">
-              <PropertyRef Name="DailyParcelMasterId" />
-            </Principal>
-            <Dependent Role="DALY_PRCL">
-              <PropertyRef Name="MasterId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="CUST_INVC">
           <Key>
             <PropertyRef Name="InvoiceId" />
@@ -1222,11 +1108,13 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="IsPaid" Type="Boolean" />
           <Property Name="InvoiceStatus" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
           <Property Name="InvoicePaymentMode" Type="Int32" />
-          <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK__CUST_INVC__Custo__42E1EEFE" FromRole="CUST_INVC" ToRole="CUST_DATA" />
           <NavigationProperty Name="INVC_PYMT_MODE" Relationship="ParcelXpressModel.FK__CUST_INVC__Invoi__45BE5BA9" FromRole="CUST_INVC" ToRole="INVC_PYMT_MODE" />
           <NavigationProperty Name="CUST_TRAN" Relationship="ParcelXpressModel.FK__CUST_TRAN__Invoi__46B27FE2" FromRole="CUST_INVC" ToRole="CUST_TRAN" />
           <Property Name="JobId" Type="Int32" />
           <NavigationProperty Name="JOB" Relationship="ParcelXpressModel.FK__CUST_INVC__JobId__489AC854" FromRole="CUST_INVC" ToRole="JOB" />
+          <NavigationProperty Name="CUST_DATA" Relationship="ParcelXpressModel.FK__CUST_INVC__Custo__42E1EEFE" FromRole="CUST_INVC" ToRole="CUST_DATA" />
+          <Property Name="ReportMarkup" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="EmailAddress" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="INVC_PYMT_MODE">
           <Key>
@@ -1238,18 +1126,6 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="IsActive" Type="Boolean" />
           <NavigationProperty Name="CUST_INVC" Relationship="ParcelXpressModel.FK__CUST_INVC__Invoi__45BE5BA9" FromRole="INVC_PYMT_MODE" ToRole="CUST_INVC" />
         </EntityType>
-        <Association Name="FK__CUST_INVC__Custo__42E1EEFE">
-          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="0..1" />
-          <End Type="ParcelXpressModel.CUST_INVC" Role="CUST_INVC" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CUST_DATA">
-              <PropertyRef Name="CustomerId" />
-            </Principal>
-            <Dependent Role="CUST_INVC">
-              <PropertyRef Name="CustomerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK__CUST_INVC__Invoi__45BE5BA9">
           <End Type="ParcelXpressModel.INVC_PYMT_MODE" Role="INVC_PYMT_MODE" Multiplicity="0..1" />
           <End Type="ParcelXpressModel.CUST_INVC" Role="CUST_INVC" Multiplicity="*" />
@@ -1297,34 +1173,140 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <Property Name="IsActive" Type="Boolean" />
           <Property Name="IsDeleted" Type="Boolean" />
         </EntityType>
+        <EntityType Name="PNDG_JOBS">
+          <Key>
+            <PropertyRef Name="JobId" />
+          </Key>
+          <Property Name="JobId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="JobStatus" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="PickupAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DropAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CustomerPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerId" Type="Int32" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="JobDate" Type="DateTime" Precision="3" />
+          <Property Name="AccountPaymentInd" Type="Boolean" />
+          <Property Name="ChargesDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LongDistanceInd" Type="Boolean" />
+          <Property Name="DropoffContact" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="DropAddress1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DropAddress2" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DropAddress3" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DropAddress4" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="TypeOfParcel" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IsPaid" Type="Boolean" />
+          <Property Name="PaymentMode" Type="Int32" />
+          <Property Name="Reference" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="HangfireId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ScheduledTime" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="CUST_DATA">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Address" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ContactNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="EmailAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AccountRefNumber" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="HasAccount" Type="Boolean" />
+          <Property Name="AccountId" Type="Int32" />
+          <Property Name="IsDeleted" Type="Boolean" />
+          <Property Name="HasContract" Type="Boolean" />
+          <Property Name="ContactNo2" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ContactNo3" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ContactNo4" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ContactNo5" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PersonalAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="RecieveNotifications" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CUST_CRDT" Relationship="ParcelXpressModel.FK_CRDT_CUST_DATA" FromRole="CUST_DATA" ToRole="CUST_CRDT" />
+          <NavigationProperty Name="CUST_INVC" Relationship="ParcelXpressModel.FK__CUST_INVC__Custo__42E1EEFE" FromRole="CUST_DATA" ToRole="CUST_INVC" />
+          <NavigationProperty Name="DUES_ALRT" Relationship="ParcelXpressModel.FK_DUES_ALRT_CUST_DATA" FromRole="CUST_DATA" ToRole="DUES_ALRT" />
+          <NavigationProperty Name="JOBS" Relationship="ParcelXpressModel.FK_JOBS_CUST" FromRole="CUST_DATA" ToRole="JOB" />
+        </EntityType>
+        <Association Name="FK_CRDT_CUST_DATA">
+          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="0..1" />
+          <End Type="ParcelXpressModel.CUST_CRDT" Role="CUST_CRDT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CUST_CRDT">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__CUST_INVC__Custo__42E1EEFE">
+          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="0..1" />
+          <End Type="ParcelXpressModel.CUST_INVC" Role="CUST_INVC" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="CUST_INVC">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DUES_ALRT_CUST_DATA">
+          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="1" />
+          <End Type="ParcelXpressModel.DUES_ALRT" Role="DUES_ALRT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="DUES_ALRT">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_JOBS_CUST">
+          <End Type="ParcelXpressModel.CUST_DATA" Role="CUST_DATA" Multiplicity="0..1" />
+          <End Type="ParcelXpressModel.JOB" Role="JOB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUST_DATA">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="JOB">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DRVR_TIME_SHET">
+          <Key>
+            <PropertyRef Name="TimesheetId" />
+          </Key>
+          <Property Name="TimesheetId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DriverId" Type="Int32" />
+          <Property Name="LoginTime" Type="DateTime" Precision="3" />
+          <Property Name="LogoutTime" Type="DateTime" Precision="3" />
+          <Property Name="HourlyRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AmountEarned" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="SettledInd" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="DRVR_DATA" Relationship="ParcelXpressModel.FK__DRVR_TIME__Drive__2A164134" FromRole="DRVR_TIME_SHET" ToRole="DRVR_DATA" />
+          <Property Name="IsLoggedIn" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__DRVR_TIME__Drive__2A164134">
+          <End Type="ParcelXpressModel.DRVR_DATA" Role="DRVR_DATA" Multiplicity="0..1" />
+          <End Type="ParcelXpressModel.DRVR_TIME_SHET" Role="DRVR_TIME_SHET" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DRVR_DATA">
+              <PropertyRef Name="DriverId" />
+            </Principal>
+            <Dependent Role="DRVR_TIME_SHET">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="ParcelXpressModelStoreContainer" CdmEntityContainer="ParcelXpressConnection">
-          <EntitySetMapping Name="CUST_DATA">
-            <EntityTypeMapping TypeName="ParcelXpressModel.CUST_DATA">
-              <MappingFragment StoreEntitySet="CUST_DATA">
-                <ScalarProperty Name="RecieveNotifications" ColumnName="RecieveNotifications" />
-                <ScalarProperty Name="PersonalAddress" ColumnName="PersonalAddress" />
-                <ScalarProperty Name="ContactNo5" ColumnName="ContactNo5" />
-                <ScalarProperty Name="ContactNo4" ColumnName="ContactNo4" />
-                <ScalarProperty Name="ContactNo3" ColumnName="ContactNo3" />
-                <ScalarProperty Name="ContactNo2" ColumnName="ContactNo2" />
-                <ScalarProperty Name="HasContract" ColumnName="HasContract" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
-                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
-                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
-                <ScalarProperty Name="AccountRefNumber" ColumnName="AccountRefNumber" />
-                <ScalarProperty Name="HasAccount" ColumnName="HasAccount" />
-                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="CUST_TRAN">
             <EntityTypeMapping TypeName="ParcelXpressModel.CUST_TRAN">
               <MappingFragment StoreEntitySet="CUST_TRAN">
@@ -1369,6 +1351,7 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySetMapping Name="JOBS">
             <EntityTypeMapping TypeName="ParcelXpressModel.JOB">
               <MappingFragment StoreEntitySet="JOBS">
+                <ScalarProperty Name="IsDelivered" ColumnName="IsDelivered" />
                 <ScalarProperty Name="LastUpdated" ColumnName="LastUpdated" />
                 <ScalarProperty Name="Reference" ColumnName="Reference" />
                 <ScalarProperty Name="DropoffTime" ColumnName="DropoffTime" />
@@ -1510,6 +1493,8 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
           <EntitySetMapping Name="DRVR_DATA">
             <EntityTypeMapping TypeName="ParcelXpressModel.DRVR_DATA">
               <MappingFragment StoreEntitySet="DRVR_DATA">
+                <ScalarProperty Name="IsOnHourlyRate" ColumnName="IsOnHourlyRate" />
+                <ScalarProperty Name="HourlyRate" ColumnName="HourlyRate" />
                 <ScalarProperty Name="LogoutTime" ColumnName="LogoutTime" />
                 <ScalarProperty Name="LoginTime" ColumnName="LoginTime" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
@@ -1584,30 +1569,11 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="DALY_PRCL">
-            <EntityTypeMapping TypeName="ParcelXpressModel.DALY_PRCL">
-              <MappingFragment StoreEntitySet="DALY_PRCL">
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="TimeOfDay" ColumnName="TimeOfDay" />
-                <ScalarProperty Name="DayOfWeek" ColumnName="DayOfWeek" />
-                <ScalarProperty Name="MasterId" ColumnName="MasterId" />
-                <ScalarProperty Name="DailyParcelId" ColumnName="DailyParcelId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="DALY_PRCL_MSTR">
-            <EntityTypeMapping TypeName="ParcelXpressModel.DALY_PRCL_MSTR">
-              <MappingFragment StoreEntitySet="DALY_PRCL_MSTR">
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="DropAddress" ColumnName="DropAddress" />
-                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
-                <ScalarProperty Name="DailyParcelMasterId" ColumnName="DailyParcelMasterId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="CUST_INVC">
             <EntityTypeMapping TypeName="ParcelXpressModel.CUST_INVC">
               <MappingFragment StoreEntitySet="CUST_INVC">
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="ReportMarkup" ColumnName="ReportMarkup" />
                 <ScalarProperty Name="JobId" ColumnName="JobId" />
                 <ScalarProperty Name="InvoicePaymentMode" ColumnName="InvoicePaymentMode" />
                 <ScalarProperty Name="InvoiceStatus" ColumnName="InvoiceStatus" />
@@ -1641,6 +1607,72 @@ warning 6035: The relationship 'FK_JOBS_STUS' has columns that are not part of t
                 <ScalarProperty Name="Price" ColumnName="Price" />
                 <ScalarProperty Name="PackageName" ColumnName="PackageName" />
                 <ScalarProperty Name="PackageId" ColumnName="PackageId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PNDG_JOBS">
+            <EntityTypeMapping TypeName="ParcelXpressModel.PNDG_JOBS">
+              <MappingFragment StoreEntitySet="PNDG_JOBS">
+                <ScalarProperty Name="ScheduledTime" ColumnName="ScheduledTime" />
+                <ScalarProperty Name="HangfireId" ColumnName="HangfireId" />
+                <ScalarProperty Name="Reference" ColumnName="Reference" />
+                <ScalarProperty Name="PaymentMode" ColumnName="PaymentMode" />
+                <ScalarProperty Name="IsPaid" ColumnName="IsPaid" />
+                <ScalarProperty Name="TypeOfParcel" ColumnName="TypeOfParcel" />
+                <ScalarProperty Name="DropAddress4" ColumnName="DropAddress4" />
+                <ScalarProperty Name="DropAddress3" ColumnName="DropAddress3" />
+                <ScalarProperty Name="DropAddress2" ColumnName="DropAddress2" />
+                <ScalarProperty Name="DropAddress1" ColumnName="DropAddress1" />
+                <ScalarProperty Name="DropoffContact" ColumnName="DropoffContact" />
+                <ScalarProperty Name="LongDistanceInd" ColumnName="LongDistanceInd" />
+                <ScalarProperty Name="ChargesDescription" ColumnName="ChargesDescription" />
+                <ScalarProperty Name="AccountPaymentInd" ColumnName="AccountPaymentInd" />
+                <ScalarProperty Name="JobDate" ColumnName="JobDate" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="CustomerPhone" ColumnName="CustomerPhone" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="DropAddress" ColumnName="DropAddress" />
+                <ScalarProperty Name="PickupAddress" ColumnName="PickupAddress" />
+                <ScalarProperty Name="JobStatus" ColumnName="JobStatus" />
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CUST_DATA">
+            <EntityTypeMapping TypeName="ParcelXpressModel.CUST_DATA">
+              <MappingFragment StoreEntitySet="CUST_DATA">
+                <ScalarProperty Name="RecieveNotifications" ColumnName="RecieveNotifications" />
+                <ScalarProperty Name="PersonalAddress" ColumnName="PersonalAddress" />
+                <ScalarProperty Name="ContactNo5" ColumnName="ContactNo5" />
+                <ScalarProperty Name="ContactNo4" ColumnName="ContactNo4" />
+                <ScalarProperty Name="ContactNo3" ColumnName="ContactNo3" />
+                <ScalarProperty Name="ContactNo2" ColumnName="ContactNo2" />
+                <ScalarProperty Name="HasContract" ColumnName="HasContract" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="HasAccount" ColumnName="HasAccount" />
+                <ScalarProperty Name="AccountRefNumber" ColumnName="AccountRefNumber" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="ContactNo" ColumnName="ContactNo" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DRVR_TIME_SHET">
+            <EntityTypeMapping TypeName="ParcelXpressModel.DRVR_TIME_SHET">
+              <MappingFragment StoreEntitySet="DRVR_TIME_SHET">
+                <ScalarProperty Name="IsLoggedIn" ColumnName="IsLoggedIn" />
+                <ScalarProperty Name="SettledInd" ColumnName="SettledInd" />
+                <ScalarProperty Name="AmountEarned" ColumnName="AmountEarned" />
+                <ScalarProperty Name="HourlyRate" ColumnName="HourlyRate" />
+                <ScalarProperty Name="LogoutTime" ColumnName="LogoutTime" />
+                <ScalarProperty Name="LoginTime" ColumnName="LoginTime" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+                <ScalarProperty Name="TimesheetId" ColumnName="TimesheetId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -28,7 +28,17 @@ namespace ParcelXpress.Enums
 
         [DisplayName("Closed")]
         [StringValue("00005")]
-        Closed = 6
+        Closed = 6,
+
+        [DisplayName("Pending")]
+        [StringValue("00006")]
+        Pending = 7,
+
+        [DisplayName("Sent")]
+        [StringValue("00007")]
+        Sent = 8,
+
+
 
     }
 }

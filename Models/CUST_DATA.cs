@@ -21,7 +21,6 @@ namespace ParcelXpress.Models
             this.CUST_BILL = new HashSet<CUST_BILL>();
             this.CUST_CRDT = new HashSet<CUST_CRDT>();
             this.DUES_ALRT = new HashSet<DUES_ALRT>();
-            this.DALY_PRCL_MSTR = new HashSet<DALY_PRCL_MSTR>();
             this.CUST_INVC = new HashSet<CUST_INVC>();
         }
 
@@ -50,7 +49,6 @@ namespace ParcelXpress.Models
         public virtual ICollection<CUST_BILL> CUST_BILL { get; set; }
         public virtual ICollection<CUST_CRDT> CUST_CRDT { get; set; }
         public virtual ICollection<DUES_ALRT> DUES_ALRT { get; set; }
-        public virtual ICollection<DALY_PRCL_MSTR> DALY_PRCL_MSTR { get; set; }
         public virtual ICollection<CUST_INVC> CUST_INVC { get; set; }
     }
 }

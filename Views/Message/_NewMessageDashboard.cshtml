@@ -7,13 +7,7 @@
             <div class="mdl-card__title">
                 <h5 style="color:white;">New Message</h5>
                 <div class="mdl-layout-spacer"></div>
-                <a href="/Message/MainPage" class="btn mdl-button--accent mdl-button--raised refreshButton">
-                    Inbox &nbsp;
-                    @if ((int)ViewBag.MessageCount > 0)
-                    {
-                        <span class="badge badge-notify"><b>@ViewBag.MessageCount</b></span>
-                    }
-                </a>
+                @Html.Partial("_InboxCountDashboard")
             </div>
         </div>
         <div class="panel-body">
@@ -72,3 +66,23 @@
     </div>
 </div>
 @Html.Raw(TempData["toastMessageForInbox"])
+
+<script>
+        var interval = null;
+        $(document).on('ready', function () {
+            interval = setInterval(updateInbox, 60000);
+        });
+        function updateInbox() {
+            $.ajax({
+                url: '/Message/_NewMessageDashboard',
+                success: function (data) {
+                        $('#inboxCount').html(data);
+                },
+                error: function () {
+                    clearInterval(interval);
+                }
+            });
+        }
+
+
+</script>

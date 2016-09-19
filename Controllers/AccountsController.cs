@@ -29,12 +29,14 @@ namespace ParcelXpress.Controllers
             decimal totalJobBalance = 0;
             decimal totalAmountReceivable = 0;
             decimal totalBalanceDriverCommission = 0;
+            decimal totalHourlyEarned = 0;
             string driverName = "";
             IEnumerable<JOB> jobs = null;
 
             if (driverId != 0)
             {
-                driverName = _db.DRVR_DATA.Find(driverId).DriverName;
+                var driver = _db.DRVR_DATA.Find(driverId);
+                driverName = driver.DriverName;
                 var transactions = _db.DRVR_TRAN.Where(t => t.DriverId == driverId && t.SettledInd != true);
                 if (transactions != null && transactions.Count() > 0)
                 {
@@ -54,6 +56,9 @@ namespace ParcelXpress.Controllers
 
                     totalAmountReceivable = totalPxpBalance;//totalCashPayment - totalDriverCommission;   //Driver has to give the amount by cutting his commission
                 }
+                if (driver.IsOnHourlyRate == true)
+                    totalHourlyEarned = _db.DRVR_TIME_SHET.Where(dt => dt.DriverId == driver.DriverId && dt.SettledInd == false).Sum(x => x.AmountEarned).GetValueOrDefault(0);
+                ViewBag.IsHoulyDriver = driver.IsOnHourlyRate;
             }
             ViewBag.DriverName = driverName;
             ViewBag.AmountReceivable = totalAmountReceivable;
@@ -62,6 +67,8 @@ namespace ParcelXpress.Controllers
             ViewBag.CashPayment = totalCashPayment;
             ViewBag.JobBalance = totalJobBalance;
             ViewBag.DriverId = driverId;
+            ViewBag.TotalHourlyEarned = totalHourlyEarned;
+
             return View(jobs);
         }
 
@@ -78,6 +85,14 @@ namespace ParcelXpress.Controllers
                         trans.SettledInd = true;
                         _db.Entry(trans).State = EntityState.Modified;
                     }
+                    var hourlyTimesheets = _db.DRVR_TIME_SHET.Where(x => x.DriverId == driverId && x.SettledInd == false && x.LogoutTime.HasValue);
+                    foreach (var item in hourlyTimesheets)
+                    {
+                        item.SettledInd = true;
+                        _db.Entry(item).State = EntityState.Modified;
+
+                    }
+
                     _db.SaveChanges();
                     TempData["toastMessage"] = "<script>toastr.success('Driver Account has been successfully settled.');</script>";
                 }
@@ -98,28 +113,35 @@ namespace ParcelXpress.Controllers
 
             foreach (var item in model)
             {
-                var transactions = _db.DRVR_TRAN.Where(t => t.DriverId == item.DriverId && t.SettledInd != true);
-                if (transactions != null && transactions.Count() > 0)
+                if (item.IsOnHourlyRate == true)
                 {
-                    var transactionIn = StringEnum.GetStringValue(TransactionTypeCode.In);
-                    var transactionOut = StringEnum.GetStringValue(TransactionTypeCode.Out);
-
-                    var jobs = _db.JOBS.Where(j => transactions.Any(t => j.JobId == t.JobId));
-                    var totalJobBalance = jobs.Sum(j => j.Price).GetValueOrDefault(0);      //total sum of jobs
-
-                    var paymentFromAccount = jobs.Where(j => j.AccountPaymentInd == true).Sum(j => j.Price).GetValueOrDefault(0);
-                    var totalCashPayment = Math.Round((totalJobBalance - paymentFromAccount), 2);        //total cash that driver had already received
-
-                    var totalDriverCommission = transactions.Where(t => t.TransactionType == transactionIn).Sum(t => t.Amount).GetValueOrDefault(0);
-                    var totalBalanceDriverCommission = transactions.Where(t => t.TransactionType == transactionIn).Sum(t => t.Balance).GetValueOrDefault(0);
-
-                    var totalPxpBalance = transactions.Where(t => t.TransactionType == transactionOut).Sum(t => t.Balance).GetValueOrDefault(0);
-
-                    item.DriverCommissionAmount = totalPxpBalance; // totalCashPayment - totalDriverCommission;   //Driver has to give the amount by cutting his commission
+                    item.DriverCommissionAmount = _db.DRVR_TIME_SHET.Where(x => x.DriverId == item.DriverId && x.SettledInd != true).Sum(y => y.AmountEarned).GetValueOrDefault(0);
                 }
                 else
                 {
-                    item.DriverCommissionAmount = 0;
+                    var transactions = _db.DRVR_TRAN.Where(t => t.DriverId == item.DriverId && t.SettledInd != true);
+                    if (transactions != null && transactions.Count() > 0)
+                    {
+                        var transactionIn = StringEnum.GetStringValue(TransactionTypeCode.In);
+                        var transactionOut = StringEnum.GetStringValue(TransactionTypeCode.Out);
+
+                        var jobs = _db.JOBS.Where(j => transactions.Any(t => j.JobId == t.JobId));
+                        var totalJobBalance = jobs.Sum(j => j.Price).GetValueOrDefault(0);      //total sum of jobs
+
+                        var paymentFromAccount = jobs.Where(j => j.AccountPaymentInd == true).Sum(j => j.Price).GetValueOrDefault(0);
+                        var totalCashPayment = Math.Round((totalJobBalance - paymentFromAccount), 2);        //total cash that driver had already received
+
+                        var totalDriverCommission = transactions.Where(t => t.TransactionType == transactionIn).Sum(t => t.Amount).GetValueOrDefault(0);
+                        var totalBalanceDriverCommission = transactions.Where(t => t.TransactionType == transactionIn).Sum(t => t.Balance).GetValueOrDefault(0);
+
+                        var totalPxpBalance = transactions.Where(t => t.TransactionType == transactionOut).Sum(t => t.Balance).GetValueOrDefault(0);
+
+                        item.DriverCommissionAmount = totalPxpBalance; // totalCashPayment - totalDriverCommission;   //Driver has to give the amount by cutting his commission
+                    }
+                    else
+                    {
+                        item.DriverCommissionAmount = 0;
+                    }
                 }
             }
             return PartialView("_SearchResultDriver", model);
@@ -133,27 +155,34 @@ namespace ParcelXpress.Controllers
 
             foreach (var item in model)
             {
-                var transactions = _db.DRVR_TRAN.Where(t => t.DriverId == item.DriverId && t.SettledInd != true);
-                if (transactions != null && transactions.Count() > 0)
+                if (item.IsOnHourlyRate == true)
                 {
-                    var transactionIn = StringEnum.GetStringValue(TransactionTypeCode.In);
-                    var transactionOut = StringEnum.GetStringValue(TransactionTypeCode.Out);
-
-                    var jobs = _db.JOBS.Where(j => transactions.Any(t => j.JobId == t.JobId));
-                    var totalJobBalance = jobs.Sum(j => j.Price).GetValueOrDefault(0);      //total sum of jobs
-
-                    var paymentFromAccount = jobs.Where(j => j.AccountPaymentInd == true).Sum(j => j.Price).GetValueOrDefault(0);
-                    var totalCashPayment = Math.Round((totalJobBalance - paymentFromAccount), 2);       //total cash that driver had already received
-
-                    var totalDriverCommission = transactions.Where(t => t.TransactionType == transactionIn).Sum(t => t.Amount).GetValueOrDefault(0);
-                    var totalBalanceDriverCommission = transactions.Where(t => t.TransactionType == transactionIn).Sum(t => t.Balance).GetValueOrDefault(0);
-                    var totalPxpBalance = transactions.Where(t => t.TransactionType == transactionOut).Sum(t => t.Balance).GetValueOrDefault(0);
-
-                    item.DriverCommissionAmount = totalPxpBalance; //totalCashPayment - totalDriverCommission;   //Driver has to give the amount by cutting his commission
+                    item.DriverCommissionAmount = _db.DRVR_TIME_SHET.Where(x => x.DriverId == item.DriverId && x.SettledInd != true).Sum(y => y.AmountEarned).GetValueOrDefault(0);
                 }
                 else
                 {
-                    item.DriverCommissionAmount = 0;
+                    var transactions = _db.DRVR_TRAN.Where(t => t.DriverId == item.DriverId && t.SettledInd != true);
+                    if (transactions != null && transactions.Count() > 0)
+                    {
+                        var transactionIn = StringEnum.GetStringValue(TransactionTypeCode.In);
+                        var transactionOut = StringEnum.GetStringValue(TransactionTypeCode.Out);
+
+                        var jobs = _db.JOBS.Where(j => transactions.Any(t => j.JobId == t.JobId));
+                        var totalJobBalance = jobs.Sum(j => j.Price).GetValueOrDefault(0);      //total sum of jobs
+
+                        var paymentFromAccount = jobs.Where(j => j.AccountPaymentInd == true).Sum(j => j.Price).GetValueOrDefault(0);
+                        var totalCashPayment = Math.Round((totalJobBalance - paymentFromAccount), 2);       //total cash that driver had already received
+
+                        var totalDriverCommission = transactions.Where(t => t.TransactionType == transactionIn).Sum(t => t.Amount).GetValueOrDefault(0);
+                        var totalBalanceDriverCommission = transactions.Where(t => t.TransactionType == transactionIn).Sum(t => t.Balance).GetValueOrDefault(0);
+                        var totalPxpBalance = transactions.Where(t => t.TransactionType == transactionOut).Sum(t => t.Balance).GetValueOrDefault(0);
+
+                        item.DriverCommissionAmount = totalPxpBalance; //totalCashPayment - totalDriverCommission;   //Driver has to give the amount by cutting his commission
+                    }
+                    else
+                    {
+                        item.DriverCommissionAmount = 0;
+                    }
                 }
             }
 
@@ -195,7 +224,8 @@ namespace ParcelXpress.Controllers
             List<CUST_BILL> BillHistory = null;
             if (customerId != 0)
             {
-                customerName = _db.CUST_DATA.Find(customerId).CustomerName;
+                var customer = _db.CUST_DATA.Find(customerId);
+                customerName = customer.CustomerName;
                 var customerAccountList = (from trans in _db.CUST_TRAN
                                            where trans.CustomerId == customerId && trans.SettledInd != true
                                            join jobs in _db.JOBS on trans.JobId equals jobs.JobId
@@ -220,6 +250,8 @@ namespace ParcelXpress.Controllers
                 ViewBag.CustomerAccounts = CustomerDriverJobList;
 
                 BillHistory = _db.CUST_BILL.Where(b => b.CustomerId == customerId).OrderByDescending(b => b.PaymentDate).Take(10).ToList();
+                ViewBag.TotalDropoffs = getTotalDropoffs(CustomerDriverJobList);
+
             }
             ViewBag.PreviousPaidAmount = totalPaidByCustomer;
             ViewBag.CustomerPayable = totalCustomerPayable;
@@ -313,7 +345,7 @@ namespace ParcelXpress.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateCustomerStatement(int CustomerId = 0, bool FromAllCustomers = false)
+        public ActionResult CreateCustomerStatement(int CustomerId = 0, bool FromAllCustomers = false, ReportParameters ReportParams = null)
         {
 
             int customerId = CustomerId;
@@ -334,6 +366,7 @@ namespace ParcelXpress.Controllers
                                                join driver in _db.DRVR_DATA on jobs.DriverId equals driver.DriverId
                                                select new { JobId = jobs.JobId, JobDate = jobs.JobDate, DriverName = driver.DriverName, Price = trans.PayableAmount, ReceivedAmount = trans.ReceivedAmount, RemainingAmount = trans.RemainingAmount }).ToList();
 
+
                     List<CustomerJobDriver> CustomerDriverJobList = new List<CustomerJobDriver>();
                     foreach (var item in customerAccountList)
                     {
@@ -350,6 +383,16 @@ namespace ParcelXpress.Controllers
                     customerJobs = CustomerDriverJobList;
                 }
                 CUST_DATA customerInformation = _db.CUST_DATA.Find(customerId);
+                if (customerInformation.HasContract == true)
+                {
+                    if (ReportParams == null || ReportParams.PackageId == null)
+                        throw new Exception("Please select a contract package to send invoice.");
+                }
+                else
+                {
+                    if (customerJobs.Count <= 0)
+                        throw new Exception("There are no unsettled transactions for this customer.");
+                }
                 //Check if customer has an email Address
                 if (customerInformation == null || customerInformation.EmailAddress == null || customerInformation.EmailAddress.Trim().Equals(""))
                 {
@@ -386,30 +429,33 @@ namespace ParcelXpress.Controllers
                         Reference = item.Reference
                     });
                 }
-
-                string result = PDFGenerator.createCustomerReportMarkup(customerInformation, reportParameters, previousPaidAmount);
+                string reportMarkup;
+                string result = PDFGenerator.createCustomerReportMarkup(out reportMarkup,customerInformation, reportParameters, previousPaidAmount, false, ReportParams);
                 if (result != null)
                 {
                     TempData["toastMessage"] = "<script>toastr.success('Invoice has been successfully sent to customer.');</script>";
+                    decimal? contractPrice = null;
+                    if (ReportParams != null && ReportParams.PackageId != null)
+                        contractPrice = _db.CONT_PKGS.Find(ReportParams.PackageId).Price;
                     CUST_INVC invoice = new CUST_INVC()
                     {
                         InvoiceNumber = result,
-                        InvoiceAmount = (reportParameters.Sum(p => p.RemainingAmount) - previousPaidAmount),
+                        InvoiceAmount = contractPrice != null ? (contractPrice + (reportParameters.Sum(p => p.RemainingAmount))) : (reportParameters.Sum(p => p.RemainingAmount) - previousPaidAmount),
                         InvoiceDate = DateTime.Now.ToUniversalTime(),
                         CustomerId = CustomerId,
-                        InvoiceStatus=StringEnum.GetStringValue(InvoiceStatus.Due),
+                        InvoiceStatus = StringEnum.GetStringValue(InvoiceStatus.Due),
+                        EmailAddress = customerInformation.EmailAddress,
+                        ReportMarkup = System.Net.WebUtility.HtmlEncode(reportMarkup),
                         IsPaid = false
                     };
                     _db.CUST_INVC.Add(invoice);
                     _db.SaveChanges();
                     var listOfJobs = reportParameters.Select(x => x.JobId).ToList();
-                    var transactions = _db.CUST_TRAN.Where(j =>  listOfJobs.Contains(j.JobId.Value)).ToList();
-                    var existingInvoices = transactions.Select(x => x.InvoiceId).Distinct();
-                    foreach (var trans in transactions) {
-                        trans.InvoiceId = invoice.InvoiceId;
-                        _db.Entry(trans).State = EntityState.Modified;
-                    }
-                    foreach (var inv in existingInvoices) {
+                    var transactions = _db.CUST_TRAN.Where(j => listOfJobs.Contains(j.JobId.Value)).ToList();
+                    List<int?> existingInvoices = new List<int?>();
+                    existingInvoices = transactions.Select(x => x.InvoiceId).Distinct().ToList();
+                    foreach (var inv in existingInvoices)
+                    {
                         if (inv != null && inv.Value > 0)
                         {
                             var previousInvoice = _db.CUST_INVC.Find(inv.Value);
@@ -417,6 +463,12 @@ namespace ParcelXpress.Controllers
                             _db.Entry(previousInvoice).State = EntityState.Modified;
                         }
                     }
+                    foreach (var trans in transactions)
+                    {
+                        trans.InvoiceId = invoice.InvoiceId;
+                        _db.Entry(trans).State = EntityState.Modified;
+                    }
+
                     _db.SaveChanges();
                 }
                 else
@@ -543,6 +595,49 @@ namespace ParcelXpress.Controllers
             return RedirectToAction("CustomerAccounts", new { customerId = CustomerId }); ;
         }
 
+        public ActionResult _SelectedCustomerAccount(int CustomerId = 0)
+        {
+            var invoicePaymentModes = _db.CONT_PKGS.Where(pm => pm.IsActive == true).OrderBy(pm => pm.PackageName);
+            var selectList = new List<SelectListItem>();
+            foreach (var item in invoicePaymentModes)
+            {
+                selectList.Add(new SelectListItem
+                {
+                    Value = item.PackageId.ToString(),
+                    Text = item.PackageName
+                });
+            }
 
+            ViewBag.PackageList = selectList;
+            ReportParameters model = new ReportParameters();
+            if (CustomerId != 0)
+            {
+                var customer = _db.CUST_DATA.Find(CustomerId);
+                model.CustomerName = customer.CustomerName;
+                model.CustomerId = customer.CustomerId;
+            }
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_SelectedCustomerAccount", model);
+            }
+            return PartialView(model);
+        }
+
+
+        private int getTotalDropoffs(List<CustomerJobDriver> JobList)
+        {
+            var listOfIds = JobList.Select(x => x.JobId).ToList();
+            var Jobs = from job in _db.JOBS
+                       where listOfIds.Contains(job.JobId)
+                       select job;
+            int _numberOfDropooffs = 0;
+            _numberOfDropooffs += Jobs.Count(x => x.DropAddress != null);
+            _numberOfDropooffs += Jobs.Count(x => x.DropAddress1 != null);
+            _numberOfDropooffs += Jobs.Count(x => x.DropAddress2 != null);
+            _numberOfDropooffs += Jobs.Count(x => x.DropAddress3 != null);
+            _numberOfDropooffs += Jobs.Count(x => x.DropAddress4 != null);
+            return _numberOfDropooffs;
+
+        }
     }
 }

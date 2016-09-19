@@ -264,7 +264,23 @@ $(function () {
 
         return false;
     };
-    $('#btnGenerateStatement,[name="btnGenerateStatement"]').click(generateEmailConfirmation);
+    $('#btnGenerateStatement,[name="btnGenerateStatement"],[name="btnGenerateContractStatement"]').click(generateEmailConfirmation);
+
+    var showReportParams = function () {
+        $("#selectedCustomerDiv").removeClass("hidden");
+        var $a = $(this);
+        var targetUrl = $a.attr("href");
+        var targetElement = $a.attr("data-pxp-target");
+        var options = {
+            url: targetUrl,
+            type: 'get'
+        };
+        $.ajax(options).done(function (data) {
+            $(targetElement).replaceWith(data);
+        });
+        return false;
+    }
+    $('[name="btnShowReportParams"]').click(showReportParams);
     
     var submitWithLoader = function () {
         var $button = $(this);
@@ -322,5 +338,15 @@ $(function () {
     };
     $("#addContactNo").click(showAnotherContactNp);
 
-   
+    $("#hourlyDriverCheck").click(function (event) {
+        var commissionField = $("#txtCommissionRate");
+        if ($(event.target).is(":checked") == true) {
+            commissionField.val('0.00');
+            commissionField.attr("disabled", "disabled");
+        }
+        else {
+            commissionField.val('');
+            commissionField.removeAttr("disabled");
+        }
+    });
 });

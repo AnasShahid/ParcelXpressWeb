@@ -1,0 +1,52 @@
+﻿@model ReportParameters
+@{
+
+}
+<div id="reportParamDiv">
+    @using (Html.BeginForm("CreateCustomerStatement", "Accounts", new { CustomerId = Model.CustomerId, FromAllCustomers = true }, FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        <div class="box box-primary">
+            <div class="box-header">
+                <h5>Please fill the following Details</h5>
+            </div>
+            <div class="box-body container-fluid" style="margin-left:10px; margin-right:15px; padding-top:30px;">
+                <div class="row">
+                    <label>Customer Name: @Model.CustomerName</label>
+                </div>
+                <div class="row">
+                    <label class="control-label">Contract Package</label>
+                    <div>
+                        @Html.DropDownListFor(m => m.PackageId, (IEnumerable<SelectListItem>)ViewBag.PackageList, "Please Select", new { @class = "form-control dropdown dropdown-toggle" })
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="control-label">From Date</label>
+                    <div class="">
+                        @Html.TextBoxFor(m => m.DateFrom, new { @class = "form-control DateDialog" })
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="control-label">To Date</label>
+                    <div class="">
+                        @Html.TextBoxFor(m => m.DateTo, new { @class = "form-control DateDialog" })
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <button type="submit" role="button" class="btn btn-default" id="btnGenerateContractStatement" name="btnGenerateContractStatement"> Send Customer Statement</button>
+
+            </div>
+        </div>
+    }
+    <script type="text/javascript">
+        $('.DateDialog').datepicker({ format: "dd/mm/yyyy" }); //Initialise any date pickers
+    </script>
+    <div id="loading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+        <p style="position: absolute; top: 0%; left: 30%; color: White;">
+            Please Wait. . .<img src="~/Content/loading.gif" height="200px" width="200px">
+        </p>
+    </div>
+</div>
+

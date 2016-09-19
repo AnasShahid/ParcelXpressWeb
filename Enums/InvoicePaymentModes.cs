@@ -13,6 +13,10 @@ namespace ParcelXpress.Enums
 
         [StringValue("00002")]
         [DisplayName("Bacs")]
-        Bacs = 2
+        Bacs = 2,
+
+        [StringValue("00003")]
+        [DisplayName("GoCardless")]
+        GoCardless = 3
     }
 }

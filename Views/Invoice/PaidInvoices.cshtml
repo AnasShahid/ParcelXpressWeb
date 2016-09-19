@@ -16,6 +16,7 @@
                     <div class="box-header">
                         <div style="margin-top:5px;margin-bottom:10px;">
                             <form method="get" action="@Url.Action("PaidInvoices")" @*data-pxp-ajax="true" data-pxp-target="#allJobs"*@ class="form-inline">
+                                <input type="search" class="form-control col-md-2" placeholder="Search&hellip;" name="searchTxt" id="searchTxt" value="@ViewBag.SearchText" />
 
                                 <label class="control-label col-md-1">From</label><input type="search" class="DateDialog col-md-2  form-control" placeholder="From Date&hellip;" name="fromDate" id="fromDate" value="@ViewBag.FromDate" />
                                 <label class="control-label col-md-1 col-md-offset-1">To</label><input type="search" class="DateDialog form-control col-md-2" placeholder="To Date&hellip;" name="toDate" id="toDate" value="@ViewBag.ToDate" />
@@ -23,7 +24,7 @@
                             </form>
                         </div>
                     </div>
-                    @Html.Partial("_InvoiceTable", Model, new ViewDataDictionary { { "view", "PaidInvoices" }, { "fromDate", @ViewBag.FromDate }, { "toDate", @ViewBag.ToDate } })
+                    @Html.Partial("_InvoiceTable", Model, new ViewDataDictionary { { "view", "PaidInvoices" }, { "searchTxt", @ViewBag.SearchText }, { "fromDate", @ViewBag.FromDate }, { "toDate", @ViewBag.ToDate } })
                 </div>
 
             </div>

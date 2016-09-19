@@ -1,0 +1,10 @@
+﻿
+<div id="inboxCount">
+    <a href="/Message/MainPage" class="btn mdl-button--accent mdl-button--raised refreshButton">
+        Inbox &nbsp;
+        @if ((int)ViewBag.MessageCount > 0)
+        {
+            <span class="badge badge-notify"><b>@ViewBag.MessageCount</b></span>
+        }
+    </a>
+</div>

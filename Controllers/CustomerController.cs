@@ -152,15 +152,7 @@ namespace ParcelXpress.Controllers
             return RedirectToAction("AllCustomers");
         }
 
-        [HttpGet] // this action result returns the partial containing the modal
-        public ActionResult _DailyParcels(List<DALY_PRCL_MSTR> dailyParcels)
-        {
-            var model = new DALY_PRCL_MSTR();
-            if (dailyParcels != null && dailyParcels.FirstOrDefault() != null)
-                model = dailyParcels.FirstOrDefault();
-
-            return PartialView("_DailyParcels", model);
-        }
+ 
         public ActionResult generateAccountRef(string fromAction = "CreateCustomerAccount",int custId=0)
         {
             string accountCode = accountCodeGenerator();

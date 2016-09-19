@@ -25,7 +25,6 @@ namespace ParcelXpress.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public DbSet<CUST_DATA> CUST_DATA { get; set; }
         public DbSet<CUST_TRAN> CUST_TRAN { get; set; }
         public DbSet<DRVR_MSGS> DRVR_MSGS { get; set; }
         public DbSet<DRVR_TRAN> DRVR_TRAN { get; set; }
@@ -46,10 +45,11 @@ namespace ParcelXpress.Models
         public DbSet<FAQ> FAQS { get; set; }
         public DbSet<DUES_ALRT> DUES_ALRT { get; set; }
         public DbSet<ERR_LOG> ERR_LOG { get; set; }
-        public DbSet<DALY_PRCL> DALY_PRCL { get; set; }
-        public DbSet<DALY_PRCL_MSTR> DALY_PRCL_MSTR { get; set; }
         public DbSet<CUST_INVC> CUST_INVC { get; set; }
         public DbSet<INVC_PYMT_MODE> INVC_PYMT_MODE { get; set; }
         public DbSet<CONT_PKGS> CONT_PKGS { get; set; }
+        public DbSet<PNDG_JOBS> PNDG_JOBS { get; set; }
+        public DbSet<CUST_DATA> CUST_DATA { get; set; }
+        public DbSet<DRVR_TIME_SHET> DRVR_TIME_SHET { get; set; }
     }
 }

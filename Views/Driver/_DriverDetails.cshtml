@@ -4,7 +4,14 @@
     var disabled = ViewData["isDisabled"];
     Model.IsDeleted = false;
 }
-
+<div class="row">
+    <div class="col-md-6 form-group">
+        <label class="control-label col-lg-4 ">On Hourly Wage</label>
+        <div class="col-lg-1">
+            @Html.CheckBoxFor(m => m.IsOnHourlyRate, new { @class = "form-control", @id = "hourlyDriverCheck" })
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-lg-6 form-group">
         <label class="control-label col-lg-3">Driver Name</label>
@@ -16,18 +23,18 @@
     <div class="col-lg-6 form-group">
         <label class="control-label col-lg-3">Login Name</label>
         <div class="col-lg-8">
-            @Html.TextBoxFor(m => m.LoginName, new {  @class = "form-control isDisabled" })
+            @Html.TextBoxFor(m => m.LoginName, new { @class = "form-control isDisabled" })
             @Html.ValidationMessageFor(m => m.LoginName, null, new { @class = "text-danger" })
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-lg-6 form-group" >
+    <div class="col-lg-6 form-group">
         <label class="control-label col-lg-3">Contact No.</label>
         <div class="col-lg-8">
-            @Html.TextBoxFor(m => m.ContactNo, new {  @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.ContactNo, null, new { @class = "text-danger" })           
+            @Html.TextBoxFor(m => m.ContactNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.ContactNo, null, new { @class = "text-danger" })
         </div>
     </div>
     <div class="col-lg-6 form-group">
@@ -41,18 +48,31 @@
 <div class="row">
     <div class="col-lg-6 form-group">
         <label class="control-label col-lg-3">Commission %</label>
-        <div class="col-lg-8">       
-            @Html.EditorFor(m => m.CommissionRate)
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.CommissionRate, new { @id = "txtCommissionRate" })
             @Html.ValidationMessageFor(m => m.CommissionRate, null, new { @class = "text-danger" })
         </div>
     </div>
-    @Html.HiddenFor(m=>m.Password)
-    @Html.HiddenFor(m=>m.IsActive)
-    @Html.HiddenFor(m=>m.DriverId)
-    @Html.HiddenFor(m=>m.IsDeleted)
-    @Html.HiddenFor(m=>m.CreatedOn)
-  
+    @*<div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Commission %</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.CommissionRate, new { @id = "txtCommissionRate" })
+            @Html.ValidationMessageFor(m => m.CommissionRate, null, new { @class = "text-danger" })
+        </div>
+    </div>*@
+    <div class="col-lg-6 form-group">
+        <label class="control-label col-lg-3">Hourly Rate</label>
+        <div class="col-lg-8">
+            @Html.TextBoxFor(m => m.HourlyRate)
+            @Html.ValidationMessageFor(m => m.HourlyRate, null, new { @class = "text-danger" })
+        </div>
+    </div>
 </div>
+@Html.HiddenFor(m => m.Password)
+@Html.HiddenFor(m => m.IsActive)
+@Html.HiddenFor(m => m.DriverId)
+@Html.HiddenFor(m => m.IsDeleted)
+@Html.HiddenFor(m => m.CreatedOn)
 
 
 

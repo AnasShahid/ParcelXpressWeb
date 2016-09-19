@@ -1,0 +1,20 @@
+﻿@model DailyParcelEntity
+<div class="container-fluid" id="DailySchedule">
+    <table class="table table-bordered table-responsive table-hover">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.DailyParcels)
+            {
+                <tr>
+                    <td>@item.DayOfWeek</td>
+                    <td>@item.TimeOfDay</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

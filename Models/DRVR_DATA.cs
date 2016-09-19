@@ -20,6 +20,7 @@ namespace ParcelXpress.Models
             this.DRVR_MSGS = new HashSet<DRVR_MSGS>();
             this.JOBS = new HashSet<JOB>();
             this.JOBS_RESP = new HashSet<JOBS_RESP>();
+            this.DRVR_TIME_SHET = new HashSet<DRVR_TIME_SHET>();
         }
 
         public int DriverId { get; set; }
@@ -47,10 +48,13 @@ namespace ParcelXpress.Models
         public System.DateTime CreatedOn { get; set; }
         public Nullable<System.DateTime> LoginTime { get; set; }
         public Nullable<System.DateTime> LogoutTime { get; set; }
+        public Nullable<decimal> HourlyRate { get; set; }
+        public bool IsOnHourlyRate { get; set; }
     
         public virtual SCRT_QUES SCRT_QUES { get; set; }
         public virtual ICollection<DRVR_MSGS> DRVR_MSGS { get; set; }
         public virtual ICollection<JOB> JOBS { get; set; }
         public virtual ICollection<JOBS_RESP> JOBS_RESP { get; set; }
+        public virtual ICollection<DRVR_TIME_SHET> DRVR_TIME_SHET { get; set; }
     }
 }

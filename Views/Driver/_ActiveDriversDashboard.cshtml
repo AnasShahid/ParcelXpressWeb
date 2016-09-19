@@ -11,42 +11,9 @@
                     </div>
 
                 </div>
-                <div class="panel-body">
-                    @if (Model.Count <= 0)
-                    {
-                        <div class="container custom-list-withoutPager" >
-                            <div class="text-danger">
-                                <h6 class="col-sm-12">There are no active drivers</h6>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="panel-body custom-list-withoutPager" id=" activedriverlist">
-                            @foreach (var item in Model)
-                            {
-
-                                <a href="/Jobs/DriverActiveJobs?driverId=@item.DriverId">
-                                    <div class="row" style="padding-top:-10px !important;">
-                                        <h6 class="zero-margins">
-                                            @item.DriverName
-                                            <small style="font-size:0.8em !important; font-weight:bolder">@item.ContactNo</small>
-                                        </h6>
-                                    </div>
-                                    <div class="row">
-                                        <p style="color:#3d3c3c">@item.ActiveJobsCount Jobs</p>
-                                    </div>
-                                </a>
-                                <hr />
-                            }
-
-                        </div>
-                    }
-                </div>
-                <div class="panel-footer text-center">
-                   
-                </div>
+                @Html.Partial("_ActiveDriversList", Model)
             </div>
         </div>
     </div>
 </div>
+

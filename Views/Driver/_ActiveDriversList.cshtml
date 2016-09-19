@@ -1,0 +1,98 @@
+﻿@model List<DRVR_DATA>
+<div id="activeDriversList">
+    <div class="panel-body">
+        <div class="row label-primary">
+            <div class="col-sm-12" style="margin-top:5px;">
+                <label class="control-label col-xs-8" style="color: #e9e5b6;">Auto Refresh</label>
+                <div class="col-xs-1">
+                    <input type="checkbox" id="autoRefreshActiveDrivers" />
+                </div>
+            </div>
+        </div>
+        @if (Model.Count <= 0)
+            {
+            <div class="container custom-list-withoutPager">
+                <div class="text-danger">
+                    <h6 class="col-sm-12">There are no active drivers</h6>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="panel-body custom-list-withoutPager" id="activedriverlist">
+                @foreach (var item in Model)
+                {
+                    <div class="row">
+                        <div class="col-md-8">
+                            <a href="/Jobs/DriverActiveJobs?driverId=@item.DriverId">
+                                <div class="row" style="padding-top:-10px !important;">
+                                    <h6 class="zero-margins">
+                                        @item.DriverName
+                                        <small style="font-size:0.8em !important; font-weight:bolder">@item.ContactNo</small>
+                                    </h6>
+                                </div>
+                                <div class="row">
+                                    <p style="color:#3d3c3c">@item.ActiveJobsCount Jobs</p>
+                                </div>
+                                @if (item.IsOnHourlyRate == true && item.isTimeIn == true)
+                                {
+                                    <div class="row">
+                                        <p style="color:#3d3c3c"><b>Logged in since:</b> @item.AdditionalInfo</p>
+                                    </div>
+                                }
+
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            @if (item.IsOnHourlyRate == true && item.isTimeIn == false)
+                            {
+                                <a class="btn btn-primary" href="/Driver/AcceptHourlyDriver?driverId=@item.DriverId">Accept</a>
+                            }
+                            else if (item.IsOnHourlyRate == true && item.isTimeIn == true)
+                            {
+                                <a class="btn btn-primary" href="/Driver/LogoutHourlyDriver?driverId=@item.DriverId">Logout</a>
+                            }
+                        </div>
+                    </div>
+                    <hr />
+                }
+
+            </div>
+        }
+    </div>
+    <div class="panel-footer text-center">
+
+    </div>
+</div>
+
+<script>
+    var interval = null;
+    $(document).on('ready', function () {
+        $('#autoRefreshActiveDrivers').attr('checked', 'checked');
+        interval = setInterval(updateDrivers, 10000);
+    });
+    function updateDrivers() {
+        $.ajax({
+            url: '/Driver/_ActiveDriversDashboard',
+            success: function (data) {
+                if ($('#autoRefreshActiveDrivers').is(":checked") == true) {
+                    $('#activeDriversList').html(data);
+                    $('#autoRefreshActiveDrivers').attr('checked', 'checked');
+                }
+            },
+            error: function () {
+                clearInterval(interval);
+            }
+        });
+    }
+
+
+    $('#autoRefreshActiveDrivers').on('click', function (e) {
+        if ($(this).is(":checked") == true) {
+            interval = setInterval(updateJobs, 10000);
+        }
+        else {
+            clearInterval(interval);
+        }
+    });
+</script>

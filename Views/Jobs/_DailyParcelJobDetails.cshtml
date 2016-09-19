@@ -1,0 +1,33 @@
+﻿@*@model DALY_PRCL_DETL
+@{
+    var htmlAttributes = new Dictionary<string, object>();
+    var htmlAttributesContract = new Dictionary<string, object>();
+    var htmlAttributesAmount = new Dictionary<string, object>();
+
+
+    List<CUST_DATA> customersModel = new List<CUST_DATA>();
+    if (ViewBag.CustomerAccountInd != null)
+    {
+        if (ViewBag.CustomerAccountInd == false)
+        {
+            htmlAttributes.Add("disabled", "disabled");
+        }
+        else
+        {
+
+        }
+    }
+    if (ViewBag.CustomerContractInd != null)
+    {
+        if (ViewBag.CustomerContractInd == false)
+        {
+            htmlAttributesContract.Add("disabled", "disabled");
+        }
+    }
+    htmlAttributes.Add("class", "paymentModeRadio");
+    htmlAttributesContract.Add("class", "paymentModeRadio");
+
+    htmlAttributesAmount.Add("class", "form-control");
+    htmlAttributesAmount.Add("id", "txtAmount");
+
+}*@

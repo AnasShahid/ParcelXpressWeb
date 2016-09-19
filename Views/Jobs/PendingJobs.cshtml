@@ -1,0 +1,40 @@
+﻿@model IPagedList<PNDG_JOBS>
+
+@{
+    ViewBag.Title = "PendingJobs";
+}
+
+
+@if (Model.Count <= 0)
+{
+    <div class="container">
+        <div class="h4 text-danger">
+            <h4>There are no pending jobs at the moment.</h4>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3>Pending Jobs</h3>
+            </div>
+            <div class="panel-body" id="activeJobsList">
+                @foreach (var item in Model)
+                {
+                    @Html.Partial("_PendingJobsListItem", item)
+                }
+
+            </div>
+            <div class="panel-footer text-center">
+                <div class="pagedList" data-pxp-target="#activeJobsList">
+                    @Html.PagedListPager(Model, page => Url.Action("PendingJobs", new { page }), PagedListRenderOptions.MinimalWithItemCountText)
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@Html.Raw(TempData["toastMessage"])
+

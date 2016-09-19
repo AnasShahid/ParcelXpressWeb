@@ -1,4 +1,6 @@
-﻿@model IPagedList<CUST_INVC>
+﻿
+
+@model IPagedList<CUST_INVC>
 @{
 
 
@@ -15,14 +17,14 @@
                     <div class="box-header">
                         <div style="margin-top:5px;margin-bottom:10px;">
                             <form method="get" action="@Url.Action("AllInvoices")" @*data-pxp-ajax="true" data-pxp-target="#allJobs"*@ class="form-inline">
-
+                                <input type="search" class="form-control col-md-2" placeholder="Search&hellip;" name="searchTxt" id="searchTxt" value="@ViewBag.SearchText" />
                                 <label class="control-label col-md-1">From</label><input type="search" class="DateDialog col-md-2  form-control" placeholder="From Date&hellip;" name="fromDate" id="fromDate" value="@ViewBag.FromDate"/>
                                 <label class="control-label col-md-1 col-md-offset-1">To</label><input type="search" class="DateDialog form-control col-md-2" placeholder="To Date&hellip;" name="toDate" id="toDate" value="@ViewBag.ToDate"/>
                                 <button type="submit" class="btn btn-default col-md-2 col-md-offset-1"><span class="glyphicon glyphicon-search"></span> Search</button>
                             </form>
                         </div>
                     </div>
-                    @Html.Partial("_InvoiceTable", Model, new ViewDataDictionary { { "view", "AllInvoices" }, { "fromDate", @ViewBag.FromDate }, { "toDate", @ViewBag.ToDate } })
+                    @Html.Partial("_InvoiceTable", Model, new ViewDataDictionary { { "view", "AllInvoices" }, { "searchTxt", @ViewBag.SearchText }, { "fromDate", @ViewBag.FromDate }, { "toDate", @ViewBag.ToDate } })
                 </div>
 
             </div>
@@ -45,6 +47,14 @@
                     <div class="row no-margin container-fluid">
                         <label class="control-label col-xs-6">Amount Unpaid: </label>@((decimal)ViewBag.TotalAmount - (decimal)ViewBag.PaidAmount)
                     </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        @using (Html.BeginForm("ExportToExcel", "Invoice", new { FromDate = ViewBag.FromDate, ToDate = ViewBag.ToDate }, FormMethod.Post))
+                    {
+                        <button type="submit" class="btn btn-default col-xs-6 col-xs-offset-3">Export to Excel</button>
+                    }
+                </div>
                 </div>
             </div>
         </div>

@@ -14,5 +14,9 @@ namespace ParcelXpress.Models
 
         public decimal DriverCommissionAmount { get; set; }
 
+        public bool isTimeIn { get; set; }
+
+        public string AdditionalInfo { get; set; }
+
     }
 }
